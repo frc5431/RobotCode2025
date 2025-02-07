@@ -1,6 +1,8 @@
 package frc.robot.Subsytems.Climber;
 
-import org.littletonrobotics.junction.AutoLogOutput;
+import static edu.wpi.first.units.Units.Rotations;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkMax;
 
@@ -48,12 +50,32 @@ public class Climber extends REVMechanism {
         this.state = ClimberStates.STOW;
         config.applySparkConfig(motor);
 
+        Logger.recordOutput("Climber/Mode", getMode());
+		Logger.recordOutput("Climber/State", getClimberState());
+		Logger.recordOutput("Climber/Setpoint", mode.angle.in(Rotations));
+		Logger.recordOutput("Climber/Velocity", getMotorVelocity());
+		Logger.recordOutput("Climber/Voltage", getMotorVoltage());
+		Logger.recordOutput("Climber/Current", getMotorCurrent());
+		Logger.recordOutput("Climber/Output", getMotorOutput());
     }
 
     @Override
+    protected Config setConfig() {
+        if (attached) {
+            config.applySparkConfig(motor);
+        }
+        return this.config;
+    }
+    @Override
     public void periodic() {
         SmartDashboard.putString("Climber Mode", this.getMode());
-        SmartDashboard.putString("getClimberState()", "getClimberState");
+        SmartDashboard.putString("Climber State", getClimberState());
+		SmartDashboard.putNumber("Climber Setpoint", mode.angle.in(Rotations));
+		SmartDashboard.putNumber("Climber Velocity", getMotorVelocity());
+		SmartDashboard.putNumber("Climber Voltage", getMotorVoltage());
+		SmartDashboard.putNumber("Climber Current", getMotorCurrent());
+		SmartDashboard.putNumber("Climber Output", getMotorOutput());
+
         switch (this.mode) {
             case STOW:
                 setClimberState(ClimberStates.STOW);
@@ -72,6 +94,14 @@ public class Climber extends REVMechanism {
         this.state = ClimberState;
     }
 
+    public String getClimberState() {
+        return this.state.toString();
+    }
+
+    public String getMode() {
+        return this.mode.toString();
+    }
+
     protected void runEnum(ClimberModes Climbermode) {
         this.mode = Climbermode;
         setMotorPosition(Climbermode.angle);
@@ -80,42 +110,6 @@ public class Climber extends REVMechanism {
     public Command runClimberCommand(ClimberModes climberModes) {
         // return new StartEndCommand(() -> this.runEnum(ClimberModes), () -> this.runEnum(ClimberModes), this).withName("Climber.runEnum");
         return run(() -> runEnum(climberModes)).withName("Climber.runEnum");
-    }
-
-    @AutoLogOutput(key = "Climber/Velocity")
-    public double getMotorVelocity() {
-        if (attached) {
-            return motor.getEncoder().getVelocity();
-        }
-
-        return 0;
-    }
-
-    @AutoLogOutput(key = "Climber/Output")
-    public double getMotorOutput() {
-        if (attached) {
-            return motor.getAppliedOutput();
-        }
-
-        return 0;
-    }
-
-    @AutoLogOutput(key = "Climber/Mode")
-    public String getMode() {
-        return this.mode.toString();
-    }
-
-    @AutoLogOutput(key = "Climber/State")
-    public String getClimberState() {
-        return this.state.toString();
-    }
-
-    @Override
-    protected Config setConfig() {
-        if (attachted) {
-            config.applySparkConfig(motor);
-        }
-        return this.config;
     }
 
 }
