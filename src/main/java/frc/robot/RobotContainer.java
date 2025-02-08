@@ -31,11 +31,9 @@ public class RobotContainer {
 
   // Operator Controls
 
-    // Intake Controls
-    private Trigger intakeCoral = driver.a();
+  // Intake Controls
+  private Trigger intakeCoral = driver.a();
 
-  // Climber Controls
-  private Trigger climberAim = driver.b();
 
   // Climber Controls
   private Trigger climberAim = driver.b();
@@ -51,7 +49,6 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    climber.periodic();
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
 
   }
@@ -64,19 +61,6 @@ public class RobotContainer {
 
     // Intake Controls
     intakeCoral.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE));
-
-    // Climber Controls
-    climberAim.whileTrue(climber.runClimberCommand(ClimberModes.ALIGN));
-
-  }
-
-  private void configureBindings() {
-
-    configureDriverControls();
-    configureOperatorControls();
-
-    // Climber Controls
-    climberAim.whileTrue(climber.runClimberCommand(ClimberModes.ALIGN));
 
   }
 
