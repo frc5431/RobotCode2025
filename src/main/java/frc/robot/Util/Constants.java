@@ -206,14 +206,14 @@ public final class Constants {
     public static class IntakePivotConstants {
 
         public enum IntakePivotStates {
-            STOW,
-            L2,
-            L3,
-            NET,
+            SCORING,
+            STOWED,
+            INTAKING,
         }
 
         public static final int id = 32342370;
         public static final boolean attached = true;
+        public static final int weight = 0;
         public static final Angle softLimitForwardMax = Units.Rotation.of(0);
         public static final boolean softLimitEnabled = true;
         public static final Angle softLimitReverseMax = Units.Rotation.of(0);
@@ -228,11 +228,12 @@ public final class Constants {
         public static final double i = 0;
         public static final double d = 0;
 
+
         public enum IntakePivotModes {
             STOW(stowAngle),
             DEPLOY(deployAngle),
             SCOREL1(l1Angle);
-            
+
             public Angle angle;
 
             IntakePivotModes(Angle angle) {

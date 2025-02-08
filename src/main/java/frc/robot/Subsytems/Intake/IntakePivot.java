@@ -44,7 +44,7 @@ public class IntakePivot extends REVMechanism {
 		this.config = config;
 		this.motor = motor;
 		this.mode = IntakePivotModes.STOW;
-		this.state = IntakePivotStates.STOW;
+		this.state = IntakePivotStates.STOWED;
 
 		config.applySparkConfig(motor);
 
