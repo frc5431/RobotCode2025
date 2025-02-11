@@ -20,7 +20,7 @@ public class Climber extends REVMechanism {
 
     private ClimberConfig config;
     private SparkMax motor;
-    public boolean attachted;
+    public boolean attached;
     public SysIdRoutine routine;
 
     private ClimberModes mode;
@@ -42,8 +42,8 @@ public class Climber extends REVMechanism {
         }
     }
 
-    public Climber(SparkMax motor, boolean attachted) {
-        super(motor, attachted);
+    public Climber(SparkMax motor, boolean attached) {
+        super(motor, attached);
         ClimberConfig config = new ClimberConfig();
         this.motor = motor;
         this.mode = ClimberModes.STOW;
@@ -64,7 +64,7 @@ public class Climber extends REVMechanism {
         if (attached) {
             config.applySparkConfig(motor);
         }
-        return this.config;
+        return config;
     }
     @Override
     public void periodic() {
@@ -112,4 +112,7 @@ public class Climber extends REVMechanism {
         return run(() -> runEnum(climberModes)).withName("Climber.runEnum");
     }
 
+    public void alignClimber(){
+        runEnum(ClimberModes.ALIGN);
+    }
 }

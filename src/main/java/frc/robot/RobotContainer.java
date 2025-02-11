@@ -18,7 +18,7 @@ import frc.team5431.titan.core.joysticks.TitanController;
 
 public class RobotContainer {
 
-  private System systems = new System();
+  private Systems systems = new Systems();
   private Intake intake = systems.getIntake();
   private Climber climber = systems.getClimber();
 
@@ -45,11 +45,12 @@ public class RobotContainer {
 
   public void periodicSubsystems() {
     intake.periodic();
-
+    climber.periodic();
   }
 
   public void periodic() {
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+    climber.periodic();
 
   }
 
@@ -61,11 +62,20 @@ public class RobotContainer {
 
     // Intake Controls
     intakeCoral.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE));
+    climberAim.onTrue(climber.runClimberCommand(ClimberModes.ALIGN));
 
+  }
+
+  public void configureBindings() {
+    configureOperatorControls();
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  public void align_climber(){
+    climber.alignClimber();
   }
   
 }

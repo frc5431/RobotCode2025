@@ -15,7 +15,7 @@ import frc.team5431.titan.core.subsystem.REVMechanism;
 public class Manipulator extends REVMechanism {
 	private ManipulatorConfig config;
 	private SparkMax motor;
-	public Boolean attachted;
+	public boolean attached;
 
 	private ManipulatorModes mode;
 	private ManipulatorStates state;
@@ -57,7 +57,7 @@ public class Manipulator extends REVMechanism {
 
 	@Override
 	protected Config setConfig() {
-		if (attachted) {
+		if (attached) {
 			config.applySparkConfig(motor);
 		}
 		return this.config;
