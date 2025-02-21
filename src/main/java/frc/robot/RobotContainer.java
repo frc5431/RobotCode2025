@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -70,8 +73,7 @@ public class RobotContainer {
 	// Game Status
 	private @Getter Trigger hasAlgae = new Trigger(() -> gamePieceStatus == GamePieceStates.ALGAE);
 	private @Getter Trigger hasCoral = new Trigger(() -> gamePieceStatus == GamePieceStates.CORAL);
-	private @Getter Trigger isEndgame = new Trigger(
-			() -> DriverStation.getMatchTime() <= 20 && DriverStation.isTeleop());
+	private @Getter Trigger isEndgame = new Trigger(() -> DriverStation.getMatchTime() <= 20 && DriverStation.isTeleop());
 	private @Getter Trigger isAutonEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
 
 	// Subsystem Triggers
@@ -87,6 +89,7 @@ public class RobotContainer {
 	private Trigger climberClimb = driver.rightTrigger(ControllerConstants.triggerThreshold);
 
 	// Operator Controls
+	private Trigger cycleThroughWrist = operator.start();
 
 	// Preset Controls
 	private Trigger intakePreset = operator.leftBumper();
@@ -140,6 +143,8 @@ public class RobotContainer {
 	}
 
 	private void configureOperatorControls() {
+		//Mechanism Controls
+		cycleThroughWrist.onTrue(robotMechanism.ChangeWristAngleCommand(40.00));
 
 		// Elevator Controls
 		intakePreset.onTrue(
