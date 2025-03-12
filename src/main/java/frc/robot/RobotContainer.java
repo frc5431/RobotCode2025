@@ -138,7 +138,8 @@ public class RobotContainer {
 		System.out.println(AutoBuilder.getAllAutoNames());
 		autoChooser = AutoBuilder.buildAutoChooser();
 		SmartDashboard.putData("Auto Chooser", autoChooser);
-		candle.changeAnimationCommand(CANdleConstants.AnimationTypes.CORAL).runsWhenDisabled();
+		candle.testCommand().runsWhenDisabled();
+		
 
 	}
 
@@ -284,11 +285,11 @@ public class RobotContainer {
 		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
 		isManipIntaking.whileTrue(feeder.runFeederCommand(FeederModes.SLOW));
 
-		// LED Status
-		isEndgame.whileTrue(candle.changeAnimationCommand(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
-		isAutonEnabled.whileTrue(
-				candle.changeAnimationCommand((Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
-						.withName("LED Auton Alliance"));
+		// // LED Status
+		// isEndgame.whileTrue(candle.changeAnimationCommand(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
+		// isAutonEnabled.whileTrue(
+		// 		candle.changeAnimationCommand((Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
+		// 				.withName("LED Auton Alliance"));
 		
 	
 
