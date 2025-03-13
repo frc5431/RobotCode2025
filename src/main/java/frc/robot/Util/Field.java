@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -295,5 +297,16 @@ public class Field {
 
 	public static boolean poseOutOfField(Pose3d pose3D) {
 		return poseOutOfField(pose3D.toPose2d());
+	}
+
+	private AprilTagFieldLayout aprilTagFieldLayout;
+
+	public Pose3d getAprilTagPose3d(int aprilTagID){
+		for (double x : reefAprilTags) {
+			if (x == aprilTagID) {
+				return aprilTagFieldLayout.getTagPose(aprilTagID).orElse(null);
+			}
+		}
+		return null;
 	}
 }
