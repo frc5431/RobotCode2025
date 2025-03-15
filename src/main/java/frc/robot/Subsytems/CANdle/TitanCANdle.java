@@ -92,7 +92,7 @@ public class TitanCANdle extends SubsystemBase {
         }
     
         public static enum LEDSegment {
-            BatteryIndicator(0, 2, 0), DriverStationIndicator(2, 1, -1), MainStrip(3, 300, 1);
+            BatteryIndicator(0, 2, 0), DriverStationIndicator(2, 1, -1), MainStrip(3, 10, 1);
     
             public final int startIndex;
             public final int segmentSize;

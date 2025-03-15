@@ -471,11 +471,10 @@ public final class Constants {
 
         public static final double s = 0.15; // 0.15 holds arm at 90 degree position, when gravity's pull is strongest
 
-        public static final double p = 1.8;
-        public static final double i = 0.005;
-        //TODO: LOWER D
-        public static final double d = 1.3;
-        public static final double maxIAccum = 0.001;
+        public static final double p = 2;
+        public static final double i = 0.0009;
+        public static final double d = 1.7;
+        public static final double maxIAccum = 0.005;
 
         public static final Angle eject = Units.Rotation.of(-0.8);
         public static final Angle stow = Units.Rotations.of(-2);
@@ -491,11 +490,6 @@ public final class Constants {
         public static final Angle error = Units.Rotations.of(0.3);
         public static final Angle tightError = Units.Rotations.of(0.1);
 
-
-        public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
-        public static final AngularVelocity mm_maxAccel = Units.RPM.of(20);
-        public static final AngularVelocity mm_velocity = Units.RPM.of(40);
-        public static final AngularVelocity mm_error = Units.RPM.of(0.1);
 
         public enum ManipJointPositions {
             STOW(stow), EJECT(eject), PREEFEED(prefeed), FEED(feed), SCOREL1(scoreL1), SCOREL2(scoreL2), SCOREL3(

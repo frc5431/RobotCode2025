@@ -27,6 +27,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -40,8 +41,11 @@ import frc.robot.Util.Constants.AutonConstants;
 import frc.robot.Util.Constants.DrivebaseConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Util.SwerveConstants.TunerSwerveDrivetrain;
+import frc.team5431.titan.core.misc.Calc;
 import lombok.Getter;
 
 /**
@@ -75,19 +79,31 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
             .withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
 
-    private @Getter SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
+    private @Getter SwerveRequest.FieldCentric driverFOControl = new SwerveRequest.FieldCentric()
             .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
             .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private @Getter SwerveRequest.RobotCentricFacingAngle faceTargetControl = new SwerveRequest.RobotCentricFacingAngle()
-            .withDeadband(DrivebaseConstants.FaceTargetAVelocityDeadzone)
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
+    private @Getter SwerveRequest.RobotCentric driverROControl = new SwerveRequest.RobotCentric()
+            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+            private @Getter SwerveRequest.RobotCentric autonControl = new SwerveRequest.RobotCentric()
+            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+    private SwerveRequest.FieldCentricFacingAngle faceTargetControl = new SwerveRequest.FieldCentricFacingAngle()
+            .withHeadingPID(13, 0, 1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withForwardPerspective(perspectiveValue);
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
+            .withMaxAbsRotationalRate(DrivebaseConstants.MaxAngularRate)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo);
 
     SwerveModuleState[] states = this.getState().ModuleStates;
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
@@ -247,7 +263,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds));
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds).withSteerRequestType(SteerRequestType.Position).withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
 
     public Command stopRobotCentric() {
@@ -256,12 +272,16 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public Command faceTargetCommand(Rotation2d faceDirection) {
-        return new InstantCommand(() -> this.setControl(faceTargetControl.withTargetDirection(faceDirection)));
+        return applyRequest(() -> faceTargetControl.withTargetDirection(faceDirection));
     }
 
     public Command faceTargetCommand(Angle faceDirection) {
-        return new InstantCommand(
-                () -> this.setControl(faceTargetControl.withTargetDirection(new Rotation2d(faceDirection))));
+        return applyRequest(() -> faceTargetControl.withTargetDirection(new Rotation2d(faceDirection)));
+    }
+
+    public boolean faceTargetEvaluate(double setpoint) {
+        return Calc.approxEquals(this.getRobotPose().getRotation().getRadians(),
+                Units.degreesToRadians(setpoint), 0.1);
     }
 
     @Override

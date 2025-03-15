@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.3105532786885234,
-        "y": 5.121875
+        "x": 7.576229508196722,
+        "y": 7.351588114754097
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.132369094372581,
-        "y": 4.739757783609109
+        "x": 7.359723157250612,
+        "y": 7.476588114754097
       },
       "isLocked": false,
-      "linkedName": "LeftOutRightPipeEnd"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.778,
-        "y": 5.961014344262295
+        "x": 5.3105532786885234,
+        "y": 5.121875
       },
       "prevControl": {
-        "x": 5.883654565435174,
-        "y": 6.187591291021457
+        "x": 5.527059629634633,
+        "y": 5.246875
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftOutRightPipeEnd"
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StowPreset",
-      "waypointRelativePos": 0.583570750237413,
+      "name": "L4Preset",
+      "waypointRelativePos": 0.5593525179856091,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StowPreset"
+          "name": "L4Preset"
         }
       }
     }
@@ -54,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 62.241459398940066
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 45.0
   },
   "useDefaultConstraints": false
 }

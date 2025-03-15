@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -94,6 +95,7 @@ public class RobotContainer {
 	 */
 
 	private Trigger zeroDrivebase = driver.y();
+	private Trigger robotOriented = driver.start();
 	private Trigger driverStow = driver.x();
 	private Trigger killElevator = driver.b();
 	private Trigger driverIntake = driver.leftTrigger(0.5);
@@ -178,7 +180,7 @@ public class RobotContainer {
 		drivebase.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivebase.applyRequest(
-						() -> drivebase.getDriverControl()
+						() -> drivebase.getDriverFOControl()
 								.withVelocityX(deadzone(-driver.getLeftY())
 										* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
 								.withVelocityY(deadzone(-driver.getLeftX())
@@ -188,6 +190,18 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond))))
 						.withName("Swerve Default Command"));
 
+
+		robotOriented.whileTrue(drivebase.applyRequest(
+				() -> drivebase.getDriverROControl()
+						.withVelocityX(deadzone(-driver.getLeftY())
+								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withVelocityY(deadzone(-driver.getLeftX())
+								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withRotationalRate(
+								deadzone(-driver.getRightX()
+										* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond))))
+				.withName("Swerve Robot Oriented"));
+
 		// Align Reef Commands
 		// alignLeftReef.onTrue(
 		// new AlignReefCommand(false).withName("Align Left Reef"));
@@ -196,10 +210,10 @@ public class RobotContainer {
 		// alignCenterReef.onTrue(
 		// new AlignReefCommand().withName("Align Center Reef"));
 
-		face0.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(0, Rotations)).withName("Rotate 0"));
-		face90.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(90, Rotations)).withName("Rotate 90"));
-		face180.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(180, Rotations)).withName("Rotate 180"));
-		face270.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(270, Rotations)).withName("Rotate 270"));
+		face0.onTrue(drivebase.faceTargetCommand(new Rotation2d(0)).until(() -> drivebase.faceTargetEvaluate(0)).withName("Rotate 0"));
+		face90.onTrue(drivebase.faceTargetCommand(new Rotation2d(90)).until(() -> drivebase.faceTargetEvaluate(90)).withName("Rotate 90"));
+		face180.onTrue(drivebase.faceTargetCommand(new Rotation2d(-180)).until(() -> drivebase.faceTargetEvaluate(-180)).withName("Rotate 180"));
+		face270.onTrue(drivebase.faceTargetCommand(new Rotation2d(-90)).until(() -> drivebase.faceTargetEvaluate(-90)).withName("Rotate 270"));
 
 		driverStow.onTrue(
 				new SmartStowCommand(elevator, manipJoint, manipulator)
@@ -311,7 +325,8 @@ public class RobotContainer {
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("ScoreL4",
-				new ParallelCommandGroup(new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint).alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
+				new ParallelCommandGroup(new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint)
+						.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
 
 		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
 		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));
