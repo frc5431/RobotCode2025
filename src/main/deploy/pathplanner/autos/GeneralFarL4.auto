@@ -5,27 +5,33 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "StowPreset"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "MiddleSideL4"
+            "pathName": "FarSide"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AlignLeftReef"
+            "name": "ScoreL4"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "L4Preset"
+            "waitTime": 1.0
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ScoreCoral"
+            "pathName": "EndFarSide"
           }
         }
       ]

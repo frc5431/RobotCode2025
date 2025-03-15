@@ -4,8 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -36,18 +34,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Util.Field;
 import frc.robot.Util.SwerveConstants;
 import frc.robot.Util.Constants.AutonConstants;
 import frc.robot.Util.Constants.DrivebaseConstants;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Util.SwerveConstants.TunerSwerveDrivetrain;
 import lombok.Getter;
 
@@ -64,8 +57,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean hasAppliedOperatorPerspective = false;
 
-    //TODO: ADD IN NULL VALUES
-    //TODO: GIVE DRIVER DPAD ALIGNMENT
+    // TODO: GIVE DRIVER DPAD ALIGNMENT
 
     private SwerveRequest.SwerveDriveBrake xLock = new SwerveDriveBrake();
     private SwerveRequest.FieldCentricFacingAngle driverFieldCentricFacingAngle = new FieldCentricFacingAngle()
@@ -80,16 +72,22 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
-    private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric().withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
+    private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
+            .withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
 
-	private @Getter SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
-			.withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
-			.withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
-			.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
-			.withSteerRequestType(SteerRequestType.MotionMagicExpo)
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private @Getter SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
+            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
+            .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-
+    private @Getter SwerveRequest.RobotCentricFacingAngle faceTargetControl = new SwerveRequest.RobotCentricFacingAngle()
+            .withDeadband(DrivebaseConstants.FaceTargetAVelocityDeadzone)
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withForwardPerspective(perspectiveValue);
 
     SwerveModuleState[] states = this.getState().ModuleStates;
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
@@ -160,7 +158,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void resetGyro() {
-        this.getPigeon2().setYaw(0);
+        this.resetRotation(Rotation2d.kZero);
     }
 
     public Command zeroGyro() {
@@ -173,7 +171,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                     this::getRobotPose,
                     this::resetPose,
                     this::getChassisSpeeds,
-                    (speeds) -> driveRobotCentric(speeds),
+                    (speeds) -> driveAuton(speeds),
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
                                                     // for holonomic drive trains
                             AutonConstants.translationPID,
@@ -244,16 +242,26 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
      *         If we have issues this is a good place to start. Not confident on the
      *         end command
      */
-    public void driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+    public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)));
+    }
+
+    public void driveAuton(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds));
     }
 
+    public Command stopRobotCentric() {
+        return new InstantCommand(() -> this
+                .setControl(new SwerveRequest.RobotCentric().withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
+    }
+
     public Command faceTargetCommand(Rotation2d faceDirection) {
-        return applyRequest(() -> driverFieldCentricFacingAngle.withTargetDirection(faceDirection));
+        return new InstantCommand(() -> this.setControl(faceTargetControl.withTargetDirection(faceDirection)));
     }
 
     public Command faceTargetCommand(Angle faceDirection) {
-        return applyRequest(() -> driverFieldCentricFacingAngle.withTargetDirection(new Rotation2d(faceDirection)));
+        return new InstantCommand(
+                () -> this.setControl(faceTargetControl.withTargetDirection(new Rotation2d(faceDirection))));
     }
 
     @Override
@@ -270,7 +278,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
          * occurs during testing.
          */
 
-        SmartDashboard.putNumber("Gyro", this.getPigeon2().getYaw().getValueAsDouble());
         SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().baseUnitMagnitude());
         // SmartDashboard.putData("Swerve Pose", (Sendable) this.getRobotPose());
 

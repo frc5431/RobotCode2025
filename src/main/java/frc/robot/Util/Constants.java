@@ -308,8 +308,8 @@ public final class Constants {
         public static final Angle coralL2 = stow;
         public static final Angle coralL3 = Units.Rotation.of(2.2);
         public static final Angle safeSwing = Units.Rotation.of(2.7);
-        public static final Angle coralL4 = Units.Rotation.of(4.55);
-        public static final Angle eject = Units.Rotation.of(4.65);
+        public static final Angle coralL4 = Units.Rotation.of(4.65);
+        public static final Angle eject = Units.Rotation.of(4.7);
 
         public static final Angle coralStation = Units.Rotation.of(3);
 
@@ -378,6 +378,9 @@ public final class Constants {
         public static final Distance robotLength = Units.Inches.of(28);
         public static final AngularVelocity AngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity VisionAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
+        public static final AngularVelocity FaceTargetAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
+        public static final LinearVelocity FaceTargetAVelocityDeadzone = TunerConstants.kSpeedAt12Volts.times(0.05);
+
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = RotationsPerSecond.of(0.5);

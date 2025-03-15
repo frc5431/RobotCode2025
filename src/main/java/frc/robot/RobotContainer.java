@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,15 +20,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.Auto.AutoIntakeCoralCommand;
 import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
 import frc.robot.Commands.Chained.ElevatorPresetCommand;
 import frc.robot.Commands.Chained.ElevatorStowCommand;
-import frc.robot.Commands.Chained.IntakeCoralCommand;
-import frc.robot.Commands.Chained.ScoreCoralCommand;
 import frc.robot.Commands.Chained.SmartStowCommand;
 import frc.robot.Commands.Chained.ZeroCommand;
 import frc.robot.Subsytems.CANdle.TitanCANdle;
@@ -225,7 +220,8 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 
 		// Intake Controls
-		ejectL4Preset.onTrue(new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint));
+		ejectL4Preset.onTrue(
+				new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint).withName("Eject L4"));
 		zeroElevator.onTrue(new ZeroCommand(elevator).withName("ZERO ELEVATOR MAY WANT KILL"));
 
 		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
@@ -256,8 +252,7 @@ public class RobotContainer {
 				new ElevatorFeedCommand(elevator, manipJoint)
 						.withName("Feed Preset"));
 
-		scoreL2Preset.onTrue(new ElevatorStowCommand(elevator, manipJoint).andThen(
-				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint))
+		scoreL2Preset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
 				.withName("Elevator L2 Preset"));
 
 		scoreL3Preset.onTrue(
@@ -312,18 +307,12 @@ public class RobotContainer {
 		NamedCommands.registerCommand("L4Preset",
 				new ElevatorPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint));
 		NamedCommands.registerCommand("StowPreset",
-				new ElevatorStowCommand(elevator, manipJoint));
+				new ElevatorStowCommand(elevator, manipJoint).withTimeout(0.5));
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("ScoreL4",
-				new ParallelCommandGroup(manipulator.runManipulatorCommand(ManipulatorModes.SCORE),
-						new WaitCommand(2).andThen(manipJoint.runManipJointCommand(ManipJointPositions.STOW))));
-		NamedCommands.registerCommand("IntakeCoral",
-				new IntakeCoralCommand(intake, intakePivot, manipulator, elevator, manipJoint));
-		NamedCommands.registerCommand("AutoIntakeCoral",
-				new AutoIntakeCoralCommand(intake, intakePivot, manipulator, elevator, manipJoint));
-		NamedCommands.registerCommand("ScoreCoral",
-				new ScoreCoralCommand(elevator, manipJoint, manipulator));
+				new ParallelCommandGroup(new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint).alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
+
 		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
 		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));
 
