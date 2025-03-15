@@ -6,10 +6,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -79,10 +82,9 @@ public class RobotContainer {
 	// Subsystem Triggers
 	private @Getter Trigger isIntaking = new Trigger(
 			() -> intake.getMode() == IntakeModes.INTAKE || intake.getMode() == IntakeModes.FEED);
-	
+
 	private @Getter Trigger isManipIntaking = new Trigger(
-		() -> manipulator.getMode() == ManipulatorModes.MANUAL);
-	
+			() -> manipulator.getMode() == ManipulatorModes.MANUAL);
 
 	// LED Triggers
 	/*
@@ -101,10 +103,10 @@ public class RobotContainer {
 	private Trigger killElevator = driver.b();
 	private Trigger driverIntake = driver.leftTrigger(0.5);
 	private Trigger di = driver.rightTrigger(0.5);
-	// private Trigger povUp
-	// private Trigger povUpRight = driver.
-	// private Trigger 
-
+	private Trigger face0 = driver.upDpad();
+	private Trigger face90 = driver.leftDpad();
+	private Trigger face180 = driver.downDpad();
+	private Trigger face270 = driver.rightDpad();
 
 	// Operator Controls
 
@@ -126,16 +128,14 @@ public class RobotContainer {
 
 	private Trigger smartIntakeCoral = operator.leftTrigger(.5);
 	private Trigger scoreCoral = operator.rightTrigger(.5);
-	
+
 	public RobotContainer() {
 		// Path Planner reccomends that construction of their namedcommands happens
 		// before anything else in robot container
 		setCommandMappings();
 		configureOperatorControls();
 		configureDriverControls();
-		new SmartStowCommand(elevator, manipJoint, manipulator).schedule();
 
-		System.out.println(AutoBuilder.getAllAutoNames());
 		autoChooser = AutoBuilder.buildAutoChooser();
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		candle.changeAnimationCommand(CANdleConstants.AnimationTypes.CORAL).runsWhenDisabled();
@@ -161,15 +161,16 @@ public class RobotContainer {
 
 	/**
 	 * Sets a Deazone
-	 * Make a linear function with deadson at 0 and 1 at 1. 
+	 * Make a linear function with deadson at 0 and 1 at 1.
 	 * Then need to have this work on both positive and negative.
+	 * 
 	 * @param num
 	 * @return
 	 */
 	public double deadzone(double num) {
 		if (Math.abs(num) > ControllerConstants.deadzone) {
-			
-			double w = 1.0 / ( 1.0 - ControllerConstants.deadzone);
+
+			double w = 1.0 / (1.0 - ControllerConstants.deadzone);
 			double b = w * ControllerConstants.deadzone;
 			return (w * Math.abs(num) - b) * (num / Math.abs(num));
 		} else {
@@ -200,20 +201,24 @@ public class RobotContainer {
 		// alignCenterReef.onTrue(
 		// new AlignReefCommand().withName("Align Center Reef"));
 
+		face0.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(0, Rotations)).withName("Rotate 0"));
+		face90.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(90, Rotations)).withName("Rotate 90"));
+		face180.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(180, Rotations)).withName("Rotate 180"));
+		face270.onTrue(drivebase.faceTargetCommand(Angle.ofRelativeUnits(270, Rotations)).withName("Rotate 270"));
 
 		driverStow.onTrue(
 				new SmartStowCommand(elevator, manipJoint, manipulator)
 						.alongWith(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW))
 						.withName("Driver Smart Stow"));
 
-		killElevator.onTrue(manipJoint.killManipJoingCommand().alongWith(elevator.killElevatorCommand()));
+		killElevator.onTrue(manipJoint.killManipJoingCommand().alongWith(elevator.killElevatorCommand())
+				.withName("Kill Elevator System"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.withName("Zero Drivebase"));
 
-		driverIntake.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE));
-		di.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE));
-
+		driverIntake.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE).asProxy().withName("Driver Intake"));
+		di.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE).asProxy().withName("Driver Intake"));
 
 	}
 
@@ -226,9 +231,6 @@ public class RobotContainer {
 		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
 				.withName("Stow Intake"));
 
-		intakeCoral.onTrue(
-				manipulator.runManipulatorCommand(ManipulatorModes.FEED).until(() -> manipulator.hasCoral()));
-
 		smartIntakeCoral.whileTrue(
 				intake.runIntakeCommand(IntakeModes.INTAKE).withName("Smart Intake System"));
 
@@ -237,11 +239,10 @@ public class RobotContainer {
 
 		manipFeed.whileTrue(
 				manipulator.runManipulatorCommand(ManipulatorModes.MANUAL)
-						.alongWith(feeder.runFeederCommand(FeederModes.SLOW))
 						.withName("Manipulator Feed Command"));
 
 		stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
-				.withName("Smart Stow"));
+				.withName("Elevator Stow"));
 
 		reverseFeed.whileTrue(new EjectCoralCommand(intake, feeder, manipulator)
 				.withName("Coral Outake"));
@@ -253,11 +254,11 @@ public class RobotContainer {
 
 		feedPreset.onTrue(
 				new ElevatorFeedCommand(elevator, manipJoint)
-						.withName("Smart Stow"));
+						.withName("Feed Preset"));
 
-		scoreL2Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint)
-						.withName("Elevator L2 Preset"));
+		scoreL2Preset.onTrue(new ElevatorStowCommand(elevator, manipJoint).andThen(
+				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint))
+				.withName("Elevator L2 Preset"));
 
 		scoreL3Preset.onTrue(
 				new ElevatorPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint)
@@ -278,9 +279,10 @@ public class RobotContainer {
 		manipulator.setDefaultCommand(
 				manipulator.runManipulatorCommand(ManipulatorModes.IDLE).withName("Manipulator Default Command"));
 
-		candle.setDefaultCommand(candle.testCommand().withName("LED Default Command"));
+		// candle.setDefaultCommand(candle.testCommand().withName("LED Default
+		// Command"));
 
-		// // Subsystem Status
+		// Subsystem Status
 		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
 		isManipIntaking.whileTrue(feeder.runFeederCommand(FeederModes.SLOW));
 
@@ -289,8 +291,6 @@ public class RobotContainer {
 		isAutonEnabled.whileTrue(
 				candle.changeAnimationCommand((Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
 						.withName("LED Auton Alliance"));
-		
-	
 
 	}
 

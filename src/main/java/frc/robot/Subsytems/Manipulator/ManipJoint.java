@@ -73,6 +73,8 @@ public class ManipJoint extends REVMechanism {
 		SmartDashboard.putNumber("ManipJoint Current", this.getMotorCurrent());
 		SmartDashboard.putNumber("ManipJoint Voltage", this.getMotorVoltage());
 		SmartDashboard.putNumber("ManipJoint Position", this.getMotorPosition());
+
+
 	}
 
 	/**

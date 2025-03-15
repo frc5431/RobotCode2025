@@ -73,7 +73,7 @@ public final class Constants {
         public static final PIDConstants rotationPID = new PIDConstants(.1, 0, .01);
     }
 
-    public static class IntakeConstants {
+    public static class IntakeConstants {    
 
         public enum IntakeStates {
             IDLE, INTAKING, FEEDING, OUTTAKING, STUCK,
@@ -88,7 +88,7 @@ public final class Constants {
         public static final Current stallLimit = Units.Amps.of(40);
         public static final Angle offset = Units.Rotation.of(0);
         public static final double maxForwardOutput = 1;
-        public static final double maxReverseOutput = -0.0;
+        public static final double maxReverseOutput = -0.4;
 
         public static final IdleMode idleMode = IdleMode.kCoast;
         public static final FeedbackSensor sensorType = FeedbackSensor.kPrimaryEncoder;
@@ -238,7 +238,7 @@ public final class Constants {
         public static final AngularVelocity mm_error = Units.RPM.of(0);
 
         public enum ManipulatorModes {
-            IDLE(idleSpeed, 0.0), SCORE(scoreSpeed, -0.6), FEED(feedSpeed, 0.3), MANUAL(feedSpeed,
+            IDLE(idleSpeed, 0.0), SCORE(scoreSpeed, -0.6), FEED(feedSpeed, 0.6), MANUAL(feedSpeed,
                     0.4), REVERSE(reverseSpeed, 0.2);
 
             public AngularVelocity speed;
@@ -286,30 +286,30 @@ public final class Constants {
 
         public static final boolean useFMaxRotation = true;
         public static final boolean useRMaxRotation = true;
-        public static final Angle maxReverseRotation = Units.Rotation.of(-1);
-        public static final Angle maxFowardRotation = Units.Rotation.of(50);
+        public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
+        public static final Angle maxFowardRotation = Units.Rotation.of(5);
 
         public static final FeedbackSensorSourceValue feedbackSensor = FeedbackSensorSourceValue.FusedCANcoder;
 
         // static voltage needed to hold position
         public static final double s = 0.65;
 
-        public static final double p = 0.1;
+        public static final double p = 0.6;
         public static final double i = 0;
         // do not add d please
         public static final double d = 0;
         public static final double maxIAccum = 0.2;
 
-        public static final Angle error = Units.Rotation.of(1);
-        public static final Angle coralL1 = Units.Rotation.of(3);
-        public static final Angle stow = Units.Rotation.of(8);
-        public static final Angle feed = Units.Rotation.of(16);
-        public static final Angle cleanl2 = Units.Rotation.of(10);
+        public static final Angle error = Units.Rotation.of(.51);
+        public static final Angle coralL1 = Units.Rotation.of(0.7);
+        public static final Angle stow = Units.Rotation.of(0.7);
+        public static final Angle feed = Units.Rotation.of(1.65);
+        public static final Angle cleanl2 = Units.Rotation.of(2);
         public static final Angle coralL2 = stow;
-        public static final Angle coralL3 = Units.Rotation.of(24.5);
-        public static final Angle safeSwing = Units.Rotation.of(25);
-        public static final Angle coralL4 = Units.Rotation.of(47);
-        public static final Angle eject = Units.Rotation.of(48.5);
+        public static final Angle coralL3 = Units.Rotation.of(2.2);
+        public static final Angle safeSwing = Units.Rotation.of(2.7);
+        public static final Angle coralL4 = Units.Rotation.of(4.55);
+        public static final Angle eject = Units.Rotation.of(4.65);
 
         public static final Angle coralStation = Units.Rotation.of(3);
 
@@ -464,15 +464,15 @@ public final class Constants {
         public static final Angle offset = Units.Rotation.of(0);
         public static final FeedbackSensor sensorType = FeedbackSensor.kPrimaryEncoder;
         public static final double maxForwardOutput = 1;
-        public static final double maxReverseOutput = -0.1;
+        public static final double maxReverseOutput = -0.08;
 
         public static final double s = 0.15; // 0.15 holds arm at 90 degree position, when gravity's pull is strongest
 
-        public static final double p = 1.75;
+        public static final double p = 1.8;
         public static final double i = 0.005;
         //TODO: LOWER D
-        public static final double d = 0.6;
-        public static final double maxIAccum = 0.2;
+        public static final double d = 1.3;
+        public static final double maxIAccum = 0.001;
 
         public static final Angle eject = Units.Rotation.of(-0.8);
         public static final Angle stow = Units.Rotations.of(-2);
@@ -482,9 +482,12 @@ public final class Constants {
         public static @Setter Angle adjustAngle = Units.Rotations.of(-2);
         public static final Angle cleanAlgea = Units.Rotations.of(-5);
         public static final Angle prefeed = Units.Rotations.of(-9);
-        public static final Angle feed = Units.Rotations.of(-11.5);
+        public static final Angle feed = Units.Rotations.of(-11);
+        public static final Angle postFeed = Units.Rotations.of(-11.3);
         public static final Angle scoreL4 = Units.Rotations.of(-2.5);
-        public static final Angle error = Units.Rotations.of(0.9);
+        public static final Angle error = Units.Rotations.of(0.3);
+        public static final Angle tightError = Units.Rotations.of(0.1);
+
 
         public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
         public static final AngularVelocity mm_maxAccel = Units.RPM.of(20);
@@ -536,8 +539,8 @@ public final class Constants {
         public static final AngularVelocity error = Units.RPM.of(0);
 
         public static final double idleOutput = 0.0;
-        public static final double reverseOutput = -0.3;
-        public static final double feedOutput = 0.3;
+        public static final double reverseOutput = -0.7;
+        public static final double feedOutput = 1;
         public static final double slowFeedOutput = 0.3;
 
         public enum FeederModes {

@@ -35,6 +35,7 @@ public class Elevator extends CTREMechanism {
             configPIDGains(ElevatorConstants.p, ElevatorConstants.i,
                     ElevatorConstants.d);
             configNeutralBrakeMode(ElevatorConstants.breakType);
+            configFeedbackSensorSource(ElevatorConstants.feedbackSensor);
             configGearRatio(ElevatorConstants.gearRatio);
             configGravityType(ElevatorConstants.gravityType);
             configSupplyCurrentLimit(ElevatorConstants.supplyLimit, ElevatorConstants.useSupplyLimit);
@@ -75,7 +76,9 @@ public class Elevator extends CTREMechanism {
         config.talonConfig.Slot0.kS = ElevatorConstants.s;
         // config.talonConfig.MotorOutput.withPeakForwardDutyCycle(ElevatorConstants.maxForwardOutput);
         // config.talonConfig.MotorOutput.withPeakReverseDutyCycle(ElevatorConstants.maxReverseOutput);
+        config.talonConfig.Feedback.withFeedbackRemoteSensorID(ElevatorConstants.canCoderId);
         config.applyTalonConfig(leader);
+        elevatorCANcoder = new CANcoder(ElevatorConstants.canCoderId, Constants.canbus);
         // leader.getConfigurator().apply(config.talonConfig);
         // follower.getConfigurator().apply(config.talonConfig);
         follower.setControl(new Follower(ElevatorConstants.leftId, ElevatorConstants.follwerInvert));
@@ -100,7 +103,7 @@ public class Elevator extends CTREMechanism {
             SmartDashboard.putString("Elevator Mode", getPosition().toString());
             SmartDashboard.putString("Elevator State", getStates().toString());
             SmartDashboard.putNumber("Elevator Setpoint", getPosition().rotation.in(Rotation));
-            SmartDashboard.putNumber("Leader Position", leader.getRotorPosition().getValueAsDouble());
+            SmartDashboard.putNumber("CANCoder Position", elevatorCANcoder.getPosition().getValueAsDouble());
             SmartDashboard.putNumber("Follower Position", follower.getPosition().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Voltage", leader.getMotorVoltage().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Refrence", leader.getClosedLoopReference().getValueAsDouble());
@@ -136,7 +139,7 @@ public class Elevator extends CTREMechanism {
      */
     public boolean getPositionSetpointGoal(Angle target, Angle error) {
         if (attached) {
-            if (Calc.approxEquals(leader.getRotorPosition().getValueAsDouble(), target.in(Rotation),
+            if (Calc.approxEquals(elevatorCANcoder.getPosition().getValue().in(Rotation), target.in(Rotation),
                     error.in(Rotation))) {
                 return true;
             }
@@ -182,6 +185,10 @@ public class Elevator extends CTREMechanism {
     public Command zeroElevatorCommand() {
         return new InstantCommand(() -> setZero(), this);
     }
+
+    // public Angle getPosition() {
+    //     return elevatorCANcoder.getPosition().getValue();
+    // }
 
     protected void stop() {
         if (attached) {

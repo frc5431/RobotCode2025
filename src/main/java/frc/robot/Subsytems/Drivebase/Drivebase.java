@@ -32,6 +32,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -249,6 +250,10 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     public Command faceTargetCommand(Rotation2d faceDirection) {
         return applyRequest(() -> driverFieldCentricFacingAngle.withTargetDirection(faceDirection));
+    }
+
+    public Command faceTargetCommand(Angle faceDirection) {
+        return applyRequest(() -> driverFieldCentricFacingAngle.withTargetDirection(new Rotation2d(faceDirection)));
     }
 
     @Override

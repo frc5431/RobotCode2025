@@ -28,15 +28,16 @@ public class ElevatorFeedCommand extends SequentialCommandGroup {
 						// manip runs to stow position only if the elevator is at the setpoint goal
 						manipJoint.runManipJointCommand(ManipJointPositions.PREEFEED),
 						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.prefeed,
-								ManipJointConstants.error)),
-						manipJoint.runManipJointCommand(ManipJointPositions.FEED),
-						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
-								ManipJointConstants.error)),
+								ManipJointConstants.tightError)),
 						// since its sequential, this lowers once the manip is
 						// when prev commands finish (instantaly since its RunCommands)
 						// sets elevator to stow angle only if the manipulator is near the stow angle
 						// this ensures that the manip doesnt hit anything while the elevator goes down
-						elevator.runElevatorCommand(ElevatorPositions.FEED));
+						elevator.runElevatorCommand(ElevatorPositions.FEED),
+						manipJoint.runManipJointCommand(ManipJointPositions.FEED),
+
+						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
+								ManipJointConstants.tightError)));
 				break;
 			// if lower than stow, raise elevator first
 			case CLEANL2:
@@ -52,14 +53,14 @@ public class ElevatorFeedCommand extends SequentialCommandGroup {
 						manipJoint.runManipJointCommand(ManipJointPositions.PREEFEED),
 						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.prefeed,
 								ManipJointConstants.error)),
+								elevator.runElevatorCommand(ElevatorPositions.FEED),
 						manipJoint.runManipJointCommand(ManipJointPositions.FEED),
 						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
-								ManipJointConstants.error)),
+								ManipJointConstants.error)));
 						// since its sequential, this lowers once the manip is
 						// when prev commands finish (instantaly since its RunCommands)
 						// sets elevator to stow angle only if the manipulator is near the stow angle
 						// this ensures that the manip doesnt hit anything while the elevator goes down
-						elevator.runElevatorCommand(ElevatorPositions.FEED));
 				break;
 		}
 

@@ -15,7 +15,6 @@ public class Robot extends LoggedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
-    CameraServer.startAutomaticCapture();
 
     // Logger.recordMetadata("Titan2025", "5431Robot");
     // AutoLogOutputManager.addPackage("frc.robot.Subsystems");

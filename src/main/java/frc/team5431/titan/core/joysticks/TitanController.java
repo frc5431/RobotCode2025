@@ -90,19 +90,19 @@ public class TitanController {
 
     
     public Trigger upRightDpad() {
-        return xboxController.povUpRight();
+        return xboxController.pov(45);
     }
 
     public Trigger downRightDpad() {
-        return xboxController.povDownRight();
+        return xboxController.pov(135);
     }
 
     public Trigger upLeftDpad() {
-        return xboxController.povUpLeft();
+        return xboxController.pov(315);
     }
 
     public Trigger downLeftDpad() {
-        return xboxController.povDownLeft();
+        return xboxController.pov(225);
     }
 
 
