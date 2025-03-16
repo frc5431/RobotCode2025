@@ -4,14 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,7 +25,6 @@ import frc.robot.Commands.Chained.ElevatorFeedCommand;
 import frc.robot.Commands.Chained.ElevatorPresetCommand;
 import frc.robot.Commands.Chained.ElevatorStowCommand;
 import frc.robot.Commands.Chained.SmartStowCommand;
-import frc.robot.Commands.Chained.ZeroCommand;
 import frc.robot.Subsytems.CANdle.TitanCANdle;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
@@ -79,9 +76,6 @@ public class RobotContainer {
 	private @Getter Trigger isIntaking = new Trigger(
 			() -> intake.getMode() == IntakeModes.INTAKE || intake.getMode() == IntakeModes.FEED);
 
-	private @Getter Trigger isManipIntaking = new Trigger(
-			() -> manipulator.getMode() == ManipulatorModes.MANUAL);
-
 	// LED Triggers
 	/*
 	 * // Driver Controls
@@ -100,30 +94,24 @@ public class RobotContainer {
 	private Trigger killElevator = driver.b();
 	private Trigger driverIntake = driver.leftTrigger(0.5);
 	private Trigger di = driver.rightTrigger(0.5);
-	private Trigger face0 = driver.upDpad();
-	private Trigger face90 = driver.leftDpad();
-	private Trigger face180 = driver.downDpad();
-	private Trigger face270 = driver.rightDpad();
 
 	// Operator Controls
 
 	// Preset Controls
 	private Trigger feedPreset = operator.downDpad();
+	private Trigger stowPreset = operator.start();
 	private Trigger scoreL2Preset = operator.rightDpad();
 	private Trigger scoreL3Preset = operator.leftDpad();
 	private Trigger scoreL4Preset = operator.upDpad();
 	private Trigger ejectL4Preset = operator.y();
-	private Trigger stowPreset = operator.start();
-	private Trigger intakePreset = operator.rightBumper();
+	private Trigger deplotIntake = operator.rightBumper();
 
 	// Intake Controls
-	private Trigger intakeCoral = operator.a();
 	private Trigger reverseFeed = operator.b();
-	private Trigger zeroElevator = operator.back();
 	private Trigger stowIntake = operator.leftBumper();
 	private Trigger manipFeed = operator.x();
 
-	private Trigger smartIntakeCoral = operator.leftTrigger(.5);
+	private Trigger intakeCoral = operator.leftTrigger(.5);
 	private Trigger scoreCoral = operator.rightTrigger(.5);
 
 	public RobotContainer() {
@@ -132,6 +120,7 @@ public class RobotContainer {
 		setCommandMappings();
 		configureOperatorControls();
 		configureDriverControls();
+		configDriverFacingAngle();
 
 		autoChooser = AutoBuilder.buildAutoChooser();
 		SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -156,50 +145,30 @@ public class RobotContainer {
 		SmartDashboard.putData("mechanism", robotMechanism.elevator);
 	}
 
-	/**
-	 * Sets a Deazone
-	 * Make a linear function with deadson at 0 and 1 at 1.
-	 * Then need to have this work on both positive and negative.
-	 * 
-	 * @param num
-	 * @return
-	 */
-	public double deadzone(double num) {
-		if (Math.abs(num) > ControllerConstants.deadzone) {
-
-			double w = 1.0 / (1.0 - ControllerConstants.deadzone);
-			double b = w * ControllerConstants.deadzone;
-			return (w * Math.abs(num) - b) * (num / Math.abs(num));
-		} else {
-			return 0;
-		}
-	}
-
 	private void configureDriverControls() {
 
 		drivebase.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivebase.applyRequest(
 						() -> drivebase.getDriverFOControl()
-								.withVelocityX(deadzone(-driver.getLeftY())
+								.withVelocityX(-driver.getLeftY()
 										* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
-								.withVelocityY(deadzone(-driver.getLeftX())
+								.withVelocityY(-driver.getLeftX()
 										* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
 								.withRotationalRate(
-										deadzone(-driver.getRightX()
-												* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond))))
+										-driver.getRightX()
+												* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond)))
 						.withName("Swerve Default Command"));
-
 
 		robotOriented.whileTrue(drivebase.applyRequest(
 				() -> drivebase.getDriverROControl()
-						.withVelocityX(deadzone(-driver.getLeftY())
+						.withVelocityX(-driver.getLeftY()
 								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
-						.withVelocityY(deadzone(-driver.getLeftX())
+						.withVelocityY(-driver.getLeftX()
 								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
 						.withRotationalRate(
-								deadzone(-driver.getRightX()
-										* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond))))
+								-driver.getRightX()
+										* DrivebaseConstants.MaxAngularRate.in(RadiansPerSecond)))
 				.withName("Swerve Robot Oriented"));
 
 		// Align Reef Commands
@@ -209,11 +178,6 @@ public class RobotContainer {
 		// new AlignReefCommand(true).withName("Align Right Reef"));
 		// alignCenterReef.onTrue(
 		// new AlignReefCommand().withName("Align Center Reef"));
-
-		face0.onTrue(drivebase.faceTargetCommand(new Rotation2d(0)).until(() -> drivebase.faceTargetEvaluate(0)).withName("Rotate 0"));
-		face90.onTrue(drivebase.faceTargetCommand(new Rotation2d(90)).until(() -> drivebase.faceTargetEvaluate(90)).withName("Rotate 90"));
-		face180.onTrue(drivebase.faceTargetCommand(new Rotation2d(-180)).until(() -> drivebase.faceTargetEvaluate(-180)).withName("Rotate 180"));
-		face270.onTrue(drivebase.faceTargetCommand(new Rotation2d(-90)).until(() -> drivebase.faceTargetEvaluate(-90)).withName("Rotate 270"));
 
 		driverStow.onTrue(
 				new SmartStowCommand(elevator, manipJoint, manipulator)
@@ -234,33 +198,32 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 
 		// Intake Controls
-		ejectL4Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint).withName("Eject L4"));
-		zeroElevator.onTrue(new ZeroCommand(elevator).withName("ZERO ELEVATOR MAY WANT KILL"));
-
-		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
-				.withName("Stow Intake"));
-
-		smartIntakeCoral.whileTrue(
-				intake.runIntakeCommand(IntakeModes.INTAKE).withName("Smart Intake System"));
+		intakeCoral.whileTrue(
+				intake.runIntakeCommand(IntakeModes.INTAKE)
+						.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.FEED))
+						.withName("Intake System"));
 
 		scoreCoral.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE)
 				.withName("Score Coral"));
 
 		manipFeed.whileTrue(
 				manipulator.runManipulatorCommand(ManipulatorModes.MANUAL)
-						.withName("Manipulator Feed Command"));
-
-		stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
-				.withName("Elevator Stow"));
+						.withName("Manipulator Feed"));
 
 		reverseFeed.whileTrue(new EjectCoralCommand(intake, feeder, manipulator)
 				.withName("Coral Outake"));
 
-		// Elevator Controls
-		intakePreset.onTrue(
+		// Pivot Controls
+		deplotIntake.onTrue(
 				intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
-						.withName("Pickup Preset"));
+						.withName("Deploy Intake"));
+
+		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
+				.withName("Stow Intake"));
+
+		// Elevator Controls
+		stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
+				.withName("Elevator Stow"));
 
 		feedPreset.onTrue(
 				new ElevatorFeedCommand(elevator, manipJoint)
@@ -277,6 +240,54 @@ public class RobotContainer {
 				new ElevatorPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint)
 						.withName("Elevator L4 Preset"));
 
+		ejectL4Preset.onTrue(
+				new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
+						.withName("Eject L4 Preset"));
+
+	}
+
+	private Command lockToAngleCommand(Angle redAngle, Angle blueAngle) {
+		return drivebase.applyRequest(
+				() -> drivebase.getFacingRequest()
+						.withVelocityX(-driver.getLeftY() * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withHeading(Field.isBlue() ? blueAngle : redAngle)
+						.withVelocityY(-driver.getLeftX() * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond)))
+				.until(() -> Math.abs(driver.getHID().getRawAxis(4)) > 0.15);
+	}
+
+	private void configDriverFacingAngle() {
+		driver.upDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(180), Degrees.of(180)));
+
+		driver.upRightDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(30), Degrees.of(30)));
+
+		driver.rightDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(90), Degrees.of(90)));
+
+		driver.downRightDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(60), Degrees.of(60)));
+
+		driver.downDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(0), Degrees.of(0)));
+
+		driver.downLeftDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(120), Degrees.of(120)));
+
+		driver.leftDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(270), Degrees.of(270)));
+
+		driver.upLeftDpad().onTrue(new InstantCommand(() -> {
+			drivebase.getFacingRequest().pid.reset();
+		})).toggleOnTrue(lockToAngleCommand(Degrees.of(330), Degrees.of(330)));
+
 	}
 
 	public void onInitialize() {
@@ -288,12 +299,8 @@ public class RobotContainer {
 		manipulator.setDefaultCommand(
 				manipulator.runManipulatorCommand(ManipulatorModes.IDLE).withName("Manipulator Default Command"));
 
-		// candle.setDefaultCommand(candle.testCommand().withName("LED Default
-		// Command"));
-
 		// Subsystem Status
 		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
-		isManipIntaking.whileTrue(feeder.runFeederCommand(FeederModes.SLOW));
 
 		// LED Status
 		isEndgame.whileTrue(candle.changeAnimationCommand(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
@@ -325,8 +332,9 @@ public class RobotContainer {
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("ScoreL4",
-				new ParallelCommandGroup(new ElevatorPresetCommand(ControllerConstants.ejectL4, elevator, manipJoint)
-						.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
+				new ParallelCommandGroup(
+						new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
+								.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
 
 		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
 		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));

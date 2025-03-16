@@ -19,8 +19,8 @@ public class SmartScoreCommand extends SequentialCommandGroup {
      */
     public SmartScoreCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator) {
         switch (manipJoint.getMode()) {
-            case SCOREL2:
-            case SCOREL3:
+            case CORAL_L2:
+            case CORAL_L3:
                 addCommands(
                         manipulator.runManipulatorCommand(ManipulatorModes.SCORE),
                         new WaitUntilCommand(() -> !manipulator.hasCoral()),

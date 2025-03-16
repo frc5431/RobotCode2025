@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -64,10 +65,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     // TODO: GIVE DRIVER DPAD ALIGNMENT
 
     private SwerveRequest.SwerveDriveBrake xLock = new SwerveDriveBrake();
-    private SwerveRequest.FieldCentricFacingAngle driverFieldCentricFacingAngle = new FieldCentricFacingAngle()
-            .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
-            .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
 
     private SwerveRequest.RobotCentricFacingAngle autonRobotCentricFacingAngle = new RobotCentricFacingAngle()
             .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
@@ -92,18 +89,13 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-            private @Getter SwerveRequest.RobotCentric autonControl = new SwerveRequest.RobotCentric()
+    private @Getter SwerveRequest.RobotCentric autonControl = new SwerveRequest.RobotCentric()
             .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
             .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private SwerveRequest.FieldCentricFacingAngle faceTargetControl = new SwerveRequest.FieldCentricFacingAngle()
-            .withHeadingPID(13, 0, 1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
-            .withMaxAbsRotationalRate(DrivebaseConstants.MaxAngularRate)
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo);
+    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle().withPID(null);
 
     SwerveModuleState[] states = this.getState().ModuleStates;
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
@@ -263,20 +255,12 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds).withSteerRequestType(SteerRequestType.Position).withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds).withSteerRequestType(SteerRequestType.MotionMagicExpo).withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
 
     public Command stopRobotCentric() {
         return new InstantCommand(() -> this
                 .setControl(new SwerveRequest.RobotCentric().withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
-    }
-
-    public Command faceTargetCommand(Rotation2d faceDirection) {
-        return applyRequest(() -> faceTargetControl.withTargetDirection(faceDirection));
-    }
-
-    public Command faceTargetCommand(Angle faceDirection) {
-        return applyRequest(() -> faceTargetControl.withTargetDirection(new Rotation2d(faceDirection)));
     }
 
     public boolean faceTargetEvaluate(double setpoint) {
