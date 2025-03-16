@@ -44,25 +44,25 @@ public final class Constants {
         public static final PresetPosition FeedCoralPosition = new PresetPosition(
                 ElevatorPositions.FEED, ManipJointPositions.FEED);
 
-        public static final PresetPosition ScoreL1Position = new PresetPosition(ElevatorPositions.CORALL1,
-                ManipJointPositions.SCOREL1);
+        public static final PresetPosition ScoreL1Position = new PresetPosition(ElevatorPositions.CORAL_L1,
+                ManipJointPositions.CORAL_L1);
 
-        public static final PresetPosition ScoreL2Position = new PresetPosition(ElevatorPositions.CORALL2,
-                ManipJointPositions.SCOREL2);
+        public static final PresetPosition ScoreL2Position = new PresetPosition(ElevatorPositions.CORAL_L2,
+                ManipJointPositions.CORAL_L2);
 
-        public static final PresetPosition ScoreL3Position = new PresetPosition(ElevatorPositions.CORALL3,
-                ManipJointPositions.SCOREL3);
+        public static final PresetPosition ScoreL3Position = new PresetPosition(ElevatorPositions.CORAL_L3,
+                ManipJointPositions.CORAL_L3);
 
-        public static final PresetPosition CleanL2Position = new PresetPosition(ElevatorPositions.CLEANL2,
-                ManipJointPositions.SCOREL2);
+        public static final PresetPosition CleanL2Position = new PresetPosition(ElevatorPositions.CLEAN_L2,
+                ManipJointPositions.CORAL_L2);
 
-        public static final PresetPosition CleanL3Position = new PresetPosition(ElevatorPositions.CORALL3,
-                ManipJointPositions.SCOREL3);
+        public static final PresetPosition CleanL3Position = new PresetPosition(ElevatorPositions.CORAL_L3,
+                ManipJointPositions.CORAL_L3);
 
-        public static final PresetPosition ScoreL4Position = new PresetPosition(ElevatorPositions.CORALL4,
-                ManipJointPositions.SCOREL4);
+        public static final PresetPosition ScoreL4Position = new PresetPosition(ElevatorPositions.CORAL_L4,
+                ManipJointPositions.CORAL_L4);
 
-        public static final PresetPosition ejectL4 = new PresetPosition(ElevatorPositions.EJECET,
+        public static final PresetPosition EjectL4Position = new PresetPosition(ElevatorPositions.EJECT,
                 ManipJointPositions.EJECT);
 
     }
@@ -314,8 +314,8 @@ public final class Constants {
         public static final Angle coralStation = Units.Rotation.of(3);
 
         public enum ElevatorPositions {
-            STOW(stow), FEED(feed), CORALL1(coralL1), CLEANL2(cleanl2), CORALL2(coralL2), CORALL3(coralL3), CORALL4(
-                    coralL4), SAFESWING(safeSwing), EJECET(eject);
+            STOW(stow), FEED(feed), CORAL_L1(coralL1), CLEAN_L2(cleanl2), CORAL_L2(coralL2), CORAL_L3(coralL3), CORAL_L4(
+                    coralL4), SAFESWING(safeSwing), EJECT(eject);
 
             public Angle rotation;
 
@@ -492,8 +492,8 @@ public final class Constants {
 
 
         public enum ManipJointPositions {
-            STOW(stow), EJECT(eject), PREEFEED(prefeed), FEED(feed), SCOREL1(scoreL1), SCOREL2(scoreL2), SCOREL3(
-                    scoreL3), ADJUSTANGLE(adjustAngle), SCOREL4(scoreL4);
+            STOW(stow), EJECT(eject), PREEFEED(prefeed), FEED(feed), CORAL_L1(scoreL1), CORAL_L2(scoreL2), CORAL_L3(
+                    scoreL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4);
 
             public Angle position;
 

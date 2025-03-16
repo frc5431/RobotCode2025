@@ -16,11 +16,11 @@ public class ElevatorStowCommand extends SequentialCommandGroup {
 		switch (manipJoint.getMode()) {
 			// if higher than stow, dont get higher
 			case EJECT:
-			case SCOREL4:
-			case SCOREL2:
-			case SCOREL3:
+			case CORAL_L4:
+			case CORAL_L2:
+			case CORAL_L3:
 			case STOW:
-			case SCOREL1:
+			case CORAL_L1:
 				addCommands(
 						manipJoint.runManipJointCommand(ManipJointPositions.STOW),
 						new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.stow,

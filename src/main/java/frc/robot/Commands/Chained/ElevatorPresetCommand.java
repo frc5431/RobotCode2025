@@ -11,12 +11,12 @@ public class ElevatorPresetCommand extends SequentialCommandGroup {
 	public ElevatorPresetCommand(PresetPosition position, Elevator elevator, ManipJoint manipJoint) {
 
 		switch (elevator.getPosition()) {
-			case CORALL1:
+			case CORAL_L1:
 			case STOW:
-			case CORALL2:
-			case CORALL3:
-			case CORALL4:
-			case EJECET:
+			case CORAL_L2:
+			case CORAL_L3:
+			case CORAL_L4:
+			case EJECT:
 				addCommands(manipJoint.runManipJointCommand(position.getJointMode()).alongWith(
 						elevator.runElevatorCommand(position.getElevatorMode())));
 				break;

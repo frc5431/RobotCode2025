@@ -19,10 +19,10 @@ public class ElevatorFeedCommand extends SequentialCommandGroup {
 
 		switch (elevator.getPosition()) {
 			// if higher than safeswing, dont get any higher
-			case EJECET:
-			case CORALL4:
+			case EJECT:
+			case CORAL_L4:
 			case SAFESWING:
-			case CORALL3:	
+			case CORAL_L3:	
 			case FEED:
 				addCommands(
 						// manip runs to stow position only if the elevator is at the setpoint goal
@@ -40,9 +40,9 @@ public class ElevatorFeedCommand extends SequentialCommandGroup {
 								ManipJointConstants.tightError)));
 				break;
 			// if lower than stow, raise elevator first
-			case CLEANL2:
-			case CORALL2:
-			case CORALL1:
+			case CLEAN_L2:
+			case CORAL_L2:
+			case CORAL_L1:
 			case STOW:
 			default:
 				addCommands(
