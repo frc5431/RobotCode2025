@@ -17,6 +17,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -82,7 +83,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle().withPID(null);
+    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle().withPID(new PIDController(6, 0.01, 0.008));
 
     SwerveModuleState[] states = this.getState().ModuleStates;
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
