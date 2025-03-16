@@ -6,15 +6,11 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
-import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentricFacingAngle;
-import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -32,7 +28,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,8 +37,6 @@ import frc.robot.Util.Constants.AutonConstants;
 import frc.robot.Util.Constants.DrivebaseConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Util.SwerveConstants.TunerSwerveDrivetrain;
 import frc.team5431.titan.core.misc.Calc;
@@ -64,12 +57,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     // TODO: GIVE DRIVER DPAD ALIGNMENT
 
-    private SwerveRequest.SwerveDriveBrake xLock = new SwerveDriveBrake();
-
-    private SwerveRequest.RobotCentricFacingAngle autonRobotCentricFacingAngle = new RobotCentricFacingAngle()
-            .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
-            .withRotationalDeadband(DrivebaseConstants.AutoAngularDeadzone)
-            .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
 
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
@@ -247,20 +234,23 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     /**
      * @param chassisSpeeds
      * @return
-     *         If we have issues this is a good place to start. Not confident on the
-     *         end command
      */
     public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
-        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)));
+        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vyMetersPerSecond)));
     }
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds).withSteerRequestType(SteerRequestType.MotionMagicExpo).withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
 
     public Command stopRobotCentric() {
         return new InstantCommand(() -> this
-                .setControl(new SwerveRequest.RobotCentric().withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
+                .setControl(new SwerveRequest.RobotCentric()
+                        .withVelocityX(0)
+                        .withVelocityY(0)
+                        .withRotationalRate(0)));
     }
 
     public boolean faceTargetEvaluate(double setpoint) {
