@@ -294,10 +294,12 @@ public class RobotContainer {
 		// Default Commands
 		manipJoint.runManipJointCommand(ManipJointPositions.STOW);
 		elevator.runOnce(() -> elevator.riseAboveFriction());
-		intake.setDefaultCommand(intake.runIntakeCommand(IntakeModes.IDLE).withName("Intake Default Command"));
-		feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE).withName("Feeder Default Command"));
-		manipulator.setDefaultCommand(
-				manipulator.runManipulatorCommand(ManipulatorModes.IDLE).withName("Manipulator Default Command"));
+		intake.setDefaultCommand(intake.runIntakeCommand(IntakeModes.IDLE)
+			.withName("Intake Default Command"));
+		feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE)
+			.withName("Feeder Default Command"));
+		manipulator.setDefaultCommand(manipulator.runManipulatorCommand(ManipulatorModes.IDLE)
+			.withName("Manipulator Default Command"));
 
 		// Subsystem Status
 		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
