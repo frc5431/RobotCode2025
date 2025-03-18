@@ -71,8 +71,11 @@ public class RobotContainer {
 	private @Getter Trigger isEndgame = new Trigger(
 			() -> DriverStation.getMatchTime() <= 5 && DriverStation.isTeleop());
 	private @Getter Trigger isAutonEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
-	private @Getter Trigger isAutonDisabled = new Trigger(() -> DriverStation.isAutonomous() || DriverStation.isDisabled());
-
+	private @Getter Trigger isAutonDisabled = new Trigger(
+			() -> DriverStation.isAutonomous() || DriverStation.isDisabled());
+	private Trigger elevatorTarget = new Trigger(
+			() -> elevator.getPositionSetpointGoal(elevator.getPosition().rotation, ElevatorConstants.error)
+					&& manipJoint.getPositionSetpointGoal(manipJoint.getMode().position, ManipJointConstants.error));
 
 	// Subsystem Triggers
 	private @Getter Trigger isIntaking = new Trigger(
@@ -149,18 +152,6 @@ public class RobotContainer {
 		subsystemPeriodic();
 		SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
 		SmartDashboard.putData("mechanism", robotMechanism.elevator);
-
-		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
-		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.Larson).withName("CANdle Coral").withTimeout(1));
-		// LED Status
-		isEndgame.whileTrue(candle.changeCANdle(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
-		isAutonEnabled.whileTrue(
-				candle.changeCANdle((Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
-						.withName("LED Auton Alliance"));
-
-		isAutonDisabled.whileTrue(
-			candle.changeCANdle((Field.isRed() ? AnimationTypes.Rainbow : AnimationTypes.Rainbow))
-				.withName("Auton Disabled"));
 	}
 
 	private void configureDriverControls() {
@@ -209,7 +200,8 @@ public class RobotContainer {
 				.withName("Zero Drivebase"));
 
 		driverIntake.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE).asProxy().withName("Driver Intake"));
-		driverOutake.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy().withName("Driver Outake"));
+		driverOutake.whileTrue(
+				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy().withName("Driver Outake"));
 
 	}
 
@@ -218,7 +210,7 @@ public class RobotContainer {
 		// Intake Controls
 		intakeCoral.whileTrue(new ParallelCommandGroup(
 				intake.runIntakeCommand(IntakeModes.INTAKE),
-						(manipulator.runManipulatorCommand(ManipulatorModes.FEED)))
+				(manipulator.runManipulatorCommand(ManipulatorModes.FEED)))
 						.withName("Intake System"));
 
 		scoreCoral.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
@@ -271,9 +263,11 @@ public class RobotContainer {
 	private Command lockToAngleCommand(Angle redAngle, Angle blueAngle) {
 		return drivebase.applyRequest(
 				() -> drivebase.getFacingRequest()
-						.withVelocityX(deadzone(-driver.getLeftY()) * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withVelocityX(
+								deadzone(-driver.getLeftY()) * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
 						.withHeading(Field.isBlue() ? blueAngle : redAngle)
-						.withVelocityY(deadzone(-driver.getLeftX()) * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond)))
+						.withVelocityY(
+								deadzone(-driver.getLeftX()) * SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond)))
 				.until(() -> Math.abs(driver.getHID().getRawAxis(4)) > 0.15);
 	}
 
@@ -283,7 +277,7 @@ public class RobotContainer {
 		})).toggleOnTrue(lockToAngleCommand(Degrees.of(180), Degrees.of(180)));
 
 		// driver.upRightDpad().onTrue(new InstantCommand(() -> {
-		// 	drivebase.getFacingRequest().pid.reset();
+		// drivebase.getFacingRequest().pid.reset();
 		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(30), Degrees.of(30)));
 
 		driver.rightDpad().onTrue(new InstantCommand(() -> {
@@ -291,7 +285,7 @@ public class RobotContainer {
 		})).toggleOnTrue(lockToAngleCommand(Degrees.of(90), Degrees.of(90)));
 
 		// driver.downRightDpad().onTrue(new InstantCommand(() -> {
-		// 	drivebase.getFacingRequest().pid.reset();
+		// drivebase.getFacingRequest().pid.reset();
 		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(60), Degrees.of(60)));
 
 		driver.downDpad().onTrue(new InstantCommand(() -> {
@@ -299,7 +293,7 @@ public class RobotContainer {
 		})).toggleOnTrue(lockToAngleCommand(Degrees.of(0), Degrees.of(0)));
 
 		// driver.downLeftDpad().onTrue(new InstantCommand(() -> {
-		// 	drivebase.getFacingRequest().pid.reset();
+		// drivebase.getFacingRequest().pid.reset();
 		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(120), Degrees.of(120)));
 
 		driver.leftDpad().onTrue(new InstantCommand(() -> {
@@ -307,7 +301,7 @@ public class RobotContainer {
 		})).toggleOnTrue(lockToAngleCommand(Degrees.of(270), Degrees.of(270)));
 
 		// driver.upLeftDpad().onTrue(new InstantCommand(() -> {
-		// 	drivebase.getFacingRequest().pid.reset();
+		// drivebase.getFacingRequest().pid.reset();
 		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(330), Degrees.of(330)));
 
 	}
@@ -317,35 +311,48 @@ public class RobotContainer {
 		manipJoint.runManipJointCommand(ManipJointPositions.STOW);
 		elevator.runOnce(() -> elevator.riseAboveFriction());
 		intake.setDefaultCommand(intake.runIntakeCommand(IntakeModes.IDLE)
-			.withName("Intake Default Command"));
+				.withName("Intake Default Command"));
 		feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE)
-			.withName("Feeder Default Command"));
+				.withName("Feeder Default Command"));
 		manipulator.setDefaultCommand(manipulator.runManipulatorCommand(ManipulatorModes.IDLE)
-			.withName("Manipulator Default Command"));
+				.withName("Manipulator Default Command"));
 		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default"));
 
 		// Subsystem Status
-		
+		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
+		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.Larson).withName("CANdle Coral").withTimeout(0.5));
+		// LED Status
+		isEndgame.whileTrue(candle.changeCANdle(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
+		isAutonEnabled.whileTrue(
+				candle.changeCANdle((Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
+						.withName("LED Auton Alliance"));
+
+		elevatorTarget
+				.onTrue(candle.changeCANdle(AnimationTypes.ELEVATOR_GOAL).withTimeout(0.5).withName("CANDle Goal"));
+
+		isAutonDisabled.whileTrue(
+				candle.changeCANdle(AnimationTypes.Rainbow).ignoringDisable(true)
+						.withName("Auton Disabled"));
 
 	}
 
 	/**
-     * Sets a Deazone
-     * Make a linear function with deadson at 0 and 1 at 1.
-     * Then need to have this work on both positive and negative.
-     * 
-     * @param num
-     * @return
-     */
-    public double deadzone(double num) {
-        if (Math.abs(num) > ControllerConstants.deadzone) {
-            double w = 1.0 / (1.0 -  ControllerConstants.deadzone);
-            double b = w *  ControllerConstants.deadzone;
-            return (w * Math.abs(num) - b) * (num / Math.abs(num));
-        } else {
-            return 0;
-        }
-    }
+	 * Sets a Deazone
+	 * Make a linear function with deadson at 0 and 1 at 1.
+	 * Then need to have this work on both positive and negative.
+	 * 
+	 * @param num
+	 * @return
+	 */
+	public double deadzone(double num) {
+		if (Math.abs(num) > ControllerConstants.deadzone) {
+			double w = 1.0 / (1.0 - ControllerConstants.deadzone);
+			double b = w * ControllerConstants.deadzone;
+			return (w * Math.abs(num) - b) * (num / Math.abs(num));
+		} else {
+			return 0;
+		}
+	}
 
 	public Command getAutonomousCommand() {
 		return autoChooser.getSelected();
