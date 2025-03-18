@@ -6,7 +6,9 @@ import com.revrobotics.spark.SparkMax;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.TitanCANdle;
+import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
 import frc.robot.Subsytems.Climber.Climber;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
@@ -38,7 +40,7 @@ public class Systems {
     private @Getter ManipJoint manipJoint;
     private @Getter Manipulator manipulator;
     private @Getter Elevator elevator;
-    private static @Getter TitanCANdle titanCANdle;
+    private static @Getter CANdleSystem titanCANdle;
     private static @Getter Vision vision;
     private @Getter Climber climber;
     private static @Getter Drivebase drivebase = new Drivebase(
@@ -49,7 +51,6 @@ public class Systems {
     /* Kraken X60s */
     private TalonFX elevatorLeft;
     private TalonFX elevatorRight;
-    public static CANdle candle;
 
     /* Neo 1.1s */
     private SparkMax intakeMotor;
@@ -100,7 +101,8 @@ public class Systems {
         }
 
         if (CANdleConstants.attached) {
-            titanCANdle = new TitanCANdle();
+            titanCANdle = new CANdleSystem();
+            titanCANdle.changeAnimation(AnimationTypes.SPIRIT);
         }
 
         

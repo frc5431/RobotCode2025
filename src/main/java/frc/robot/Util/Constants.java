@@ -45,7 +45,7 @@ public final class Constants {
                 ElevatorPositions.FEED, ManipJointPositions.FEED);
 
         public static final PresetPosition ScoreL1Position = new PresetPosition(ElevatorPositions.CORAL_L1,
-                ManipJointPositions.CORAL_L1);
+                ManipJointPositions.CORAL_L2);
 
         public static final PresetPosition ScoreL2Position = new PresetPosition(ElevatorPositions.CORAL_L2,
                 ManipJointPositions.CORAL_L2);
@@ -214,6 +214,7 @@ public final class Constants {
         public static final double gearRatio = 1 / 1;
         public static final Current supplyLimit = Units.Amps.of(30);
         public static final Current stallLimit = Units.Amps.of(40);
+        public static final double stallCurrent = 37;
         public static final IdleMode idleMode = IdleMode.kBrake;
         public static final boolean isInverted = false;
         public static final Angle offset = Units.Rotation.of(0);
@@ -301,7 +302,7 @@ public final class Constants {
         public static final double maxIAccum = 0.2;
 
         public static final Angle error = Units.Rotation.of(.51);
-        public static final Angle coralL1 = Units.Rotation.of(0.7);
+        public static final Angle coralL1 = Units.Rotation.of(0.5);
         public static final Angle stow = Units.Rotation.of(0.7);
         public static final Angle feed = Units.Rotation.of(1.65);
         public static final Angle cleanl2 = Units.Rotation.of(2);
@@ -613,9 +614,9 @@ public final class Constants {
         public static final double slow = 0.2;
 
         // Team Colors
-        public static final Color darkBlue = new Color(0, 0, 139);
+        public static final Color darkBlue = new Color(0, 0, 200);
         public static final Color cyanish = new Color(13, 228, 252);
-        public static final Color purple = new Color(160, 0, 217);
+        public static final Color purple = new Color(270, 0, 217);
 
         // Game Piece Colors
         public static final Color algaeGreen = new Color(69, 206, 162);

@@ -127,9 +127,9 @@ public class Manipulator extends REVMechanism {
                 .withName("Intake.runEnum");
     }
 
-
 	public boolean hasCoral() {
-		return motor.getForwardLimitSwitch().isPressed();
+		//return motor.getForwardLimitSwitch().isPressed() || 
+		return motor.getOutputCurrent() >= ManipulatorConstants.stallCurrent;
 	}
 
 }
