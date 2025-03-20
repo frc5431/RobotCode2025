@@ -100,7 +100,6 @@ public class RobotContainer {
 	private Trigger zeroDrivebase = driver.y();
 	private Trigger robotOriented = driver.start();
 	private Trigger driverStow = driver.x();
-	private Trigger killElevator = driver.b();
 	private Trigger driverOutake = driver.leftTrigger(0.5);
 	private Trigger driverIntake = driver.rightTrigger(0.5);
 
@@ -108,18 +107,19 @@ public class RobotContainer {
 
 	// Preset Controls
 	private Trigger feedPreset = operator.downDpad();
-	private Trigger stowPreset = operator.start();
-	private Trigger cleanL2Preset = operator.back();
+	private Trigger cleanL2Preset = operator.start();
+	private Trigger cleanL3Preset = operator.back();
+
 	private Trigger scoreL2Preset = operator.rightDpad();
 	private Trigger scoreL3Preset = operator.leftDpad();
 	private Trigger scoreL4Preset = operator.upDpad();
 	private Trigger ejectL4Preset = operator.y();
-	private Trigger deplotIntake = operator.rightBumper();
+	private Trigger deployIntake = operator.rightBumper();
+	private Trigger scoreL1Intake = operator.x();
 
 	// Intake Controls
 	private Trigger reverseFeed = operator.b();
 	private Trigger stowIntake = operator.leftBumper();
-	private Trigger manipFeed = operator.x();
 
 	private Trigger intakeCoral = operator.leftTrigger(.5);
 	private Trigger scoreCoral = operator.rightTrigger(.5);
@@ -193,15 +193,17 @@ public class RobotContainer {
 						.alongWith(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW))
 						.withName("Driver Smart Stow"));
 
-		killElevator.onTrue(manipJoint.killManipJoingCommand().alongWith(elevator.killElevatorCommand())
-				.withName("Kill Elevator System"));
-
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.withName("Zero Drivebase"));
 
-		driverIntake.whileTrue(intake.runIntakeCommand(IntakeModes.INTAKE).asProxy().withName("Driver Intake"));
-		driverOutake.whileTrue(
-				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy().withName("Driver Outake"));
+		driverIntake.whileTrue(new ParallelCommandGroup(
+				intake.runIntakeCommand(IntakeModes.INTAKE),
+				feeder.runFeederCommand(FeederModes.FEED),
+				manipulator.runManipulatorCommand(ManipulatorModes.FEED)).asProxy()
+						.withName("Driver Intake"));
+
+		driverOutake.whileTrue(new EjectCoralCommand(intake, feeder, manipulator).asProxy()
+				.withName("Driver Intake"));
 
 	}
 
@@ -210,21 +212,21 @@ public class RobotContainer {
 		// Intake Controls
 		intakeCoral.whileTrue(new ParallelCommandGroup(
 				intake.runIntakeCommand(IntakeModes.INTAKE),
-				(manipulator.runManipulatorCommand(ManipulatorModes.FEED)))
+				feeder.runFeederCommand(FeederModes.FEED),
+				manipulator.runManipulatorCommand(ManipulatorModes.FEED)).asProxy()
 						.withName("Intake System"));
 
 		scoreCoral.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
 				.withName("Score Coral"));
 
-		manipFeed.whileTrue(
-				manipulator.runManipulatorCommand(ManipulatorModes.MANUAL)
-						.withName("Manipulator Feed"));
+		scoreL1Intake.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SLOWSCORE)
+				.withName("Score L1"));
 
 		reverseFeed.whileTrue(new EjectCoralCommand(intake, feeder, manipulator)
 				.withName("Coral Outake"));
 
 		// Pivot Controls
-		deplotIntake.onTrue(
+		deployIntake.onTrue(
 				intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
 						.withName("Deploy Intake"));
 
@@ -232,16 +234,20 @@ public class RobotContainer {
 				.withName("Stow Intake"));
 
 		// Elevator Controls
-		stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
-				.withName("Elevator Stow"));
+		// stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
+		// .withName("Elevator Stow"));
 
 		feedPreset.onTrue(
 				new ElevatorFeedCommand(elevator, manipJoint)
 						.withName("Feed Preset"));
 
 		cleanL2Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.ScoreL1Position, elevator, manipJoint)
+				new ElevatorPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint)
 						.withName("Clean L2 Preset"));
+
+		cleanL3Preset.onTrue(
+				new ElevatorPresetCommand(ControllerConstants.CleanL3Position, elevator, manipJoint)
+						.withName("Clean L3 Preset"));
 
 		scoreL2Preset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
 				.withName("Elevator L2 Preset"));
@@ -319,7 +325,6 @@ public class RobotContainer {
 		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default"));
 
 		// Subsystem Status
-		isIntaking.whileTrue(feeder.runFeederCommand(FeederModes.FEED).withName("Feeder Auto Control"));
 		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.Larson).withName("CANdle Coral").withTimeout(0.5));
 		// LED Status
 		isEndgame.whileTrue(candle.changeCANdle(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
@@ -364,7 +369,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ElevatorFeed",
 				new ElevatorFeedCommand(elevator, manipJoint));
 		NamedCommands.registerCommand("L1Preset",
-				new ElevatorPresetCommand(ControllerConstants.ScoreL1Position, elevator, manipJoint));
+				new ElevatorPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint));
 		NamedCommands.registerCommand("L2Preset",
 				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
@@ -376,9 +381,11 @@ public class RobotContainer {
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("ScoreL4",
-				new ParallelCommandGroup(
-						new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
-								.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(1))));
+				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(0.5)
+						.andThen(new ParallelCommandGroup(
+								new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
+										.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE)
+												.withTimeout(1)))));
 
 		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
 		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));

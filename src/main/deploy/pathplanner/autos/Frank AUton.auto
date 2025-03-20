@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleSideL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreL4"
+            "pathName": "Dumb Frank Path"
           }
         }
       ]

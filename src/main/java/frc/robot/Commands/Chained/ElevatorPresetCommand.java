@@ -14,6 +14,8 @@ public class ElevatorPresetCommand extends SequentialCommandGroup {
 			case CORAL_L1:
 			case STOW:
 			case CORAL_L2:
+			case CLEAN_L2:
+			case CLEAN_L3:
 			case CORAL_L3:
 			case CORAL_L4:
 			case EJECT:

@@ -56,7 +56,10 @@ public class SwerveConstants {
         // cannot be null.
         // Some configs will be overwritten; check the `with*InitialConfigs()` API
         // documentation.
-        private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+        private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+                        .withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLowerLimit(20)
+                                        .withSupplyCurrentLimit(40).withStatorCurrentLimit(80)
+                                        .withStatorCurrentLimitEnable(true).withSupplyCurrentLimitEnable(true));
         private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
 
                         .withCurrentLimits(
@@ -71,7 +74,8 @@ public class SwerveConstants {
         private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
         // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
         private static final Pigeon2Configuration pigeonConfigs = new Pigeon2Configuration()
-                                .withMountPose(new MountPoseConfigs().withMountPoseYaw(90));
+                        .withMountPose(new MountPoseConfigs()
+                                        .withMountPoseYaw(Angle.ofRelativeUnits(0.0, Units.Degrees)));
 
         // CAN bus that the devices are located on;
         // All swerve devices must share the same CAN bus

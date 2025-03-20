@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
@@ -190,8 +191,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
      *         `seedCheckedPose` method with the current pose as an argument.
      */
     public Pose2d getRobotPose() {
-        Pose2d pose = getState().Pose;
-        return keepPoseOnField(pose);
+        return getState().Pose;
     }
 
     // Keep the robot on the field
@@ -210,6 +210,12 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
             resetPose(pose);
         }
         return pose;
+    }
+
+
+    private void resetPoseHere(Pose2d pose) {
+        this.resetPose(pose);
+        this.resetGyro();
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -242,7 +248,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
-                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withSteerRequestType(SteerRequestType.Position)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
 

@@ -5,13 +5,10 @@
 package frc.robot.Subsytems.CANdle;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Subsytems.CANdle.TitanCANdle.LEDSegment;
-import frc.robot.Util.Constants;
 import frc.robot.Util.Constants.CANdleConstants;
 
 import java.time.LocalTime;
@@ -21,6 +18,7 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 
@@ -39,7 +37,7 @@ public class CANdleSystem extends SubsystemBase {
     private Animation m_toAnimate = null;
 
     public enum AnimationTypes {
-        ColorFlow, Fire, Larson, Rainbow, RgbFade, SingleFade, Strobe, Twinkle, TwinkleOff, ELEVATOR_GOAL, SPIRIT, STRESS_TIME, BLINK_BLUE, BLINK_RED, SetAll
+        ColorFlow, Fire, Larson, Rainbow, RgbFade, SingleFade, Strobe, Twinkle, TwinkleOff, ELEVATOR_GOAL, INTAKE, SPIRIT, STRESS_TIME, BLINK_BLUE, BLINK_RED, SetAll
     }
 
     private AnimationTypes m_currentAnimation;
@@ -180,7 +178,6 @@ public class CANdleSystem extends SubsystemBase {
             case Rainbow:
                 m_toAnimate = new RainbowAnimation(1, 0.1, LedCount);
                 m_toAnimate.setLedOffset(8);
-
                 break;
             case RgbFade:
                 m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LedCount);
@@ -191,20 +188,17 @@ public class CANdleSystem extends SubsystemBase {
             case Strobe:
                 m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, LedCount);
                 m_toAnimate.setLedOffset(8);
-
                 break;
             case Twinkle:
                 m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LedCount, TwinklePercent.Percent6);
                 m_toAnimate.setLedOffset(8);
-
                 break;
             case TwinkleOff:
                 m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, LedCount, TwinkleOffPercent.Percent100);
                 m_toAnimate.setLedOffset(8);
-
                 break;
             case SPIRIT:
-                m_toAnimate = new TwinkleAnimation(50, 10, 100, 0, 0.4, LedCount, TwinklePercent.Percent88);
+                m_toAnimate = new TwinkleAnimation(50, 10, 100, 0, .8, LedCount, TwinklePercent.Percent88);
                 m_toAnimate.setLedOffset(8);
                 break;
             case BLINK_BLUE:
@@ -212,13 +206,13 @@ public class CANdleSystem extends SubsystemBase {
                 m_toAnimate.setLedOffset(8);
                 break;
             case ELEVATOR_GOAL:
-                m_toAnimate = new StrobeAnimation(50, 250, 100, 0, 1, LedCount);
+                m_toAnimate = new StrobeAnimation(50, 50, 250, 0, 1, LedCount);
                 break;
             case SetAll:
                 m_toAnimate = null;
                 break;
         }
-        System.out.println("Changed to " + m_currentAnimation.toString());
+        //System.out.println("Changed to " + m_currentAnimation.toString());
     }
 
     public Command changeCANdle(AnimationTypes animationTypes) {
