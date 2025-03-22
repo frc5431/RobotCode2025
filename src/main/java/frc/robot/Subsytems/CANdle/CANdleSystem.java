@@ -37,7 +37,7 @@ public class CANdleSystem extends SubsystemBase {
     private Animation m_toAnimate = null;
 
     public enum AnimationTypes {
-        ColorFlow, Fire, Larson, Rainbow, RgbFade, SingleFade, Strobe, Twinkle, TwinkleOff, ELEVATOR_GOAL, INTAKE, SPIRIT, STRESS_TIME, BLINK_BLUE, BLINK_RED, SetAll
+        ColorFlow, SCORE, Larson, Rainbow, RgbFade, SingleFade, Strobe, Twinkle, TwinkleOff, ELEVATOR_GOAL, INTAKE, SPIRIT, STRESS_TIME, BLINK_BLUE, BLINK_RED, SetAll
     }
 
     private AnimationTypes m_currentAnimation;
@@ -56,9 +56,9 @@ public class CANdleSystem extends SubsystemBase {
     public void incrementAnimation() {
         switch (m_currentAnimation) {
             case ColorFlow:
-                changeAnimation(AnimationTypes.Fire);
+                changeAnimation(AnimationTypes.SCORE);
                 break;
-            case Fire:
+            case SCORE:
                 changeAnimation(AnimationTypes.Larson);
                 break;
             case Larson:
@@ -93,11 +93,11 @@ public class CANdleSystem extends SubsystemBase {
             case ColorFlow:
                 changeAnimation(AnimationTypes.TwinkleOff);
                 break;
-            case Fire:
+            case SCORE:
                 changeAnimation(AnimationTypes.ColorFlow);
                 break;
             case Larson:
-                changeAnimation(AnimationTypes.Fire);
+                changeAnimation(AnimationTypes.SCORE);
                 break;
             case Rainbow:
                 changeAnimation(AnimationTypes.Larson);
@@ -167,20 +167,19 @@ public class CANdleSystem extends SubsystemBase {
             case ColorFlow:
                 m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LedCount, Direction.Forward);
                 break;
-            case Fire:
-                m_toAnimate = new FireAnimation(0.5, 0.7, LedCount, 0.7, 0.5);
-                break;
+            case SCORE:
+            m_toAnimate = new RainbowAnimation(1, 1, LedCount);
+            break;
             case Larson:
                 m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 1, LedCount, BounceMode.Front, 3);
                 m_toAnimate.setLedOffset(8);
-
                 break;
             case Rainbow:
                 m_toAnimate = new RainbowAnimation(1, 0.1, LedCount);
                 m_toAnimate.setLedOffset(8);
                 break;
             case RgbFade:
-                m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LedCount);
+                m_toAnimate = new RgbFadeAnimation(1, 0.8, LedCount);
                 break;
             case SingleFade:
                 m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, LedCount);
@@ -198,7 +197,7 @@ public class CANdleSystem extends SubsystemBase {
                 m_toAnimate.setLedOffset(8);
                 break;
             case SPIRIT:
-                m_toAnimate = new TwinkleAnimation(50, 10, 100, 0, .8, LedCount, TwinklePercent.Percent88);
+                m_toAnimate = new TwinkleAnimation(100, 10, 200, 0, 0.8, LedCount, TwinklePercent.Percent64);
                 m_toAnimate.setLedOffset(8);
                 break;
             case BLINK_BLUE:
@@ -208,11 +207,14 @@ public class CANdleSystem extends SubsystemBase {
             case ELEVATOR_GOAL:
                 m_toAnimate = new StrobeAnimation(50, 50, 250, 0, 1, LedCount);
                 break;
+            case INTAKE:
+                m_toAnimate = new LarsonAnimation(20, 170, 250, 0, 1, LedCount, BounceMode.Front, 20);
+                break;
             case SetAll:
                 m_toAnimate = null;
                 break;
         }
-        //System.out.println("Changed to " + m_currentAnimation.toString());
+        // System.out.println("Changed to " + m_currentAnimation.toString());
     }
 
     public Command changeCANdle(AnimationTypes animationTypes) {
@@ -249,7 +251,7 @@ public class CANdleSystem extends SubsystemBase {
             m_candle.animate(m_toAnimate);
         }
 
-        if(DriverStation.isFMSAttached()) {
+        if (DriverStation.isFMSAttached()) {
             m_candle.setLEDs(0, 100, 0, 50, 0, 8);
         }
 

@@ -155,7 +155,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void resetGyro() {
-        this.resetRotation(Rotation2d.kZero);
+        this.resetRotation(Field.isBlue() ? Rotation2d.kZero : Rotation2d.k180deg);
     }
 
     public Command zeroGyro() {

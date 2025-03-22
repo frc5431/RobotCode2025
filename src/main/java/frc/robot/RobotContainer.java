@@ -63,6 +63,11 @@ public class RobotContainer {
 	private TitanController driver = Systems.getDriver();
 	private TitanController operator = Systems.getOperator();
 
+	private enum AutoFilters {
+		Comp, TEST, FW, NONE
+	}
+
+	AutoFilters autoFilter = AutoFilters.Comp;
 	// Triggers
 
 	// Automated Triggers
@@ -81,9 +86,13 @@ public class RobotContainer {
 	private @Getter Trigger isIntaking = new Trigger(
 			() -> intake.getMode() == IntakeModes.INTAKE || intake.getMode() == IntakeModes.FEED);
 
+	private @Getter Trigger isScoring = new Trigger(
+				() -> manipulator.getMode() == ManipulatorModes.SCORE || manipulator.getMode() == ManipulatorModes.SLOWSCORE);
+	
+
 	// Subsystem Triggers
 	private @Getter Trigger hasCoral = new Trigger(
-			() -> manipulator.hasCoral());
+			() -> manipulator.hasCoral() && manipulator.getMode() == ManipulatorModes.SCORE || manipulator.getMode() == ManipulatorModes.SLOWSCORE);
 
 	// LED Triggers
 	/*
@@ -132,7 +141,11 @@ public class RobotContainer {
 		configureDriverControls();
 		configDriverFacingAngle();
 
-		autoChooser = AutoBuilder.buildAutoChooser();
+		autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+				(stream) -> autoFilter != AutoFilters.NONE
+						? stream.filter(auto -> auto.getName().startsWith(autoFilter.name()))
+						: stream);
+
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 
 	}
@@ -325,7 +338,8 @@ public class RobotContainer {
 		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default"));
 
 		// Subsystem Status
-		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.Larson).withName("CANdle Coral").withTimeout(0.5));
+		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.INTAKE).withName("CANdle Coral"));
+		isScoring.whileTrue(candle.changeCANdle(AnimationTypes.SCORE).withName("CANdle Score"));
 		// LED Status
 		isEndgame.whileTrue(candle.changeCANdle(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
 		isAutonEnabled.whileTrue(
@@ -367,7 +381,8 @@ public class RobotContainer {
 		NamedCommands.registerCommand("EjectCoral",
 				new EjectCoralCommand(intake, feeder, manipulator));
 		NamedCommands.registerCommand("ElevatorFeed",
-				new ElevatorFeedCommand(elevator, manipJoint));
+				new ParallelCommandGroup(new ElevatorFeedCommand(elevator, manipJoint),
+						intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)));
 		NamedCommands.registerCommand("L1Preset",
 				new ElevatorPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint));
 		NamedCommands.registerCommand("L2Preset",
@@ -378,14 +393,19 @@ public class RobotContainer {
 				new ElevatorPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint));
 		NamedCommands.registerCommand("StowPreset",
 				new ElevatorStowCommand(elevator, manipJoint).withTimeout(0.5));
+		NamedCommands.registerCommand("IntakeCoral",
+				new ParallelCommandGroup(
+						intake.runIntakeCommand(IntakeModes.INTAKE),
+						feeder.runFeederCommand(FeederModes.FEED),
+						manipulator.runManipulatorCommand(ManipulatorModes.FEED)));
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("ScoreL4",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(0.5)
 						.andThen(new ParallelCommandGroup(
 								new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
-										.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE)
-												.withTimeout(1)))));
+										.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE)))
+												.withTimeout(1)));
 
 		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
 		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));

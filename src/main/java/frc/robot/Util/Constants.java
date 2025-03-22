@@ -110,7 +110,7 @@ public final class Constants {
         public static final AngularVelocity mm_error = Units.RPM.of(0);
 
         public enum IntakeModes {
-            IDLE(idleSpeed, 0.0), INTAKE(intakeSpeed, 0.7), FEED(feedSpeed, 0.2), OUTTAKE(outtakeSpeed, -0.4);
+            IDLE(idleSpeed, 0.0), INTAKE(intakeSpeed, 0.95), FEED(feedSpeed, 0.2), OUTTAKE(outtakeSpeed, -0.4);
 
             public AngularVelocity speed;
             public double output;

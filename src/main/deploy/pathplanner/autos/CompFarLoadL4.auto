@@ -5,27 +5,33 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "StowPreset"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "FarSideL3"
+            "pathName": "FarSide"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ScoreCoral"
+            "name": "ScoreL4"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FarSideGetReadyL3"
+            "pathName": "FarSideLoad"
           }
         }
       ]
