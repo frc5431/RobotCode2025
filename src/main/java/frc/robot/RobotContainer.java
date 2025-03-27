@@ -10,8 +10,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,10 +22,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
+import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
+import frc.robot.Commands.Chained.AlignToReef;
 import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
 import frc.robot.Commands.Chained.ElevatorPresetCommand;
 import frc.robot.Commands.Chained.ElevatorStowCommand;
+import frc.robot.Commands.Chained.SmartPresetCommand;
 import frc.robot.Commands.Chained.SmartStowCommand;
 import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
@@ -58,7 +64,11 @@ public class RobotContainer {
 	private final Manipulator manipulator = systems.getManipulator();
 	private final CANdleSystem candle = Systems.getTitanCANdle();
 	private final Drivebase drivebase = Systems.getDrivebase();
+	private final AprilTagFieldLayout layout = Systems.getLayout();
 	private final SendableChooser<Command> autoChooser;
+
+	private final PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
+  
 
 	private TitanController driver = Systems.getDriver();
 	private TitanController operator = Systems.getOperator();
@@ -77,7 +87,7 @@ public class RobotContainer {
 			() -> DriverStation.getMatchTime() <= 5 && DriverStation.isTeleop());
 	private @Getter Trigger isAutonEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
 	private @Getter Trigger isAutonDisabled = new Trigger(
-			() -> DriverStation.isAutonomous() || DriverStation.isDisabled());
+			() -> DriverStation.isAutonomous() && DriverStation.isDisabled());
 	private Trigger elevatorTarget = new Trigger(
 			() -> elevator.getPositionSetpointGoal(elevator.getPosition().rotation, ElevatorConstants.error)
 					&& manipJoint.getPositionSetpointGoal(manipJoint.getMode().position, ManipJointConstants.error));
@@ -87,24 +97,24 @@ public class RobotContainer {
 			() -> intake.getMode() == IntakeModes.INTAKE || intake.getMode() == IntakeModes.FEED);
 
 	private @Getter Trigger isScoring = new Trigger(
-				() -> manipulator.getMode() == ManipulatorModes.SCORE || manipulator.getMode() == ManipulatorModes.SLOWSCORE);
-	
+			() -> manipulator.getMode() == ManipulatorModes.SCORE
+					|| manipulator.getMode() == ManipulatorModes.SLOWSCORE);
 
 	// Subsystem Triggers
 	private @Getter Trigger hasCoral = new Trigger(
-			() -> manipulator.hasCoral() && manipulator.getMode() == ManipulatorModes.SCORE || manipulator.getMode() == ManipulatorModes.SLOWSCORE);
+			() -> manipulator.hasCoral() && manipulator.getMode() == ManipulatorModes.SCORE
+					|| manipulator.getMode() == ManipulatorModes.SLOWSCORE);
 
 	// LED Triggers
-	/*
-	 * // Driver Controls
-	 * // private Trigger alignRightReef = driver.rightBumper();
-	 * // private Trigger alignLeftReef = driver.leftBumper();
-	 * // private Trigger alignCenterReef = driver.a();
-	 * 
-	 * // more Game Status
-	 * // private @Getter Trigger reefAlignment = new Trigger(
-	 * // () -> alignRightReef.getAsBoolean() || alignLeftReef.getAsBoolean());
-	 */
+
+	// Driver Controls
+	private Trigger alignRightReef = driver.rightBumper();
+	private Trigger alignLeftReef = driver.leftBumper();
+	private Trigger alignCenterReef = driver.a();
+
+	// more Game Status
+	// private @Getter Trigger reefAlignment = new Trigger(
+	// () -> alignRightReef.getAsBoolean() || alignLeftReef.getAsBoolean());
 
 	private Trigger zeroDrivebase = driver.y();
 	private Trigger robotOriented = driver.start();
@@ -141,6 +151,9 @@ public class RobotContainer {
 		configureDriverControls();
 		configDriverFacingAngle();
 
+		//TODO SWAP
+		poseEstimator.setAlliance(Alliance.Red);
+
 		autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
 				(stream) -> autoFilter != AutoFilters.NONE
 						? stream.filter(auto -> auto.getName().startsWith(autoFilter.name()))
@@ -159,6 +172,7 @@ public class RobotContainer {
 		manipulator.periodic();
 		intakePivot.periodic();
 		candle.periodic();
+		poseEstimator.periodic();
 	}
 
 	public void periodic() {
@@ -168,6 +182,7 @@ public class RobotContainer {
 	}
 
 	private void configureDriverControls() {
+		AlignToReef alignToReefCommandFactory = new AlignToReef(drivebase, layout);
 
 		drivebase.setDefaultCommand(
 				// Drivetrain will execute this command periodically
@@ -194,12 +209,13 @@ public class RobotContainer {
 				.withName("Swerve Robot Oriented"));
 
 		// Align Reef Commands
-		// alignLeftReef.onTrue(
-		// new AlignReefCommand(false).withName("Align Left Reef"));
-		// alignRightReef.onTrue(
-		// new AlignReefCommand(true).withName("Align Right Reef"));
-		// alignCenterReef.onTrue(
-		// new AlignReefCommand().withName("Align Center Reef"));
+		alignLeftReef.onTrue(
+				alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)
+						.withName("Align Left Branch"));
+
+		alignRightReef.onTrue(
+				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
+						.withName("Align Right Branch"));
 
 		driverStow.onTrue(
 				new SmartStowCommand(elevator, manipJoint, manipulator)
@@ -246,23 +262,19 @@ public class RobotContainer {
 		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
 				.withName("Stow Intake"));
 
-		// Elevator Controls
-		// stowPreset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
-		// .withName("Elevator Stow"));
-
 		feedPreset.onTrue(
 				new ElevatorFeedCommand(elevator, manipJoint)
 						.withName("Feed Preset"));
 
 		cleanL2Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint)
 						.withName("Clean L2 Preset"));
 
 		cleanL3Preset.onTrue(
 				new ElevatorPresetCommand(ControllerConstants.CleanL3Position, elevator, manipJoint)
 						.withName("Clean L3 Preset"));
 
-		scoreL2Preset.onTrue(new ElevatorStowCommand(elevator, manipJoint)
+		scoreL2Preset.onTrue(new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint)
 				.withName("Elevator L2 Preset"));
 
 		scoreL3Preset.onTrue(

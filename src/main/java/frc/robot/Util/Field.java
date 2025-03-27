@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -20,7 +19,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Systems;
 import lombok.Getter;
 
 public class Field {
@@ -61,7 +62,86 @@ public class Field {
 				Rotation2d.fromDegrees(144.011 - 90));
 	}
 
-	public static final double[] reefAprilTags = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
+	public static final int[] reefAprilTags = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
+	public static final int[] redReefAprilTags = { 6, 7, 8, 9, 10, 11 };
+	public static final int[] blueReefAprilTags = { 17, 18, 19, 20, 21, 22 };
+
+	public enum FieldBranch {
+		A(BranchSide.LEFT, ReefSide.ONE), B(BranchSide.RIGHT, ReefSide.ONE), C(BranchSide.LEFT, ReefSide.TWO), D(
+				BranchSide.RIGHT, ReefSide.TWO), E(BranchSide.LEFT, ReefSide.THREE), F(BranchSide.RIGHT,
+						ReefSide.THREE), G(BranchSide.LEFT, ReefSide.FOUR), H(BranchSide.RIGHT, ReefSide.FOUR), I(
+								BranchSide.LEFT, ReefSide.FIVE), J(BranchSide.RIGHT, ReefSide.FIVE), K(BranchSide.LEFT,
+										ReefSide.SIX), L(BranchSide.RIGHT, ReefSide.SIX);
+
+		public SimpleBranch simpleBranchInfo;
+
+		private FieldBranch(BranchSide branchSide, ReefSide reefSide) {
+			this.simpleBranchInfo = new SimpleBranch(branchSide, reefSide);
+		}
+	}
+
+	public record SimpleBranch(BranchSide branchSide, ReefSide reefSide) {
+		public SimpleBranch mirror() {
+			// TODO check if mirroring the branchside does work here
+			return new SimpleBranch(branchSide.mirror(), reefSide.mirror());
+		}
+	}
+
+	public enum BranchSide {
+		LEFT(new Translation2d(Inches.of(0), Inches.of(0))), 
+		RIGHT(new Translation2d(Inches.of(0), Inches.of(0))),
+		MIDDLE(new Translation2d(0, 0));
+
+		public Translation2d tagOffset;
+
+		private BranchSide(Translation2d offsets) {
+			tagOffset = offsets;
+		}
+
+		public BranchSide mirror() {
+			switch (this) {
+				case LEFT:
+					return RIGHT;
+				default:
+					return LEFT;
+			}
+		}
+	}
+
+	public enum ReefSide {
+		ONE(18, 7), SIX(19, 6), FIVE(20, 11), FOUR(21, 10), THREE(22, 9), TWO(17, 8);
+
+		public final Pose2d redTagPose;
+		public final Pose2d blueTagPose;
+
+		public Pose2d getCurrent() {
+			return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? blueTagPose : redTagPose;
+		}
+
+		public ReefSide mirror() {
+			switch (this) {
+				case ONE:
+					return ONE;
+				case TWO:
+					return SIX;
+				case THREE:
+					return FIVE;
+				case FOUR:
+					return FOUR;
+				case FIVE:
+					return THREE;
+				default:
+					return TWO; // SIX case
+			}
+		}
+
+		private ReefSide(int blue, int red) {
+			var layout = Systems.getLayout();
+
+			redTagPose = layout.getTagPose(red).get().toPose2d();
+			blueTagPose = layout.getTagPose(blue).get().toPose2d();
+		}
+	}
 
 	public static class Reef {
 		public static final Translation2d center = new Translation2d(Units.Inches.of(176.746),
@@ -207,15 +287,14 @@ public class Field {
 		return false;
 	}
 
-	public static boolean isRedTag(double id){
+	public static boolean isRedTag(double id) {
 		return id < 12;
 	}
 
 	/** Returns {@code true} if the robot is on the blue alliance. */
 	public static boolean isBlue() {
-		return DriverStation.getAlliance()
-				.orElse(DriverStation.Alliance.Blue)
-				.equals(DriverStation.Alliance.Blue);
+		//TODO ADD NULL CEHCIGN
+		return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 	}
 
 	/** Returns {@code true} if the robot is on the red alliance. */
@@ -301,7 +380,7 @@ public class Field {
 
 	private AprilTagFieldLayout aprilTagFieldLayout;
 
-	public Pose3d getAprilTagPose3d(int aprilTagID){
+	public Pose3d getAprilTagPose3d(int aprilTagID) {
 		for (double x : reefAprilTags) {
 			if (x == aprilTagID) {
 				return aprilTagFieldLayout.getTagPose(aprilTagID).orElse(null);

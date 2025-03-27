@@ -26,7 +26,7 @@ public class ElevatorPresetCommand extends SequentialCommandGroup {
 			case SAFESWING:
 			default:
 				addCommands(
-				new ElevatorStowCommand(true, elevator, manipJoint),
+				new ElevatorStowCommand( elevator, manipJoint),
 				manipJoint.runManipJointCommand(position.getJointMode()).alongWith(
 					elevator.runElevatorCommand(position.getElevatorMode())));
 				break;

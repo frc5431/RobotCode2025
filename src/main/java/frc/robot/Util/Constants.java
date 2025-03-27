@@ -4,10 +4,15 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -17,6 +22,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.Util.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import lombok.Setter;
@@ -73,7 +79,7 @@ public final class Constants {
         public static final PIDConstants rotationPID = new PIDConstants(2, 0, .0);
     }
 
-    public static class IntakeConstants {    
+    public static class IntakeConstants {
 
         public enum IntakeStates {
             IDLE, INTAKING, FEEDING, OUTTAKING, STUCK,
@@ -310,17 +316,20 @@ public final class Constants {
         public static final Angle cleanl2 = Units.Rotation.of(2);
         public static final Angle coralL2 = stow;
         public static final Angle coralL3 = Units.Rotation.of(2.2);
-                                                                        //2.7
-                                                                        //lower this to l3 increase speed of feeding
+        // 2.7
+        // lower this to l3 increase speed of feeding
         public static final Angle safeSwing = Units.Rotation.of(2.7);
+        public static final Angle rise = Units.Rotation.of(3);
+
         public static final Angle coralL4 = Units.Rotation.of(4.65);
         public static final Angle eject = Units.Rotation.of(4.7);
 
         public static final Angle coralStation = Units.Rotation.of(3);
 
         public enum ElevatorPositions {
-            STOW(stow), FEED(feed), CORAL_L1(coralL1), CLEAN_L2(cleanl2), CLEAN_L3(cleanL3), CORAL_L2(coralL2), CORAL_L3(coralL3), CORAL_L4(
-                    coralL4), SAFESWING(safeSwing), EJECT(eject);
+            STOW(stow), FEED(feed), CORAL_L1(coralL1), CLEAN_L2(cleanl2), CLEAN_L3(cleanL3), CORAL_L2(
+                    coralL2), CORAL_L3(coralL3), CORAL_L4(
+                            coralL4), SAFESWING(safeSwing), RISE(rise), EJECT(eject);
 
             public Angle rotation;
 
@@ -331,6 +340,7 @@ public final class Constants {
         }
 
     }
+
 
     public static class IntakePivotConstants {
 
@@ -379,6 +389,11 @@ public final class Constants {
     }
 
     public static class DrivebaseConstants {
+
+        public static final PathConstraints constraints = new PathConstraints(1, 2, 1 * Math.PI, 2 * Math.PI);
+        public static final PPHolonomicDriveController alignController = new PPHolonomicDriveController(
+                AutonConstants.translationPID,
+                AutonConstants.rotationPID);
         public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         public static final Distance robotLength = Units.Inches.of(28);
         public static final AngularVelocity AngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
@@ -386,20 +401,35 @@ public final class Constants {
         public static final AngularVelocity FaceTargetAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final LinearVelocity FaceTargetAVelocityDeadzone = TunerConstants.kSpeedAt12Volts.times(0.05);
 
-
+        public static final Rotation2d rotationTolerance = Rotation2d.fromDegrees(2.0);
+        public static final Distance positionTolerance = Units.Inches.of(2.5);
+        public static final LinearVelocity speedTolerance = Units.InchesPerSecond.of(1);
+        public static final Time autoAlignPredict = Units.Seconds.of(0.0);
+        public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(2);
+        public static final Time autoAlignAdjustTimeout = Units.Seconds.of(0.6);
+        
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = RotationsPerSecond.of(0.5);
 
     }
-
+   
+   
     public static class VisionConstants {
 
         public static final boolean useVisionPeriodic = true;
 
+        
+        public static final double FIELD_LENGTH_METERS = 16.54175;
+        public static final double FIELD_WIDTH_METERS = 8.0137;
+        // Pose on the opposite side of the field. Use with `relativeTo` to flip a pose to the opposite alliance
+        public static final Pose2d FLIPPING_POSE = new Pose2d(
+            new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS),
+            new Rotation2d(Math.PI));
+
         public static final String cameraName = "LimeLight3";
-        public static final Distance centLLForwardOffset = Units.Inches.of(-13.926);
-        public static final Distance centLLRightOffset = Units.Inches.of(-0.886);
-        public static final Distance centLLUpOffset = Units.Inches.of(10.428);
+        public static final Distance centLLForwardOffset = Units.Inches.of(-14);
+        public static final Distance centLLRightOffset = Units.Inches.of(-7);
+        public static final Distance centLLUpOffset = Units.Inches.of(21);
         public static final Angle centLLRollOffset = Units.Degrees.of(0);
         public static final Angle centLLPitchOffset = Units.Degrees.of(0);
         public static final Angle centLLYawOffset = Units.Degrees.of(180);
@@ -474,8 +504,8 @@ public final class Constants {
         public static final double maxForwardOutput = 1;
         public static final double maxReverseOutput = -0.08;
 
-        //calculate WITH coral, 
-        //0.15 output units
+        // calculate WITH coral,
+        // 0.15 output units
         public static final double s = 0.15; // 0.15 holds arm at 90 degree position, when gravity's pull is strongest
 
         public static final double p = 2;
@@ -490,13 +520,13 @@ public final class Constants {
         public static final Angle scoreL3 = scoreL2;
         public static @Setter Angle adjustAngle = Units.Rotations.of(-2);
         public static final Angle cleanAlgea = Units.Rotations.of(-5);
+        public static final Angle safeSwing = Units.Rotations.of(-7.7);
         public static final Angle prefeed = Units.Rotations.of(-9);
         public static final Angle feed = Units.Rotations.of(-11);
         public static final Angle postFeed = Units.Rotations.of(-11.3);
         public static final Angle scoreL4 = Units.Rotations.of(-2.5);
         public static final Angle error = Units.Rotations.of(0.3);
         public static final Angle tightError = Units.Rotations.of(0.1);
-
 
         public enum ManipJointPositions {
             STOW(stow), EJECT(eject), PREEFEED(prefeed), FEED(feed), CORAL_L1(scoreL1), CORAL_L2(scoreL2), CORAL_L3(

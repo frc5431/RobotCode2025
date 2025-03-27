@@ -42,8 +42,11 @@ public class TitanFieldCentricFacingAngle implements SwerveRequest {
         SwerveModuleState[] states = parameters.kinematics.toSwerveModuleStates(speeds, new Translation2d());
 
         for (int i = 0; i < modulesToApply.length; ++i) {
-            modulesToApply[i].apply(new ModuleRequest().withDriveRequest(DriveRequestType.OpenLoopVoltage)
-                    .withSteerRequest(SteerRequestType.MotionMagicExpo).withState(states[i])
+            modulesToApply[i].apply(new ModuleRequest()
+                    .withDriveRequest(DriveRequestType.OpenLoopVoltage)
+                    .withSteerRequest(SteerRequestType.MotionMagicExpo)
+                    .withState(states[i])
+                    .withEnableFOC(true)
             );
         }
 

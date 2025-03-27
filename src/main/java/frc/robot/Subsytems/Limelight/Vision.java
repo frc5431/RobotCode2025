@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Subsytems.Limelight.LimelightHelpers.RawFiducial;
 import frc.robot.Subsytems.Limelight.LimelightHelpers.Trio;
 import frc.robot.Subsytems.Limelight.LimelightHelpers.VisionHelper;
-import frc.robot.Subsytems.Limelight.VisionUtil.LimelightLogger;
 import frc.robot.Subsytems.Limelight.VisionUtil.VisionConfig;
 import frc.robot.Util.Field;
 import lombok.Getter;
@@ -101,7 +100,7 @@ public class Vision extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker());        // Yaw should be 0 when intake faces red alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
-        double yaw = drivebase.getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
+        double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
         for (VisionHelper visionHelper : poseLimelights) {
             visionHelper.setRobotOrientation(yaw);
 
@@ -120,10 +119,9 @@ public class Vision extends SubsystemBase {
             if (DriverStation.isTeleopEnabled() && VisionConstants.useVisionPeriodic) {
 
                 // choose LL with best view of tags and integrate from only that camera
-                VisionHelper bestLimelight = getBestLimelight();
+                VisionHelper bestLimelight = centLL3;
                 for (VisionHelper visionHelper : poseLimelights) {
-                    if (getReefAlignment().getAsBoolean()
-                            && Field.isReef((bestLimelight.getClosestTagID()))) {
+                    if (Field.isReef((bestLimelight.getClosestTagID()))) {
                         addFilteredVisionInput(bestLimelight);
                     } else {
                         visionHelper.sendInvalidStatus("SAD!: Apriltag is not matched Reef ID");
@@ -151,10 +149,10 @@ public class Vision extends SubsystemBase {
             Pose2d megaPose2d = ll.getMegaPose2d();
             RawFiducial[] tags = ll.getRawFiducial();
             double highestAmbiguity = 2;
-            ChassisSpeeds robotSpeeds = drivebase.getChassisSpeeds();
+            ChassisSpeeds robotSpeeds = Systems.getDrivebase().getChassisSpeeds();
 
             // distance from current pose to vision estimated pose
-            double poseError = drivebase.getRobotPose().getTranslation().getDistance(botpose.getTranslation());
+            double poseError = Systems.getDrivebase().getRobotPose().getTranslation().getDistance(botpose.getTranslation());
 
             /* rejections */
             // reject pose if individual tag ambiguity is too high
@@ -244,14 +242,14 @@ public class Vision extends SubsystemBase {
             VisionConfig.VISION_STD_DEV_Y = xyStds;
             VisionConfig.VISION_STD_DEV_THETA = degStds;
 
-            drivebase.setVisionMeasurementStdDevs(
+            Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
                             VisionConfig.VISION_STD_DEV_X,
                             VisionConfig.VISION_STD_DEV_Y,
                             VisionConfig.VISION_STD_DEV_THETA));
 
             Pose2d integratedPose = new Pose2d(megaPose2d.getTranslation(), botpose.getRotation());
-            drivebase.addVisionMeasurement(integratedPose, timeStamp);
+            Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
         } else {
             ll.tagStatus = "no tags";
             ll.sendInvalidStatus("Vision: no tag found rejection");
@@ -304,7 +302,7 @@ public class Vision extends SubsystemBase {
         boolean reject = false;
         if (targetInView) {
             Pose2d botpose = botpose3D.toPose2d();
-            Pose2d robotPose = drivebase.getRobotPose();
+            Pose2d robotPose = Systems.getDrivebase().getRobotPose();
             if (Field.poseOutOfField(botpose3D)
                     || Math.abs(botpose3D.getZ()) > 0.25
                     || (Math.abs(botpose3D.getRotation().getX()) > 5
@@ -345,16 +343,16 @@ public class Vision extends SubsystemBase {
                             + robotPose.getY()
                             + " Theta: "
                             + robotPose.getRotation().getDegrees());
-            drivebase.setVisionMeasurementStdDevs(
+            Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
                             VisionConfig.VISION_STD_DEV_X,
                             VisionConfig.VISION_STD_DEV_Y,
                             VisionConfig.VISION_STD_DEV_THETA));
 
             Pose2d integratedPose = new Pose2d(megaPose.getTranslation(), botpose.getRotation());
-            drivebase.addVisionMeasurement(integratedPose, poseTimestamp);
+            Systems.getDrivebase().addVisionMeasurement(integratedPose, poseTimestamp);
             // robotpose after vision mesurments have been added
-            robotPose = drivebase.getRobotPose();
+            robotPose = Systems.getDrivebase().getRobotPose();
             System.out.println(
                     "ResetPoseToVision: New Pose X: "
                             + robotPose.getX()
@@ -370,19 +368,8 @@ public class Vision extends SubsystemBase {
 
     public VisionHelper getBestLimelight() {
         VisionHelper bestLimelight = centLL3;
-        double bestScore = 0;
-        for (VisionHelper visionHelper : poseLimelights) {
-            double score = 0;
-            // prefer LL with most tags, when equal tag count, prefer LL closer to tags
-            score += visionHelper.getTagCountInView();
-            score += visionHelper.getTargetSize();
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestLimelight = visionHelper;
-            }
-        }
-        return bestLimelight;
+      
+        return centLL3;
     }
 
     @AutoLogOutput(key = "Vision/BestLimelight")

@@ -66,14 +66,14 @@ public class IntakePivot extends REVMechanism {
 
 	public void periodic() {
 		SmartDashboard.putString("Intake Pivot Mode", getMode().toString());
-		SmartDashboard.putString("Intake Pivot State", getState().toString());
-		SmartDashboard.putBoolean("ManipJoint Goal", getAngleSetpointGoal(getMode().angle, ManipJointConstants.error));
+		//SmartDashboard.putString("Intake Pivot State", getState().toString());
+		//SmartDashboard.putBoolean("ManipJoint Goal", getAngleSetpointGoal(getMode().angle, ManipJointConstants.error));
 		SmartDashboard.putNumber("Intake Pivot Setpoint", getMode().angle.in(Rotation));
 		SmartDashboard.putNumber("Intake Pivot Output", getMotorOutput());
 		SmartDashboard.putNumber("Intake Pivot Position", absoluteEncoder.getPosition());
-		SmartDashboard.putNumber("Intake Pivot Current", getMotorCurrent());
-		SmartDashboard.putNumber("Intake Pivot Voltage", getMotorVoltage());
-		SmartDashboard.putNumber("Intake Pivot Velocity", getMotorVelocity());
+		//SmartDashboard.putNumber("Intake Pivot Current", getMotorCurrent());
+		//SmartDashboard.putNumber("Intake Pivot Voltage", getMotorVoltage());
+		//SmartDashboard.putNumber("Intake Pivot Velocity", getMotorVelocity());
 
 	}
 

@@ -14,7 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -30,6 +30,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,7 +60,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     // TODO: GIVE DRIVER DPAD ALIGNMENT
 
-
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
     private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
@@ -84,7 +84,8 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle().withPID(new PIDController(6, 0.01, 0.008));
+    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle()
+            .withPID(new PIDController(6, 0.01, 0.008));
 
     SwerveModuleState[] states = this.getState().ModuleStates;
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
@@ -194,7 +195,13 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         return getState().Pose;
     }
 
+    public Rotation2d getRobotHeading() {
+        return getState().Pose.getRotation();
+
+    }
+
     // Keep the robot on the field
+    @SuppressWarnings("unused")
     private Pose2d keepPoseOnField(Pose2d pose) {
 
         double halfBot = DrivebaseConstants.robotLength.div(2).in(Meters);
@@ -212,14 +219,27 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         return pose;
     }
 
+    
+    public Pose2d predict(Time inTheFuture){
+        
+        Pose2d currPose = getRobotPose();
 
-    private void resetPoseHere(Pose2d pose) {
-        this.resetPose(pose);
-        this.resetGyro();
+        var cs = getChassisSpeeds();
+
+        return new Pose2d(
+            currPose.getX() + cs.vxMetersPerSecond * inTheFuture.in(Seconds), 
+            currPose.getY() + cs.vyMetersPerSecond * inTheFuture.in(Seconds), 
+            currPose.getRotation().plus(Rotation2d.fromRadians(cs.omegaRadiansPerSecond * inTheFuture.in(Seconds)))
+        );
     }
 
     public ChassisSpeeds getChassisSpeeds() {
         return getKinematics().toChassisSpeeds(getState().ModuleStates);
+    }
+
+    public double getSpeed() {
+        ChassisSpeeds robotVelocity = getChassisSpeeds();
+        return Math.sqrt(robotVelocity.vxMetersPerSecond * robotVelocity.vxMetersPerSecond + robotVelocity.vyMetersPerSecond * robotVelocity.vyMetersPerSecond);
     }
 
     /**
@@ -243,11 +263,20 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
      * @return
      */
     public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
-        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vyMetersPerSecond)));
+        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)
+                .withVelocityY(chassisSpeeds.vyMetersPerSecond)));
     }
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withSteerRequestType(SteerRequestType.Position)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    public void driveAuton(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())
                 .withSteerRequestType(SteerRequestType.Position)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }

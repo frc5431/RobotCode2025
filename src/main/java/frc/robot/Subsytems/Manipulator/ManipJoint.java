@@ -71,6 +71,7 @@ public class ManipJoint extends REVMechanism {
 		SmartDashboard.putNumber("ManipJoint Current", this.getMotorCurrent());
 		SmartDashboard.putNumber("ManipJoint Voltage", this.getMotorVoltage());
 		SmartDashboard.putNumber("ManipJoint Position", this.getMotorPosition());
+		SmartDashboard.putBoolean("Manip Safe Swing", isSwingSafe());
 
 
 	}
@@ -92,6 +93,10 @@ public class ManipJoint extends REVMechanism {
 			}
 		}
 		return false;
+	}
+
+	public boolean isSwingSafe() {
+		return Rotations.of(motor.getEncoder().getPosition()).gte(ManipJointConstants.safeSwing);
 	}
 
 	protected void stop() {

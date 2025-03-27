@@ -1,8 +1,13 @@
 package frc.robot;
 
+import java.io.IOException;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.Filesystem;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -31,6 +36,8 @@ public class Systems {
     private static @Getter TitanController operator = new TitanController(ControllerConstants.operatorPort,
             ControllerConstants.deadzone);
     private static @Getter TitanBitDoController operator8BitDo = new TitanBitDoController(ControllerConstants.operatorPort);
+	private static @Getter AprilTagFieldLayout layout;
+
 
     private MotorType brushless = MotorType.kBrushless;
 
@@ -41,7 +48,7 @@ public class Systems {
     private @Getter Manipulator manipulator;
     private @Getter Elevator elevator;
     private static @Getter CANdleSystem titanCANdle;
-    private static @Getter Vision vision;
+    private static @Getter Vision vision = new Vision();
     private @Getter Climber climber;
     private static @Getter Drivebase drivebase = new Drivebase(
         SwerveConstants.DrivetrainConstants,
@@ -63,6 +70,12 @@ public class Systems {
     private SparkMax manipulatorMotor;
 
     public Systems() {
+
+        try {
+            layout = new AprilTagFieldLayout(Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape-welded.json"));
+        } catch (IOException ioE) {
+            System.out.println("Apriltag Field Layout Path Bad");
+        }
 
         if (IntakeConstants.attached) {
             intakeMotor = new SparkMax(IntakeConstants.id, brushless);

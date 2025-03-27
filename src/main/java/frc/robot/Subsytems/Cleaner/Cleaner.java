@@ -60,25 +60,25 @@ public class Cleaner extends REVMechanism {
 
     @Override
     public void periodic() {
-        SmartDashboard.putString("Cleaner Mode", getMode().toString());
-        SmartDashboard.putString("Cleaner State", getState().toString());
-        SmartDashboard.putNumber("Cleaner Setpoint", getMode().speed.in(RPM));
-        SmartDashboard.putNumber("Cleaner Output", getMotorOutput());
-        SmartDashboard.putNumber("Cleaner Current", getMotorCurrent());
-        SmartDashboard.putNumber("Cleaner Voltage", getMotorVoltage());
-        SmartDashboard.putNumber("Cleaner Velocity", getMotorVelocity());
+        // SmartDashboard.putString("Cleaner Mode", getMode().toString());
+        // SmartDashboard.putString("Cleaner State", getState().toString());
+        // SmartDashboard.putNumber("Cleaner Setpoint", getMode().speed.in(RPM));
+        // SmartDashboard.putNumber("Cleaner Output", getMotorOutput());
+        // SmartDashboard.putNumber("Cleaner Current", getMotorCurrent());
+        // SmartDashboard.putNumber("Cleaner Voltage", getMotorVoltage());
+        // SmartDashboard.putNumber("Cleaner Velocity", getMotorVelocity());
 
-        switch (this.mode) {
-            case IDLE:
-                setState(CleanerStates.IDLE);
-                break;
-            case INTAKE:
-                setState(CleanerStates.INTAKING);
-                break;
-            case OUTTAKE:
-                setState(CleanerStates.OUTTAKING);
-                break;
-        }
+        // switch (this.mode) {
+        //     case IDLE:
+        //         setState(CleanerStates.IDLE);
+        //         break;
+        //     case INTAKE:
+        //         setState(CleanerStates.INTAKING);
+        //         break;
+        //     case OUTTAKE:
+        //         setState(CleanerStates.OUTTAKING);
+        //         break;
+        // }
 
     }
 

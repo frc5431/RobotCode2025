@@ -67,15 +67,15 @@ public class CleanPivot extends REVMechanism {
 	}
 
 	public void periodic() {
-		SmartDashboard.putString("Cleaner Pivot Mode", getMode().toString());
-		SmartDashboard.putString("Cleaner Pivot Mode", getState().toString());
-		SmartDashboard.putNumber("Cleaner Pivot Setpoint", getMode().angle.in(Rotation));
-		SmartDashboard.putNumber("Cleaner Pivot Output", getMotorOutput());
-		SmartDashboard.putNumber("Cleaner Pivot Position", absoluteEncoder.getPosition());
-		SmartDashboard.putNumber("Cleaner Pivot Current", getMotorCurrent());
-		SmartDashboard.putNumber("Cleaner Pivot Voltage", getMotorVoltage());
-		SmartDashboard.putNumber("Cleaner Pivot Velocity", getMotorVelocity());
-	}
+	// 	SmartDashboard.putString("Cleaner Pivot Mode", getMode().toString());
+	// 	SmartDashboard.putString("Cleaner Pivot Mode", getState().toString());
+	// 	SmartDashboard.putNumber("Cleaner Pivot Setpoint", getMode().angle.in(Rotation));
+	// 	SmartDashboard.putNumber("Cleaner Pivot Output", getMotorOutput());
+	// 	SmartDashboard.putNumber("Cleaner Pivot Position", absoluteEncoder.getPosition());
+	// 	SmartDashboard.putNumber("Cleaner Pivot Current", getMotorCurrent());
+	// 	SmartDashboard.putNumber("Cleaner Pivot Voltage", getMotorVoltage());
+	// 	SmartDashboard.putNumber("Cleaner Pivot Velocity", getMotorVelocity());
+	 }
 
 	public void runEnum(CleanPivotModes cleanPivotModes) {
 		this.mode = cleanPivotModes;

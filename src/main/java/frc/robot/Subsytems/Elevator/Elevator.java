@@ -11,7 +11,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -111,6 +110,7 @@ public class Elevator extends CTREMechanism {
                     getPositionSetpointGoal(getPosition().rotation, ElevatorConstants.error));
             SmartDashboard.putNumber("Elevator Output", leader.getClosedLoopOutput().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Leader Output", leader.getBridgeOutput().getValueAsDouble());
+            SmartDashboard.putBoolean("Elevator Safe Swing", isSwingSafe());
 
             SmartDashboard.putNumber("Elevator Acceleration", leader.getAcceleration().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Velocity", leader.getVelocity().getValueAsDouble());
@@ -152,7 +152,7 @@ public class Elevator extends CTREMechanism {
      */
     public boolean isSwingSafe() {
         if (attached) {
-            return leader.getRotorPosition().getValue().gte(ElevatorConstants.safeSwing);
+            return leader.getRotorPosition().getValue().gte(ElevatorConstants.rise);
         }
         return false;
     }

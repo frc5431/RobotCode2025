@@ -74,28 +74,14 @@ public class Manipulator extends REVMechanism {
 	@Override
 	public void periodic() {
 		SmartDashboard.putString("Mainpulator Mode", getMode().toString());
-		SmartDashboard.putNumber("Mainpulator Setpoint", getMode().speed.in(RPM));
-		SmartDashboard.putString("Manipulator State", getState().toString());
+		// SmartDashboard.putNumber("Mainpulator Setpoint", getMode().speed.in(RPM));
+		// SmartDashboard.putString("Manipulator State", getState().toString());
 		SmartDashboard.putNumber("Mainpulator Output", getMotorOutput());
 		SmartDashboard.putNumber("Mainpulator Current", getMotorCurrent());
-		SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
-		SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
-		SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
+		// SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
+		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
+		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
 
-		switch (this.mode) {
-			case IDLE:
-				setState(ManipulatorStates.EMPTY);
-				break;
-			case SCORE:
-				setState(ManipulatorStates.INTAKING);
-				break;
-			case REVERSE:
-				setState(ManipulatorStates.OUTTAKING);
-				break;
-			case FEED:
-				setState(ManipulatorStates.INTAKING);
-				break;
-		}
 	}
 
 	protected void stop() {
