@@ -34,6 +34,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Systems;
 import frc.robot.Util.Field;
 import frc.robot.Util.SwerveConstants;
 import frc.robot.Util.Constants.AutonConstants;
@@ -78,7 +79,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private @Getter SwerveRequest.RobotCentric autonControl = new SwerveRequest.RobotCentric()
+    private @Getter SwerveRequest.RobotCentric alignControl = new SwerveRequest.RobotCentric()
             .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
             .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
@@ -167,7 +168,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         try {
             AutoBuilder.configure(
                     this::getRobotPose,
-                    this::resetPose,
+                    this::resetPoses,
                     this::getChassisSpeeds,
                     (speeds) -> driveAuton(speeds),
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
@@ -201,8 +202,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     // Keep the robot on the field
-    @SuppressWarnings("unused")
-    private Pose2d keepPoseOnField(Pose2d pose) {
+    public Pose2d keepPoseOnField(Pose2d pose) {
 
         double halfBot = DrivebaseConstants.robotLength.div(2).in(Meters);
         double x = pose.getX();
@@ -214,7 +214,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
         if (x != newX || y != newY) {
             pose = new Pose2d(new Translation2d(newX, newY), pose.getRotation());
-            resetPose(pose);
         }
         return pose;
     }
@@ -222,7 +221,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     
     public Pose2d predict(Time inTheFuture){
         
-        Pose2d currPose = getRobotPose();
+        Pose2d currPose = Systems.getEstimator().getCurrentPose();
 
         var cs = getChassisSpeeds();
 
@@ -258,6 +257,11 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         return run(() -> new SwerveRequest.PointWheelsAt().withModuleDirection(direction));
     }
 
+    public void resetPoses(Pose2d pose) {
+        this.resetPose(pose);
+        Systems.getEstimator().setCurrentPose(pose);
+    }
+
     /**
      * @param chassisSpeeds
      * @return
@@ -272,6 +276,15 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                 .withSteerRequestType(SteerRequestType.Position)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
+
+    
+    public void driveAlign(ChassisSpeeds chassisSpeeds) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    
 
     public void driveAuton(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)

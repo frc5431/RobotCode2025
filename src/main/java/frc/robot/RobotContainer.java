@@ -7,6 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+
+import com.ctre.phoenix6.hardware.CANrange;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
+import frc.robot.Subsytems.RangeAligner.RangeAligner;
 import frc.robot.Commands.Chained.AlignToReef;
 import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
@@ -63,12 +66,12 @@ public class RobotContainer {
 	private final ManipJoint manipJoint = systems.getManipJoint();
 	private final Manipulator manipulator = systems.getManipulator();
 	private final CANdleSystem candle = Systems.getTitanCANdle();
+	private final RangeAligner rangeAligner = systems.getRangeAligner();
 	private final Drivebase drivebase = Systems.getDrivebase();
 	private final AprilTagFieldLayout layout = Systems.getLayout();
 	private final SendableChooser<Command> autoChooser;
 
-	private final PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
-  
+	private final PoseEstimator poseEstimator = Systems.getEstimator();
 
 	private TitanController driver = Systems.getDriver();
 	private TitanController operator = Systems.getOperator();
@@ -104,6 +107,9 @@ public class RobotContainer {
 	private @Getter Trigger hasCoral = new Trigger(
 			() -> manipulator.hasCoral() && manipulator.getMode() == ManipulatorModes.SCORE
 					|| manipulator.getMode() == ManipulatorModes.SLOWSCORE);
+
+	private @Getter Trigger manipJointManual = new Trigger(
+			() -> (Math.abs(operator.getLeftY()) >= ControllerConstants.deadzone));
 
 	// LED Triggers
 
@@ -151,8 +157,8 @@ public class RobotContainer {
 		configureDriverControls();
 		configDriverFacingAngle();
 
-		//TODO SWAP
-		poseEstimator.setAlliance(Alliance.Red);
+		// TODO SWAP
+		poseEstimator.setAlliance(Alliance.Blue);
 
 		autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
 				(stream) -> autoFilter != AutoFilters.NONE
@@ -165,11 +171,8 @@ public class RobotContainer {
 
 	public void subsystemPeriodic() {
 		drivebase.periodic();
-		intake.periodic();
-		feeder.periodic();
 		elevator.periodic();
 		manipJoint.periodic();
-		manipulator.periodic();
 		intakePivot.periodic();
 		candle.periodic();
 		poseEstimator.periodic();
@@ -177,6 +180,7 @@ public class RobotContainer {
 
 	public void periodic() {
 		subsystemPeriodic();
+		SmartDashboard.putNumber("Operator Left Y", -operator.getLeftY());
 		SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
 		SmartDashboard.putData("mechanism", robotMechanism.elevator);
 	}
@@ -217,12 +221,17 @@ public class RobotContainer {
 				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
 						.withName("Align Right Branch"));
 
+		alignCenterReef.onTrue(
+				alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
+						.withName("Align Right Branch"));
+
 		driverStow.onTrue(
 				new SmartStowCommand(elevator, manipJoint, manipulator)
 						.alongWith(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW))
 						.withName("Driver Smart Stow"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
+				.andThen(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
 				.withName("Zero Drivebase"));
 
 		driverIntake.whileTrue(new ParallelCommandGroup(
@@ -271,23 +280,27 @@ public class RobotContainer {
 						.withName("Clean L2 Preset"));
 
 		cleanL3Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.CleanL3Position, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.CleanL3Position, elevator, manipJoint)
 						.withName("Clean L3 Preset"));
 
 		scoreL2Preset.onTrue(new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint)
 				.withName("Elevator L2 Preset"));
 
 		scoreL3Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint)
 						.withName("Elevator L3 Preset"));
 
 		scoreL4Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint)
 						.withName("Elevator L4 Preset"));
 
 		ejectL4Preset.onTrue(
-				new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
 						.withName("Eject L4 Preset"));
+
+		operator.rightStick().whileTrue(manipJoint.runVoltageCommand(0.3));
+		manipJointManual.whileTrue(manipJoint.runVoltageCommand((operator.getLeftY() < 0) ? 0.3
+				: -operator.getLeftY() * 0.5));
 
 	}
 

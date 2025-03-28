@@ -82,7 +82,7 @@ public class PositionPIDCommand extends Command {
 
         endTriggerLogger.accept(endTrigger.getAsBoolean());
 
-        drivebase.driveAuton(
+        drivebase.driveAlign(
                 alignController.calculateRobotRelativeSpeeds(
                         drivebase.getRobotPose(), goalState));
 
