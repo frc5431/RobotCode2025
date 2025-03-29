@@ -20,7 +20,7 @@ public class SmartPresetCommand extends SequentialCommandGroup {
 								new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorConstants.rise,
 										ElevatorConstants.error))),
 						new PrintCommand("********************************\nRise Skipped\n***************************"),
-						(() -> (elevator.isSwingSafe() && !manipJoint.isSwingSafe()))),
+						(() -> (elevator.isSwingSafe() && manipJoint.isSwingSafe()))),
 				// rises to RISE so manip can safely move
 
 				// manip runs to stow position only if the elevator is at the setpoint goal

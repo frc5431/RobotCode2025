@@ -307,7 +307,7 @@ public class RobotContainer {
 						.withName("Take The Shot"));
 
 		pickCoral.whileTrue(
-				new PickCoralCommand(elevator, manipulator)
+				new PickCoralCommand(elevator, manipJoint, manipulator)
 						.withName("Pick Coarl"));
 
 		manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));

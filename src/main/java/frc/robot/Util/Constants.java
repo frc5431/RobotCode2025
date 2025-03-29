@@ -332,6 +332,8 @@ public final class Constants {
 
         public static final Angle error = Units.Rotation.of(.51);
         public static final Angle tightError = Units.Rotation.of(.1);
+        public static final Angle superTightError = Units.Rotation.of(.05);
+
         public static final Angle lolipop = Units.Rotation.of(0.2);
 
         public static final Angle coralL1 = Units.Rotation.of(0.5);
@@ -349,7 +351,7 @@ public final class Constants {
         public static final Angle coralL3 = Units.Rotation.of(1.8);
         // 2.7
         // lower this to l3 increase speed of feeding
-        public static final Angle safeSwing = Units.Rotation.of(2.7);
+        public static final Angle safeSwing = Units.Rotation.of(3);
         public static final Angle rise = Units.Rotation.of(3);
 
         public static final Angle coralL4 = Units.Rotation.of(4.65);
@@ -538,7 +540,7 @@ public final class Constants {
         // 0.15 output units
         public static final double s = 0.3; // 0.15 holds arm at 90 degree position, when gravity's pull is strongest
 
-        public static final double p = 2.5;
+        public static final double p = 2;
         public static final double i = 0.001;
         public static final double d = 1.7;
         public static final double maxIAccum = 0.005;
@@ -556,8 +558,8 @@ public final class Constants {
         public static final Angle cleanAlgea = Units.Rotations.of(-2.5);
         public static final Angle processorAngle = Units.Rotations.of(-7.6);
         public static final Angle safeSwing = Units.Rotations.of(-11);
-        public static final Angle prefeed = Units.Rotations.of(-13);
-        public static final Angle feed = Units.Rotations.of(-14);
+        public static final Angle prefeed = Units.Rotations.of(-14);
+        public static final Angle feed = Units.Rotations.of(-13);
         public static final Angle scoreL4 = Units.Rotations.of(-3.7);
         public static final Angle slamL4 = Units.Rotations.of(-5);
 

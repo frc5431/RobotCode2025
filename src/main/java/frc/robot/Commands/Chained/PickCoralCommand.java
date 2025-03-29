@@ -14,15 +14,16 @@ import frc.robot.Util.Constants.ManipulatorConstants.ManipulatorModes;
 
 public class PickCoralCommand extends SequentialCommandGroup {
     
-    public PickCoralCommand(Elevator elevator, Manipulator manipulator){
+    public PickCoralCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator){
         addCommands(
+            manipJoint.runManipJointCommand(ManipJointPositions.FEED),
+            new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
+            ManipJointConstants.error)),
+            manipulator.setManipulatorCommand(ManipulatorModes.FEED),
             elevator.runElevatorCommand(ElevatorPositions.PICKUP),
-            manipulator.setManipulatorCommand(ManipulatorModes.FEED),
-            new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorPositions.PICKUP.rotation, ElevatorConstants.tightError)),
-            manipulator.setManipulatorCommand(ManipulatorModes.FEED),
-            new WaitCommand(0.5),
-            elevator.runElevatorCommand(ElevatorPositions.FEED),
-            manipulator.setManipulatorCommand(ManipulatorModes.IDLE)
+            new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorPositions.PICKUP.rotation, ElevatorConstants.superTightError)),
+            new WaitCommand(0.4),
+            elevator.runElevatorCommand(ElevatorPositions.FEED)
         );
         addRequirements(elevator, manipulator);    
     }
