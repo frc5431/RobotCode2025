@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointStates;
+import frc.robot.Systems;
 import frc.robot.Util.Constants.ManipJointConstants;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.subsystem.REVMechanism;
@@ -122,18 +123,19 @@ public class ManipJoint extends REVMechanism {
 	}
 
 	public void runVoltage(double rate) {
-		setPercentOutput(rate);
+		setPercentOutput((-Systems.getOperator().getLeftY() > 0) ? -Systems.getOperator().getLeftY() : -Systems.getOperator().getLeftY() * 0.25
+		);
+
 		ManipJointConstants.setAdjustAngle(Rotations.of(getMotorPosition()));
 		this.mode = ManipJointPositions.ADJUSTANGLE;
-		setMotorPosition(Rotations.of(getMotorPosition()));
+		
 	}
 
 	public Command runVoltageCommand(double rate) {
 		this.mode = ManipJointPositions.ADJUSTANGLE;
 		ManipJointConstants.setAdjustAngle(Rotations.of(getMotorPosition()));
-		return new StartEndCommand(() -> setPercentOutput(rate), () -> setMotorPosition(Rotations.of(getMotorPosition()))
-
-				, this);
+		return new StartEndCommand(() -> runVoltage(rate),
+				() -> setMotorPosition(Rotations.of(getMotorPosition())), this);
 	}
 
 	protected void runEnumMM(ManipJointPositions ManipJointmode) {

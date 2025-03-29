@@ -207,7 +207,7 @@ public class Vision extends SubsystemBase {
                     degStds = VisionConstants.dismalTrustStds;
 
             } else {
-                System.out.println("Rejected, get better");
+                //System.out.println("Rejected, get better");
                 return;
             }
 
@@ -254,7 +254,7 @@ public class Vision extends SubsystemBase {
         } else {
             ll.tagStatus = "no tags";
             ll.sendInvalidStatus("Vision: no tag found rejection");
-            System.out.println("********\nNoTag In View\n*********************");
+            // System.out.println("********\nNoTag In View\n*********************");
         }
     }
 

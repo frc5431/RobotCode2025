@@ -30,6 +30,7 @@ import frc.robot.Subsytems.RangeAligner.RangeAligner;
 import frc.robot.Commands.Chained.AlignToReef;
 import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
+import frc.robot.Commands.Chained.ElevatorLebron;
 import frc.robot.Commands.Chained.ElevatorPresetCommand;
 import frc.robot.Commands.Chained.ElevatorStowCommand;
 import frc.robot.Commands.Chained.SmartPresetCommand;
@@ -138,8 +139,8 @@ public class RobotContainer {
 	private Trigger scoreL2Preset = operator.rightDpad();
 	private Trigger scoreL3Preset = operator.leftDpad();
 	private Trigger scoreL4Preset = operator.upDpad();
-	private Trigger ejectL4Preset = operator.y();
-	private Trigger deployIntake = operator.rightBumper();
+	private Trigger processorPreset = operator.y();
+	private Trigger lebronShot = operator.rightBumper();
 	private Trigger scoreL1Intake = operator.x();
 
 	// Intake Controls
@@ -264,9 +265,12 @@ public class RobotContainer {
 				.withName("Coral Outake"));
 
 		// Pivot Controls
-		deployIntake.onTrue(
-				intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
-						.withName("Deploy Intake"));
+		// lebronShot.onTrue(
+		// 		intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
+		// 				.withName("Deploy Intake"));
+		lebronShot.onTrue(
+				new ElevatorLebron(elevator, manipulator)
+						.withName("Take The Shot"));
 
 		stowIntake.onTrue(intakePivot.runIntakePivotCommand(IntakePivotModes.STOW)
 				.withName("Stow Intake"));
@@ -276,7 +280,7 @@ public class RobotContainer {
 						.withName("Feed Preset"));
 
 		cleanL2Preset.onTrue(
-				new SmartPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint)
+				new SmartPresetCommand(ControllerConstants.CleanL2Position, elevator, manipJoint)
 						.withName("Clean L2 Preset"));
 
 		cleanL3Preset.onTrue(
@@ -294,13 +298,13 @@ public class RobotContainer {
 				new SmartPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint)
 						.withName("Elevator L4 Preset"));
 
-		ejectL4Preset.onTrue(
-				new SmartPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
-						.withName("Eject L4 Preset"));
+		processorPreset.onTrue(
+				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
+						.withName("Processor Preset"));
 
-		operator.rightStick().whileTrue(manipJoint.runVoltageCommand(0.3));
-		manipJointManual.whileTrue(manipJoint.runVoltageCommand((operator.getLeftY() < 0) ? 0.3
-				: -operator.getLeftY() * 0.5));
+		operator.rightStick().whileTrue(manipJoint.runVoltageCommand(-0.3));
+
+		manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));
 
 	}
 
@@ -408,8 +412,6 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ElevatorFeed",
 				new ParallelCommandGroup(new ElevatorFeedCommand(elevator, manipJoint),
 						intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)));
-		NamedCommands.registerCommand("L1Preset",
-				new ElevatorPresetCommand(ControllerConstants.CleanPosition, elevator, manipJoint));
 		NamedCommands.registerCommand("L2Preset",
 				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
@@ -431,9 +433,6 @@ public class RobotContainer {
 								new ElevatorPresetCommand(ControllerConstants.EjectL4Position, elevator, manipJoint)
 										.alongWith(manipulator.runManipulatorCommand(ManipulatorModes.SCORE)))
 												.withTimeout(1)));
-
-		// NamedCommands.registerCommand("AlignLeftReef", new AlignReefCommand(false));
-		// NamedCommands.registerCommand("AlignRightReef", new AlignReefCommand(true));
 
 	}
 }
