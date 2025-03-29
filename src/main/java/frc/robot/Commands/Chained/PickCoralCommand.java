@@ -8,7 +8,6 @@ import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
 import frc.robot.Util.Constants.ElevatorConstants;
 import frc.robot.Util.Constants.ElevatorConstants.ElevatorPositions;
-import frc.robot.Util.Constants.ManipJointConstants;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import frc.robot.Util.Constants.ManipulatorConstants.ManipulatorModes;
 
@@ -16,9 +15,7 @@ public class PickCoralCommand extends SequentialCommandGroup {
     
     public PickCoralCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator){
         addCommands(
-            manipJoint.runManipJointCommand(ManipJointPositions.FEED),
-            new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
-            ManipJointConstants.error)),
+            manipJoint.runManipJointCommand(ManipJointPositions.PREEFEED),
             manipulator.setManipulatorCommand(ManipulatorModes.FEED),
             elevator.runElevatorCommand(ElevatorPositions.PICKUP),
             new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorPositions.PICKUP.rotation, ElevatorConstants.superTightError)),
