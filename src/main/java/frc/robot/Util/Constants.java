@@ -322,6 +322,7 @@ public final class Constants {
         public static final Angle rise = Units.Rotation.of(3);
 
         public static final Angle coralL4 = Units.Rotation.of(4.65);
+        public static final Angle lebronShoot = Units.Rotation.of(4.7);
         public static final Angle eject = Units.Rotation.of(4.7);
 
         public static final Angle coralStation = Units.Rotation.of(3);
@@ -329,7 +330,7 @@ public final class Constants {
         public enum ElevatorPositions {
             STOW(stow), FEED(feed), CORAL_L1(coralL1), CLEAN_L2(cleanl2), CLEAN_L3(cleanL3), CORAL_L2(
                     coralL2), CORAL_L3(coralL3), CORAL_L4(
-                            coralL4), SAFESWING(safeSwing), RISE(rise), EJECT(eject);
+                            coralL4), SAFESWING(safeSwing), RISE(rise), EJECT(eject), LEBRON_SHOOT(lebronShoot);
 
             public Angle rotation;
 
@@ -525,12 +526,13 @@ public final class Constants {
         public static final Angle feed = Units.Rotations.of(-11);
         public static final Angle postFeed = Units.Rotations.of(-11.3);
         public static final Angle scoreL4 = Units.Rotations.of(-2.5);
+        public static final Angle straightUp = Units.Rotation.of(-0.5);
         public static final Angle error = Units.Rotations.of(0.3);
         public static final Angle tightError = Units.Rotations.of(0.1);
 
         public enum ManipJointPositions {
             STOW(stow), EJECT(eject), PREEFEED(prefeed), FEED(feed), CORAL_L1(scoreL1), CORAL_L2(scoreL2), CORAL_L3(
-                    scoreL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4);
+                    scoreL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4), STRAIGHT_UP(straightUp);
 
             public Angle position;
 
