@@ -10,8 +10,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointStates;
+import frc.robot.Systems;
 import frc.robot.Util.Constants.ManipJointConstants;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.subsystem.REVMechanism;
@@ -24,8 +26,11 @@ public class ManipJoint extends REVMechanism {
 	private SparkMax motor;
 	public boolean attached;
 
-	@Getter private ManipJointPositions mode;
-	@Getter @Setter private ManipJointStates state;
+	@Getter
+	private ManipJointPositions mode;
+	@Getter
+	@Setter
+	private ManipJointStates state;
 
 	public static class ManipJointConfig extends Config {
 
@@ -38,7 +43,8 @@ public class ManipJoint extends REVMechanism {
 			configAbsoluteEncoderInverted(false);
 			configPeakOutput(ManipJointConstants.maxForwardOutput, ManipJointConstants.maxReverseOutput);
 			configMaxIAccum(ManipJointConstants.maxIAccum);
-			configFeedForwardGains(ManipJointConstants.s, ManipJointConstants.p, ManipJointConstants.i, ManipJointConstants.d);
+			configFeedForwardGains(ManipJointConstants.s, ManipJointConstants.p, ManipJointConstants.i,
+					ManipJointConstants.d);
 			configSmartCurrentLimit(ManipJointConstants.stallLimit, ManipJointConstants.supplyLimit);
 			configPeakOutput(ManipJointConstants.maxForwardOutput, ManipJointConstants.maxReverseOutput);
 		}
@@ -66,21 +72,23 @@ public class ManipJoint extends REVMechanism {
 	public void periodic() {
 		SmartDashboard.putString("ManipJoint Mode", this.getMode().toString());
 		SmartDashboard.putNumber("ManipJoint Setpoint", getMode().position.in(Rotations));
-		SmartDashboard.putBoolean("ManipJoint Goal", getPositionSetpointGoal(getMode().position, ManipJointConstants.error));
+		SmartDashboard.putBoolean("ManipJoint Goal",
+				getPositionSetpointGoal(getMode().position, ManipJointConstants.error));
 		SmartDashboard.putNumber("ManipJoint Output", this.getMotorOutput());
 		SmartDashboard.putNumber("ManipJoint Current", this.getMotorCurrent());
 		SmartDashboard.putNumber("ManipJoint Voltage", this.getMotorVoltage());
 		SmartDashboard.putNumber("ManipJoint Position", this.getMotorPosition());
 		SmartDashboard.putBoolean("Manip Safe Swing", isSwingSafe());
 
-
 	}
 
 	/**
 	 * Checks if the motor is reaching the rotational setpoint
 	 * 
-	 * @param target the target rotation angle
-	 * @param error  allowed error in rotations (keep SMALL)
+	 * @param target
+	 *            the target rotation angle
+	 * @param error
+	 *            allowed error in rotations (keep SMALL)
 	 * @return true if the motor's angle position is within the error of the target
 	 *         angle position
 	 */
@@ -115,9 +123,19 @@ public class ManipJoint extends REVMechanism {
 	}
 
 	public void runVoltage(double rate) {
-		setPercentOutput(rate);
+		setPercentOutput((-Systems.getOperator().getLeftY() > 0) ? -Systems.getOperator().getLeftY() : -Systems.getOperator().getLeftY() * 0.25
+		);
+
 		ManipJointConstants.setAdjustAngle(Rotations.of(getMotorPosition()));
 		this.mode = ManipJointPositions.ADJUSTANGLE;
+		
+	}
+
+	public Command runVoltageCommand(double rate) {
+		this.mode = ManipJointPositions.ADJUSTANGLE;
+		ManipJointConstants.setAdjustAngle(Rotations.of(getMotorPosition()));
+		return new StartEndCommand(() -> runVoltage(rate),
+				() -> setMotorPosition(Rotations.of(getMotorPosition())), this);
 	}
 
 	protected void runEnumMM(ManipJointPositions ManipJointmode) {

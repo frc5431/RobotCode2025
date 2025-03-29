@@ -78,7 +78,9 @@ public class Manipulator extends REVMechanism {
 		// SmartDashboard.putString("Manipulator State", getState().toString());
 		SmartDashboard.putNumber("Mainpulator Output", getMotorOutput());
 		SmartDashboard.putNumber("Mainpulator Current", getMotorCurrent());
-		// SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
+		SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
+		SmartDashboard.putNumber("Mainpulator Current", getMotorCurrent());
+
 		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
 		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
 

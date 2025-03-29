@@ -205,7 +205,7 @@ public class AlignToReef {
     private Pose2d getWaypointFromBranch(Pose2d branch) {
         return new Pose2d(
                 branch.getTranslation(),
-                branch.getRotation().rotateBy(Rotation2d.k180deg));
+                branch.getRotation());
     }
 
     /**

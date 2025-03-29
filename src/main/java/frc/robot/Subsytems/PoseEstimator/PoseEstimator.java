@@ -25,7 +25,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
+import frc.robot.Subsytems.Limelight.Vision;
+import frc.robot.Util.Field;
 import frc.robot.Util.Constants.VisionConstants;
+import lombok.Getter;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -54,46 +57,34 @@ public class PoseEstimator extends SubsystemBase {
    * radians.
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
+  //(1.5, 1.5, 1.5);
 
   private Supplier<Rotation2d> rotationSupplier;
   private Supplier<SwerveModulePosition[]> modulePositionSupplier;
-  private SwerveDrivePoseEstimator poseEstimator;
-  private Field2d field2d = new Field2d();
+  private @Getter SwerveDrivePoseEstimator poseEstimator;
   private final Drivebase drivebase = Systems.getDrivebase();
+  private final Vision vision = Systems.getVision();
+
   StructPublisher<Pose2d> visionPosePublisher = NetworkTableInstance.getDefault()
-            .getStructTopic("Gibbon Pose", Pose2d.struct).publish();
+            .getStructTopic("Vision Pose", Pose2d.struct).publish();
   // private final PhotonRunnable photonEstimator = new PhotonRunnable();
   // private final Notifier photonNotifier = new Notifier(photonEstimator);
 
-  //TODO THIS IS HARD SET
-  private OriginPosition originPosition = kRedAllianceWallRightSide;
+  private OriginPosition originPosition = kBlueAllianceWallRightSide;
   private boolean sawTag = false;
-
-  StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-            .getStructTopic("Pose Estimator", Pose2d.struct).publish();
 
   public PoseEstimator(
       Supplier<Rotation2d> rotationSupplier, Supplier<SwerveModulePosition[]> modulePositionSupplier) {
 
     this.rotationSupplier = rotationSupplier;
     this.modulePositionSupplier = modulePositionSupplier;
-    
     poseEstimator = new SwerveDrivePoseEstimator(
         drivebase.getKinematics(),
         rotationSupplier.get(),
         modulePositionSupplier.get(),
-        new Pose2d(),
+        drivebase.getRobotPose(),
         stateStdDevs,
         visionMeasurementStdDevs);
-
-    // Start PhotonVision thread
-    // photonNotifier.setName("PhotonRunnable");
-    // photonNotifier.startPeriodic(0.02);
-  }
-
-  public void addDashboardWidgets(ShuffleboardTab tab) {
-    tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
-    tab.addString("Pose", this::getFomattedPose).withPosition(6, 2).withSize(2, 1);
   }
 
   /**
@@ -130,29 +121,26 @@ public class PoseEstimator extends SubsystemBase {
   public void periodic() {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
-    SmartDashboard.putBoolean("is null", Systems.getVision().getBestLimelight() == null);
-    visionPosePublisher.set((Systems.getVision().getBestLimelight() == null) ? Systems.getDrivebase().getRobotPose() :  Systems.getVision().getBestLimelight().getRawPose3d().toPose2d());
-    
-    // if (visionPose != null) {
-    if (true) { // Check to see if new tag was seen
+    visionPosePublisher.set(poseEstimator.getEstimatedPosition());
+
+    //TODO: this is where we left off last night, ading isreef
+    if (vision.getBestLimelight().targetInView() && Field.isReef(vision.getBestLimelight().getClosestTagID())) { // Check to see if new tag was seen
       // New pose from vision
       sawTag = true;
-      //var pose2d = visionPose.estimatedPose.toPose2d();
-      var pose2d = Systems.getDrivebase().getRobotPose();
+      // var pose2d = visionPose.estimatedPose.toPose2d();
+      var pose2d = vision.getBestLimelight().getRawPose3d().toPose2d();
       if (originPosition != kBlueAllianceWallRightSide) {
         pose2d = flipAlliance(pose2d);
       }
-      poseEstimator.addVisionMeasurement(Systems.getVision().getBestLimelight().getRawPose3d().toPose2d(), Timer.getFPGATimestamp());
-      posePublisher.set(poseEstimator.getEstimatedPosition());
-    }
 
-    // Set the pose on the dashboard
-    var dashboardPose = poseEstimator.getEstimatedPosition();
-    if (originPosition == kRedAllianceWallRightSide) {
-      // Flip the pose when red, since the dashboard field photo cannot be rotated
-      dashboardPose = flipAlliance(dashboardPose);
+      // TODO: Need to filter out the poses
+      // TODO: Kill Theta STDs
+      // May want to use vision.addFilteredVisionInput
+      poseEstimator.setVisionMeasurementStdDevs(Systems.getVision().visionStdMatrix);
+      pose2d = Systems.getDrivebase().keepPoseOnField(pose2d);
+      pose2d = new Pose2d(pose2d.getTranslation(), Systems.getDrivebase().getRobotHeading());
+      poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
     }
-    field2d.setRobotPose(dashboardPose);
   }
 
   private String getFomattedPose() {
@@ -165,6 +153,10 @@ public class PoseEstimator extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  public void resetRotablion() {
+    poseEstimator.resetRotation(Field.isBlue() ? Rotation2d.kZero : Rotation2d.k180deg);
   }
 
   /**

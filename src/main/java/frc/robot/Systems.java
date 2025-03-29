@@ -3,6 +3,7 @@ package frc.robot;
 import java.io.IOException;
 
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
@@ -10,6 +11,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 
 import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.TitanCANdle;
@@ -24,6 +26,7 @@ import frc.robot.Subsytems.Limelight.Vision;
 import frc.robot.Subsytems.Intake.IntakePivot;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
+import frc.robot.Subsytems.RangeAligner.RangeAligner;
 import frc.robot.Util.Constants;
 import frc.team5431.titan.core.joysticks.TitanController;
 import frc.robot.Util.SwerveConstants;
@@ -45,7 +48,9 @@ public class Systems {
     private @Getter IntakePivot intakePivot;
     private @Getter Feeder feeder;
     private @Getter ManipJoint manipJoint;
+
     private @Getter Manipulator manipulator;
+    private @Getter RangeAligner rangeAligner;
     private @Getter Elevator elevator;
     private static @Getter CANdleSystem titanCANdle;
     private static @Getter Vision vision = new Vision();
@@ -54,10 +59,15 @@ public class Systems {
         SwerveConstants.DrivetrainConstants,
         SwerveConstants.FrontLeft, SwerveConstants.FrontRight,
         SwerveConstants.BackLeft, SwerveConstants.BackRight);
+        private static @Getter PoseEstimator estimator;
+
+
 
     /* Kraken X60s */
     private TalonFX elevatorLeft;
     private TalonFX elevatorRight;
+    private CANrange rightRange;
+    private CANrange leftRange;
 
     /* Neo 1.1s */
     private SparkMax intakeMotor;
@@ -117,7 +127,7 @@ public class Systems {
             titanCANdle = new CANdleSystem();
             titanCANdle.changeAnimation(AnimationTypes.SPIRIT);
         }
-
+        estimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
         
     }
 }

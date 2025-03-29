@@ -1822,11 +1822,14 @@ public class LimelightHelpers {
     public void sendValidStatus(String message) {
         isIntegrating = true;
         logStatus = message;
+        SmartDashboard.putString("Valid Status", message);
+
     }
 
     public void sendInvalidStatus(String message) {
         isIntegrating = false;
         logStatus = message;
+        SmartDashboard.putString("Invalid Status", message);
     }
 
     /*

@@ -98,9 +98,11 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker());        // Yaw should be 0 when intake faces red alliance and manip faces blue
+        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
+                                                                              // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
-        double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
+        double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180))
+                .in(Degrees);
         for (VisionHelper visionHelper : poseLimelights) {
             visionHelper.setRobotOrientation(yaw);
 
@@ -120,14 +122,15 @@ public class Vision extends SubsystemBase {
 
                 // choose LL with best view of tags and integrate from only that camera
                 VisionHelper bestLimelight = centLL3;
-                for (VisionHelper visionHelper : poseLimelights) {
-                    if (Field.isReef((bestLimelight.getClosestTagID()))) {
-                        addFilteredVisionInput(bestLimelight);
-                    } else {
-                        visionHelper.sendInvalidStatus("SAD!: Apriltag is not matched Reef ID");
-                    }
-                    isIntegrating |= visionHelper.isIntegrating;
-                }
+                addFilteredVisionInput(bestLimelight);
+                // for (VisionHelper visionHelper : poseLimelights) {
+                // if (Field.isReef((bestLimelight.getClosestTagID()))) {
+                // addFilteredVisionInput(bestLimelight);
+                // } else {
+                // visionHelper.sendInvalidStatus("SAD!: Apriltag is not matched Reef ID");
+                // }
+                // isIntegrating |= visionHelper.isIntegrating;
+                // }
 
             }
         } catch (Exception e) {
@@ -152,7 +155,8 @@ public class Vision extends SubsystemBase {
             ChassisSpeeds robotSpeeds = Systems.getDrivebase().getChassisSpeeds();
 
             // distance from current pose to vision estimated pose
-            double poseError = Systems.getDrivebase().getRobotPose().getTranslation().getDistance(botpose.getTranslation());
+            double poseError = Systems.getDrivebase().getRobotPose().getTranslation()
+                    .getDistance(botpose.getTranslation());
 
             /* rejections */
             // reject pose if individual tag ambiguity is too high
@@ -167,7 +171,7 @@ public class Vision extends SubsystemBase {
                 // log ambiguities
                 ll.tagStatus += "Tag " + tag.id + ": " + tag.ambiguity;
                 // ambiguity rejection check
-                if (tag.ambiguity > 0.9) {
+                if (tag.ambiguity > 0.4) {
                     ll.sendInvalidStatus("vision: ambiguity rejection {vision:179ish}");
                     return;
                 }
@@ -181,10 +185,6 @@ public class Vision extends SubsystemBase {
                 // reject if we are rotating more than an amount of radians per second
                 ll.sendInvalidStatus("vision: robot rotation too fast");
                 return;
-            } else if (Math.abs(botpose3D.getZ()) > 0.25) {
-                // reject if pose is .25 meters in the air
-                ll.sendInvalidStatus("vision: height rejection");
-                return;
             } else if (Math.abs(botpose3D.getRotation().getX()) > 5
                     || Math.abs(botpose3D.getRotation().getY()) > 5) {
                 // reject if pose is 5 degrees titled in roll or pitch
@@ -196,35 +196,18 @@ public class Vision extends SubsystemBase {
             }
             /* CONFIDENCE (integration/standard devation) Evaluation */
             // if almost stationary and extremely close to tag
-            else if (robotSpeeds.vxMetersPerSecond
-                    + robotSpeeds.vyMetersPerSecond <= VisionConstants.velocityLowTrustThreshold
-                    && targetSize > 0.4) {
+            else if (targetSize >= 3) {
                 ll.sendValidStatus("Vision: Stationary close integration");
-                xyStds = VisionConstants.highTrustStds;
-                degStds = VisionConstants.highTrustStds;
-            } else if (multiTags && targetSize > 0.05) {
-                ll.sendValidStatus("Vision: Multi integration");
                 xyStds = VisionConstants.servicableTrustStds;
-                degStds = VisionConstants.badTrustStds;
-                if (targetSize > 0.09) {
-                    ll.sendValidStatus("Vision: Strong Multi integration");
-                    xyStds = VisionConstants.highTrustStds;
-                    degStds = VisionConstants.highTrustStds;
-                }
-            } else if (targetSize > 0.8 && poseError < 0.5) {
-                ll.sendValidStatus("Close integration");
-                xyStds = VisionConstants.defaultTrustStds;
-                degStds = VisionConstants.abysmalTrustStds;
-            } else if (targetSize > 0.1 && poseError < 0.3) {
-                ll.sendValidStatus("Proximity integration");
-                xyStds = VisionConstants.decreasedTrustStds;
-                degStds = VisionConstants.noTrustStds;
-            } else if (highestAmbiguity < 0.25 && targetSize >= 0.03) {
-                ll.sendValidStatus("Stable integration");
-                xyStds = VisionConstants.noTrustStds;
-                degStds = VisionConstants.noTrustStds;
+                degStds = VisionConstants.dismalTrustStds;
+            
+             } else if (targetSize >= 1) {
+                    ll.sendValidStatus("Vision: Stationary close integration");
+                    xyStds = VisionConstants.lowTrustStds;
+                    degStds = VisionConstants.dismalTrustStds;
+
             } else {
-                System.out.println("Rejected, get better");
+                //System.out.println("Rejected, get better");
                 return;
             }
 
@@ -236,23 +219,42 @@ public class Vision extends SubsystemBase {
             if (robotSpeeds.omegaRadiansPerSecond >= VisionConstants.lowTrustRadPerSec.in(RadiansPerSecond)) {
                 degStds = VisionConstants.dismalTrustStds;
             }
+            degStds = 9999;
+
+            SmartDashboard.putNumber("HIGHEST AMBIG", highestAmbiguity);
+            SmartDashboard.putNumber("target size", targetSize);
+            SmartDashboard.putNumber("pose error", poseError);
+            SmartDashboard.putBoolean("multi tag", multiTags);
+            SmartDashboard.putNumber("xystds", xyStds);
+            SmartDashboard.putNumber("theteaSTDS", degStds);
 
             // track STDs
             VisionConfig.VISION_STD_DEV_X = xyStds;
             VisionConfig.VISION_STD_DEV_Y = xyStds;
             VisionConfig.VISION_STD_DEV_THETA = degStds;
+            degStds = 9999;
 
             Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
-                            VisionConfig.VISION_STD_DEV_X,
-                            VisionConfig.VISION_STD_DEV_Y,
-                            VisionConfig.VISION_STD_DEV_THETA));
+                            xyStds,
+                            xyStds,
+                            degStds));
 
             Pose2d integratedPose = new Pose2d(megaPose2d.getTranslation(), botpose.getRotation());
-            Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
+            //Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
+            Systems.getDrivebase().resetPose(Systems.getEstimator().getCurrentPose());
+            // Systems.getEstimator().getPoseEstimator().setVisionMeasurementStdDevs(VecBuilder.fill(
+            // xyStds,
+            // xyStds,
+            // degStds));
+
+            // Systems.getEstimator().getPoseEstimator().addVisionMeasurement(integratedPose,
+            // timeStamp);
+
         } else {
             ll.tagStatus = "no tags";
             ll.sendInvalidStatus("Vision: no tag found rejection");
+            // System.out.println("********\nNoTag In View\n*********************");
         }
     }
 
@@ -368,7 +370,7 @@ public class Vision extends SubsystemBase {
 
     public VisionHelper getBestLimelight() {
         VisionHelper bestLimelight = centLL3;
-      
+
         return centLL3;
     }
 
