@@ -148,12 +148,16 @@ public class Elevator extends CTREMechanism {
         return false;
     }
 
+    public Angle getElevatorPosition() {
+        return elevatorCANcoder.getPosition().getValue();
+    }
+
     /**
      * @return if above or equal to the safe swing distance in rotations
      */
     public boolean isSwingSafe() {
         if (attached) {
-            return leader.getRotorPosition().getValue().gte(ElevatorConstants.rise);
+            return leader.getRotorPosition().getValue().lte(ElevatorConstants.rise);
         }
         return false;
     }

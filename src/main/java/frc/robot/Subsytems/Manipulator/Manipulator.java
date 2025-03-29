@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Util.Constants.IntakeConstants;
 import frc.robot.Util.Constants.ManipJointConstants;
@@ -109,6 +110,12 @@ public class Manipulator extends REVMechanism {
         return new RunCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
                 .withName("Intake.runEnum");
     }
+
+	public Command setManipulatorCommand(ManipulatorModes manipulatorModes) {
+        return new InstantCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
+                .withName("Intake.runEnum");
+    }
+	
 
     public Command runManipulatorCommand(ManipulatorModes manipulatorModes, boolean rpm) {
         return new RunCommand(() -> this.runEnum(manipulatorModes, rpm), this)

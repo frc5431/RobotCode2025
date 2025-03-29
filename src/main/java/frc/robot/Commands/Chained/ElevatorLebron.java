@@ -21,16 +21,16 @@ public class ElevatorLebron extends SequentialCommandGroup {
      */
     public ElevatorLebron(Elevator elevator, Manipulator manipulator, ManipJoint manipJoint) {
         addCommands(
-            elevator.runElevatorCommand(ElevatorPositions.CORAL_L3),
+            // elevator.runElevatorCommand(ElevatorPositions.CORAL_L3),
             manipJoint.runManipJointCommand(ManipJointPositions.STRAIGHT_UP),
 
-            new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointPositions.STRAIGHT_UP.position, ManipJointConstants.tightError)),
+            // new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointPositions.STRAIGHT_UP.position, ManipJointConstants.error)),
             elevator.runElevatorCommand(ElevatorPositions.CORAL_L4),
             
             new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorPositions.LEBRON_SHOOT.rotation, ElevatorConstants.error)),
-            manipulator.runManipulatorCommand(ManipulatorModes.FEED)
+            manipulator.runManipulatorCommand(ManipulatorModes.SCORE)
         );
-        addRequirements(elevator, manipulator);        
+        addRequirements(elevator, manipulator, manipJoint);        
     }
 
 }
