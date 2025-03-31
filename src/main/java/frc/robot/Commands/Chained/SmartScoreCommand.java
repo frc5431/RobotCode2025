@@ -34,7 +34,8 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 										() -> manipJoint.getPositionSetpointGoal(
 												ManipJointConstants.slamL4,
 												ManipJointConstants.error)
-												|| ManipJointPositions.PROCESSOR.position.lte(
+												//is it lte or gte? my mind is not minding rn
+												|| ManipJointConstants.slamL4.lte(
 														Rotations.of(manipJoint.getMotorPosition()))),
 								manipulator.setManipulatorCommand(ManipulatorModes.SLOWSCORE),
 								elevator.runElevatorCommand(ElevatorPositions.CORAL_L2),
