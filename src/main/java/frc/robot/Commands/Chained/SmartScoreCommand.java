@@ -6,6 +6,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import static edu.wpi.first.units.Units.Rotations;
+
+import com.ctre.phoenix.led.CANdle;
+
+import frc.robot.Subsytems.CANdle.CANdleSystem;
+import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
@@ -23,9 +28,9 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 	 * @param manipJoint
 	 * @param manipulator
 	 */
-	public SmartScoreCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator) {
+	public SmartScoreCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator, CANdleSystem candle) {
 		addCommands(
-			
+			candle.changeCANdle(AnimationTypes.BLINK_BLUE).alongWith(
 				//L4 Sequence
 				new ConditionalCommand(
 						new SequentialCommandGroup(
@@ -62,8 +67,8 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 										new PrintCommand("Elevator Position Not Scoring"),
 										(() -> elevator.getPosition() == ElevatorPositions.CORAL_L2)),
 								(() -> elevator.getPosition() == ElevatorPositions.CORAL_L3)),
-						(() -> elevator.getPosition() == ElevatorPositions.CORAL_L4))
-
+						(() -> elevator.getPosition() == ElevatorPositions.CORAL_L4))),
+				candle.changeCANdle(AnimationTypes.SCORE)
 		);
 
 		addRequirements(elevator, manipJoint, manipulator);

@@ -288,7 +288,7 @@ public class RobotContainer {
 						.withName("Elevator L4 Preset"));
 
 		smartScore.onTrue(
-				new SmartScoreCommand(elevator, manipJoint, manipulator)
+				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
 						.withName("Smart Score Command"));
 
 		processorPreset.onTrue(
