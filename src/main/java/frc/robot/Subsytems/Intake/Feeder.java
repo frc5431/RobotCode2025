@@ -44,7 +44,6 @@ public class Feeder extends REVMechanism {
 
     public Feeder(SparkMax motor, boolean attachted) {
         super(motor, attachted);
-        System.out.println("Feeder IS ALIVE");
         FeederConfig config = new FeederConfig();
         this.motor = motor;
         this.mode = FeederModes.IDLE;

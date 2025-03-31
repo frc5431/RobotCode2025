@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Util.Constants.IntakeConstants;
 import frc.robot.Util.Constants.ManipJointConstants;
@@ -78,7 +79,9 @@ public class Manipulator extends REVMechanism {
 		// SmartDashboard.putString("Manipulator State", getState().toString());
 		SmartDashboard.putNumber("Mainpulator Output", getMotorOutput());
 		SmartDashboard.putNumber("Mainpulator Current", getMotorCurrent());
-		// SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
+		SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
+		SmartDashboard.putNumber("Mainpulator Current", getMotorCurrent());
+
 		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
 		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
 		/* Has Algae = isStalling */
@@ -110,6 +113,12 @@ public class Manipulator extends REVMechanism {
         return new RunCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
                 .withName("Intake.runEnum");
     }
+
+	public Command setManipulatorCommand(ManipulatorModes manipulatorModes) {
+        return new InstantCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
+                .withName("Intake.runEnum");
+    }
+	
 
     public Command runManipulatorCommand(ManipulatorModes manipulatorModes, boolean rpm) {
         return new RunCommand(() -> this.runEnum(manipulatorModes, rpm), this)

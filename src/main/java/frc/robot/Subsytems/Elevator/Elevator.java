@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Util.Constants;
 import frc.robot.Util.Constants.ElevatorConstants;
 import frc.robot.Util.Constants.ElevatorConstants.ElevatorPositions;
@@ -147,12 +148,16 @@ public class Elevator extends CTREMechanism {
         return false;
     }
 
+    public Angle getElevatorPosition() {
+        return elevatorCANcoder.getPosition().getValue();
+    }
+
     /**
      * @return if above or equal to the safe swing distance in rotations
      */
     public boolean isSwingSafe() {
         if (attached) {
-            return leader.getRotorPosition().getValue().gte(ElevatorConstants.rise);
+            return leader.getRotorPosition().getValue().lte(ElevatorConstants.rise);
         }
         return false;
     }
@@ -186,10 +191,6 @@ public class Elevator extends CTREMechanism {
         return new InstantCommand(() -> setZero(), this);
     }
 
-    // public Angle getPosition() {
-    //     return elevatorCANcoder.getPosition().getValue();
-    // }
-
     protected void stop() {
         if (attached) {
             leader.stopMotor();
@@ -198,7 +199,7 @@ public class Elevator extends CTREMechanism {
     }
 
     protected void setZero() {
-      if (attached) {
+        if (attached) {
             motor.setPosition(Revolutions.of(0));
         }
     }
@@ -206,6 +207,11 @@ public class Elevator extends CTREMechanism {
     public Command runElevatorCommand(ElevatorPositions position) {
         return new InstantCommand(() -> runEnum(position), this)
                 .withName("Elevator.runEnum");
+    }
+
+    public Command riseElevatorCommand() {
+        Command rise = new InstantCommand(() -> runEnum(ElevatorPositions.RISE), this);
+        return rise;
     }
 
     public Command runElevatorCommandMM(ElevatorPositions position) {

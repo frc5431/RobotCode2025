@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center PushBack"
+            "pathName": "FarPushBack"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleSideL4"
+            "pathName": "FarSide"
           }
         },
         {
@@ -31,13 +31,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Algae Remove"
+            "pathName": "EndFarSide"
           }
         }
       ]
