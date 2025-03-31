@@ -84,8 +84,9 @@ public class Manipulator extends REVMechanism {
 
 		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
 		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
+
 		/* Has Algae = isStalling */
-		if (isStalling(.5)) {
+		if (isStalling(.5) && ManipulatorConstants.checkAlgaeStall) {
 			setPercentOutput(.02);
 		}
 	}

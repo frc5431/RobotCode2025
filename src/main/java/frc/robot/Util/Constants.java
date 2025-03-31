@@ -249,7 +249,7 @@ public final class Constants {
         public static final FeedbackSensor sensorType = FeedbackSensor.kPrimaryEncoder;
         public static final double maxForwardOutput = 1;
         public static final double maxReverseOutput = -1;
-
+        public static final boolean checkAlgaeStall = false;
         public static final double p = 1;
         public static final double i = 0.01;
         public static final double d = 0.3;
