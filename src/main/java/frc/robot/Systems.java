@@ -16,7 +16,6 @@ import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.TitanCANdle;
 import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
-import frc.robot.Subsytems.Climber.Climber;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Util.TitanBitDoController;
@@ -26,7 +25,6 @@ import frc.robot.Subsytems.Limelight.Vision;
 import frc.robot.Subsytems.Intake.IntakePivot;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
-import frc.robot.Subsytems.RangeAligner.RangeAligner;
 import frc.robot.Util.Constants;
 import frc.team5431.titan.core.joysticks.TitanController;
 import frc.robot.Util.SwerveConstants;
@@ -50,11 +48,9 @@ public class Systems {
     private @Getter ManipJoint manipJoint;
 
     private @Getter Manipulator manipulator;
-    private @Getter RangeAligner rangeAligner;
     private @Getter Elevator elevator;
     private static @Getter CANdleSystem titanCANdle;
     private static @Getter Vision vision = new Vision();
-    private @Getter Climber climber;
     private static @Getter Drivebase drivebase = new Drivebase(
         SwerveConstants.DrivetrainConstants,
         SwerveConstants.FrontLeft, SwerveConstants.FrontRight,
@@ -116,11 +112,6 @@ public class Systems {
             elevatorLeft = new TalonFX(ElevatorConstants.leftId, Constants.canbus);
             elevatorRight = new TalonFX(ElevatorConstants.rightId, Constants.canbus);
             elevator = new Elevator(elevatorLeft, elevatorRight, ElevatorConstants.attached);
-        }
-
-        if (ClimberConstants.attached) {
-            climberMotor = new SparkMax(ClimberConstants.id, brushless);
-            climber = new Climber(climberMotor, ClimberConstants.attached);
         }
 
         if (CANdleConstants.attached) {

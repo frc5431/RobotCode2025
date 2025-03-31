@@ -86,21 +86,6 @@ public final class Constants {
         public static final PIDConstants rotationPID = new PIDConstants(2, 0, .0);
     }
 
-    public static class RangeConstants {
-        public static final int rightID = 40;
-        public static final int leftID = 41;
-
-        public static final int minDist = 2500;
-        public static final Distance hyst = Units.Inches.of(0.01);
-        public static final Distance threshold = Units.Inches.of(0.01);
-
-        public static final ProximityParamsConfigs proximityConfig = new ProximityParamsConfigs()
-                .withMinSignalStrengthForValidMeasurement(minDist)
-                .withProximityHysteresis(hyst)
-                .withProximityThreshold(threshold);
-
-    }
-
     public static class IntakeConstants {
 
         public enum IntakeStates {
@@ -146,85 +131,6 @@ public final class Constants {
             IntakeModes(AngularVelocity speed, double output) {
                 this.speed = speed;
                 this.output = output;
-            }
-
-        }
-
-    }
-
-    public static class CleanerConstants {
-
-        public enum CleanerStates {
-            IDLE, INTAKING, OUTTAKING
-        }
-
-        public static final boolean attached = false;
-        public static final int id = 26;
-        public static final double gearRatio = 1 / 1;
-        public static final Current supplyLimit = Units.Amps.of(30);
-        public static final Current stallLimit = Units.Amps.of(0);
-        public static final IdleMode idleMode = IdleMode.kBrake;
-        public static final boolean isInverted = false;
-        public static final double maxForwardOutput = 0;
-        public static final double maxReverseOutput = 0;
-        public static final double maxIAccum = 0;
-
-        public static final double p = 0;
-        public static final double i = 0;
-        public static final double d = 0;
-
-        public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
-        public static final AngularVelocity mm_maxAccel = Units.RPM.of(0);
-        public static final AngularVelocity mm_velocity = Units.RPM.of(0);
-        public static final AngularVelocity mm_error = Units.RPM.of(0);
-        public static final AngularVelocity intakeSpeed = Units.RPM.of(70);
-        public static final AngularVelocity outtakeSpeed = Units.RPM.of(0);
-        public static final AngularVelocity feedSpeed = Units.RPM.of(0);
-        public static final AngularVelocity idleSpeed = Units.RPM.of(0);
-
-        public enum CleanerModes {
-            IDLE(idleSpeed), INTAKE(intakeSpeed), OUTTAKE(outtakeSpeed);
-
-            public AngularVelocity speed;
-
-            CleanerModes(AngularVelocity speed) {
-                this.speed = speed;
-            }
-
-        }
-
-    }
-
-    public static class CleanPivotConstants {
-
-        public enum CleanPivotStates {
-            STOW, L2, L3, NET,
-        }
-
-        public static final int id = 25;
-        public static final boolean attached = false;
-        public static final Angle softLimitForwardMax = Units.Rotation.of(0);
-        public static final boolean softLimitEnabled = true;
-        public static final Angle intakeAngle = Units.Rotation.of(0);
-        public static final Angle softLimitReverseMax = Units.Rotation.of(0);
-        public static final Angle stowAngle = Units.Rotation.of(0);
-        public static final Angle l2Angle = Units.Rotation.of(0);
-        public static final Angle l3Angle = Units.Rotation.of(0);
-        public static final Angle netAngle = Units.Rotation.of(0);
-        public static final boolean isInverted = false;
-        public static final Angle zeroOffset = Units.Rotation.of(0);
-        public static final FeedbackSensor feedbackSensor = FeedbackSensor.kAbsoluteEncoder;
-        public static final double p = 0;
-        public static final double i = 0;
-        public static final double d = 0;
-
-        public enum CleanPivotModes {
-            INTAKE(intakeAngle), STOW(stowAngle), L2(l2Angle), L3(l3Angle), NET(netAngle);
-
-            public Angle angle;
-
-            CleanPivotModes(Angle angle) {
-                this.angle = angle;
             }
 
         }
@@ -631,54 +537,6 @@ public final class Constants {
             }
 
         }
-    }
-
-    public static class ClimberConstants {
-
-        public enum ClimberStates {
-            STOW, ALIGN, CLIMB
-        }
-
-        public static final int id = 27;
-        public static final boolean attached = false;
-        public static final boolean isInverted = false;
-        public static final double gearRatio = 1 / 1;
-        public static final Current supplyLimit = Units.Amps.of(30);
-        public static final Current stallLimit = Units.Amps.of(80);
-        public static final Angle offset = Units.Rotation.of(0);
-        public static final double maxForwardOutput = 0.5;
-        public static final double maxReverseOutput = 0.5;
-
-        public static final IdleMode idleMode = IdleMode.kBrake;
-        public static final FeedbackSensor sensorType = FeedbackSensor.kPrimaryEncoder;
-        public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
-
-        public static final double p = 1;
-        public static final double i = 0.01;
-        public static final double d = 0.3;
-        public static final double maxIAccum = 0.2;
-
-        public static final AngularVelocity climbVelocity = Units.RPM.of(0);
-        public static final Angle stow_angle = Units.Rotation.of(0);
-        public static final Angle align_angle = Units.Rotation.of(0);
-        public static final Angle climb_angle = Units.Rotation.of(0);
-        public static final Angle error = Units.Rotation.of(0);
-
-        public static final AngularVelocity mm_maxAccel = Units.RPM.of(0);
-        public static final AngularVelocity mm_velocity = Units.RPM.of(0);
-        public static final AngularVelocity mm_error = Units.RPM.of(0);
-
-        public enum ClimberModes {
-            STOW(stow_angle), ALIGN(align_angle), CLIMB(climb_angle);
-
-            public Angle angle;
-
-            ClimberModes(Angle angle) {
-                this.angle = angle;
-            }
-
-        }
-
     }
 
     public static class CANdleConstants {
