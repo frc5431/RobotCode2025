@@ -257,7 +257,7 @@ public final class Constants {
         public static final Angle coralL3 = Units.Rotation.of(1.8);
         // 2.7
         // lower this to l3 increase speed of feeding
-        public static final Angle safeSwing = Units.Rotation.of(3);
+        public static final Angle safeSwing = Units.Rotation.of(2.5);
         public static final Angle rise = Units.Rotation.of(3);
 
         public static final Angle coralL4 = Units.Rotation.of(4.65);

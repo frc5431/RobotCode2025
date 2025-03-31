@@ -157,7 +157,7 @@ public class Elevator extends CTREMechanism {
      */
     public boolean isSwingSafe() {
         if (attached) {
-            return leader.getRotorPosition().getValue().lte(ElevatorConstants.rise);
+            return leader.getRotorPosition().getValue().gte(ElevatorConstants.rise);
         }
         return false;
     }
