@@ -68,7 +68,7 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 										(() -> elevator.getPosition() == ElevatorPositions.CORAL_L2)),
 								(() -> elevator.getPosition() == ElevatorPositions.CORAL_L3)),
 						(() -> elevator.getPosition() == ElevatorPositions.CORAL_L4))),
-				candle.changeCANdle(AnimationTypes.SCORE)
+				candle.changeCANdle(AnimationTypes.SCORE).withTimeout(0.2)
 		);
 
 		addRequirements(elevator, manipJoint, manipulator);
