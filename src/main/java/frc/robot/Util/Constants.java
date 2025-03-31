@@ -2,10 +2,6 @@ package frc.robot.Util;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
-import com.ctre.phoenix6.configs.FovParamsConfigs;
-import com.ctre.phoenix6.configs.ProximityParamsConfigs;
-import com.ctre.phoenix6.configs.ToFParamsConfigs;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -22,7 +18,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;

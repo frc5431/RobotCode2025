@@ -293,7 +293,7 @@ public class Field {
 
 	/** Returns {@code true} if the robot is on the blue alliance. */
 	public static boolean isBlue() {
-		//TODO ADD NULL CEHCIGN
+		//TODO ADD NULL CHECKING
 		return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 	}
 

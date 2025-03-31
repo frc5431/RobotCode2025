@@ -14,7 +14,6 @@ import frc.robot.Util.Constants.IntakeConstants;
 import frc.robot.Util.Constants.IntakePivotConstants;
 import frc.robot.Util.Constants.IntakePivotConstants.IntakePivotModes;
 import frc.robot.Util.Constants.IntakePivotConstants.IntakePivotStates;
-import frc.robot.Util.Constants.ManipJointConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 import lombok.Getter;
 import lombok.Setter;

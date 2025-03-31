@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
-import com.ctre.phoenix6.hardware.CANrange;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -30,7 +29,6 @@ import frc.robot.Commands.Chained.AlignToReef;
 import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
 import frc.robot.Commands.Chained.ElevatorLebron;
-import frc.robot.Commands.Chained.ElevatorPresetCommand;
 import frc.robot.Commands.Chained.ElevatorStowCommand;
 import frc.robot.Commands.Chained.PickCoralCommand;
 import frc.robot.Commands.Chained.SmartScoreCommand;
@@ -78,7 +76,7 @@ public class RobotContainer {
 	private TitanController operator = Systems.getOperator();
 
 	private enum AutoFilters {
-		Comp, TEST, FW, NONE
+		Comp, TEST, States, NONE
 	}
 
 	AutoFilters autoFilter = AutoFilters.Comp;
@@ -131,8 +129,7 @@ public class RobotContainer {
 	private Trigger driverIntake = driver.rightTrigger(0.5);
 
 	// Operator Controls
-	// New Changes
-	private Trigger lebronShot = operator.rightBumper();
+	private Trigger lebronShot = operator.leftBumper();
 	private Trigger pickCoral = operator.x();
 
 	// Preset Controls
@@ -147,7 +144,7 @@ public class RobotContainer {
 
 	// Intake Controls
 	private Trigger reverseFeed = operator.b();
-	private Trigger smartScore = operator.leftBumper();
+	private Trigger smartScore = operator.rightBumper();
 
 	private Trigger intakeCoral = operator.leftTrigger(.5);
 	private Trigger scoreCoral = operator.rightTrigger(.5);
@@ -372,7 +369,7 @@ public class RobotContainer {
 				.withName("Feeder Default Command"));
 		manipulator.setDefaultCommand(manipulator.runManipulatorCommand(ManipulatorModes.IDLE)
 				.withName("Manipulator Default Command"));
-		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default"));
+		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default Command"));
 
 		// Subsystem Status
 		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.INTAKE).withName("CANdle Coral"));
@@ -423,11 +420,11 @@ public class RobotContainer {
 				new ParallelCommandGroup(new ElevatorFeedCommand(elevator, manipJoint),
 						intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)));
 		NamedCommands.registerCommand("L2Preset",
-				new ElevatorPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
+				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
-				new ElevatorPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint));
+				new SmartPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L4Preset",
-				new ElevatorPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint));
+				new SmartPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint));
 		NamedCommands.registerCommand("StowPreset",
 				new ElevatorStowCommand(elevator, manipJoint).withTimeout(0.5));
 		NamedCommands.registerCommand("IntakeCoral",
@@ -440,7 +437,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ScoreL4",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(0.5)
 						.andThen(new ParallelCommandGroup(
-								new ElevatorPresetCommand(
+								new SmartPresetCommand(
 										ControllerConstants.EjectL4Position,
 										elevator, manipJoint)
 												.alongWith(manipulator

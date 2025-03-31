@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.io.IOException;
 
-import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
@@ -14,7 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 
 import frc.robot.Subsytems.CANdle.CANdleSystem;
-import frc.robot.Subsytems.CANdle.TitanCANdle;
 import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
@@ -62,15 +60,12 @@ public class Systems {
     /* Kraken X60s */
     private TalonFX elevatorLeft;
     private TalonFX elevatorRight;
-    private CANrange rightRange;
-    private CANrange leftRange;
 
     /* Neo 1.1s */
     private SparkMax intakeMotor;
     private SparkMax manipJointMotor;
     private SparkMax feederMotor;
     private SparkMax intakePivotMotor;
-    private SparkMax climberMotor;
 
     /* Neo 550s */
     private SparkMax manipulatorMotor;
