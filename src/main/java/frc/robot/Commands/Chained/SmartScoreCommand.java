@@ -25,8 +25,8 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 	 */
 	public SmartScoreCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator) {
 		addCommands(
+			
 				//L4 Sequence
-
 				new ConditionalCommand(
 						new SequentialCommandGroup(
 								manipJoint.runManipJointCommand(ManipJointPositions.PROCESSOR),
