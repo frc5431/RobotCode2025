@@ -327,6 +327,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         publisher.set(states);
         posePublisher.set(getRobotPose());
         speedsPublisher.set(getChassisSpeeds());
+        updateSimState(0.02, 12.0); // Added so I can use swerve in simulation
 
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {

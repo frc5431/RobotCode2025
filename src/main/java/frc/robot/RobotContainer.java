@@ -24,6 +24,7 @@ import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
+import frc.robot.Commands.Chained.DriveToPoseCommand;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 import frc.robot.Commands.Chained.AlignToReef;
 import frc.robot.Commands.Chained.EjectCoralCommand;
@@ -217,6 +218,7 @@ public class RobotContainer {
 				.withName("Swerve Robot Oriented"));
 
 		// Align Reef Commands
+		// todo: new commands!
 		alignLeftReef.onTrue(
 				alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)
 						.withName("Align Left Branch"));
@@ -225,9 +227,10 @@ public class RobotContainer {
 				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
 						.withName("Align Right Branch"));
 
-		alignCenterReef.onTrue(
-				alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
-						.withName("Align Right Branch"));
+		// alignCenterReef.onTrue(
+		// 		alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
+		// 				.withName("Align Right Branch"));
+		alignCenterReef.onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), alignToReefCommandFactory.getClosestBranch(FieldBranchSide.MIDDLE, drivebase), 2).withName("Running Path"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.andThen(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
@@ -290,7 +293,7 @@ public class RobotContainer {
 		smartScore.onTrue(
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
 						.withName("Smart Score Command"));
-
+		
 		processorPreset.onTrue(
 				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
 						.withName("Processor Preset"));
