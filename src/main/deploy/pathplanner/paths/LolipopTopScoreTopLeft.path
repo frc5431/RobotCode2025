@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.8221311475409834,
+        "y": 5.83514344262295
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.287163566951408,
+        "y": 6.003905821581689
+      },
+      "isLocked": false,
+      "linkedName": "LolipopTop"
+    },
+    {
+      "anchor": {
+        "x": 3.9319672131147536,
+        "y": 5.295696721311476
+      },
+      "prevControl": {
+        "x": 2.269911470119749,
+        "y": 5.366994983986999
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 400.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

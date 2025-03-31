@@ -81,7 +81,10 @@ public class Manipulator extends REVMechanism {
 		// SmartDashboard.putNumber("Mainpulator Voltage", getMotorVoltage());
 		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
 		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
-
+		/* Has Algae = isStalling */
+		if (isStalling(.5)) {
+			setPercentOutput(.02);
+		}
 	}
 
 	protected void stop() {
@@ -118,4 +121,7 @@ public class Manipulator extends REVMechanism {
 		return motor.getOutputCurrent() >= ManipulatorConstants.stallCurrent;
 	}
 
+	public boolean isStalling(double tolerance) {
+		return Math.abs(motor.getOutputCurrent() - ManipulatorConstants.stallLimit.baseUnitMagnitude()) <= tolerance;
+	}
 }
