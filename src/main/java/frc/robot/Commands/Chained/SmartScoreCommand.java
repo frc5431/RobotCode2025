@@ -25,6 +25,8 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 	 */
 	public SmartScoreCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator) {
 		addCommands(
+				//L4 Sequence
+
 				new ConditionalCommand(
 						new SequentialCommandGroup(
 								manipJoint.runManipJointCommand(ManipJointPositions.PROCESSOR),
@@ -32,7 +34,7 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 										() -> manipJoint.getPositionSetpointGoal(
 												ManipJointConstants.slamL4,
 												ManipJointConstants.error)
-												|| ManipJointPositions.PROCESSOR.position.gte(
+												|| ManipJointPositions.PROCESSOR.position.lte(
 														Rotations.of(manipJoint.getMotorPosition()))),
 								manipulator.setManipulatorCommand(ManipulatorModes.SLOWSCORE),
 								new WaitCommand(0.2).andThen(
@@ -41,6 +43,7 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 								manipJoint.runManipJointCommand(ManipJointPositions.CORAL_L2),
 								manipulator.setManipulatorCommand(ManipulatorModes.IDLE)),
 
+						//L3 Sequence
 						new ConditionalCommand(
 								new SequentialCommandGroup(
 										manipJoint.runManipJointCommand(ManipJointPositions.SLAM_L3),
@@ -50,6 +53,7 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 												elevator.runElevatorCommand(ElevatorPositions.SLAM_L3)),
 										new WaitCommand(4)),
 
+								//L2 Sequence
 								new ConditionalCommand(
 										new SequentialCommandGroup(
 												manipJoint.runManipJointCommand(ManipJointPositions.SLAM_L2),
