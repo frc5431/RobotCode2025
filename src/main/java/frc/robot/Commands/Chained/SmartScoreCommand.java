@@ -37,8 +37,7 @@ public class SmartScoreCommand extends SequentialCommandGroup {
 												|| ManipJointPositions.PROCESSOR.position.lte(
 														Rotations.of(manipJoint.getMotorPosition()))),
 								manipulator.setManipulatorCommand(ManipulatorModes.SLOWSCORE),
-								new WaitCommand(0.2).andThen(
-										elevator.runElevatorCommand(ElevatorPositions.CORAL_L2)),
+								elevator.runElevatorCommand(ElevatorPositions.CORAL_L2),
 								new WaitCommand(0.2),
 								manipJoint.runManipJointCommand(ManipJointPositions.CORAL_L2),
 								manipulator.setManipulatorCommand(ManipulatorModes.IDLE)),
