@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "StowPreset"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "FarSide"
@@ -19,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SmartScore"
           }
         },
         {
@@ -35,15 +29,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ElevatorFeed"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StowPreset"
           }
         },
         {
@@ -55,7 +49,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "SmartScore"
           }
         },
         {

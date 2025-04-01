@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -60,7 +61,6 @@ public class RobotContainer {
 	private final Systems systems = new Systems();
 	private final RobotMechanism robotMechanism = new RobotMechanism();
 	private final Intake intake = systems.getIntake();
-	private final IntakePivot intakePivot = systems.getIntakePivot();
 	private final Feeder feeder = systems.getFeeder();
 	private final Elevator elevator = systems.getElevator();
 	private final ManipJoint manipJoint = systems.getManipJoint();
@@ -79,14 +79,14 @@ public class RobotContainer {
 		Comp, TEST, States, NONE
 	}
 
-	AutoFilters autoFilter = AutoFilters.Comp;
+	AutoFilters autoFilter = AutoFilters.NONE;
 	// Triggers
 
 	// Automated Triggers
 
 	// Game Status
 	private @Getter Trigger isEndgame = new Trigger(
-			() -> DriverStation.getMatchTime() <= 5 && DriverStation.isTeleop());
+			() -> DriverStation.getMatchTime() <= 5);
 	private @Getter Trigger isAutonEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
 	private @Getter Trigger isAutonDisabled = new Trigger(
 			() -> DriverStation.isAutonomous() && DriverStation.isDisabled());
@@ -143,10 +143,10 @@ public class RobotContainer {
 	private Trigger processorPreset = operator.y();
 
 	// Intake Controls
-	private Trigger reverseFeed = operator.b();
+	private Trigger groundAlgae = operator.b();
 	private Trigger smartScore = operator.rightBumper();
 
-	private Trigger intakeCoral = operator.leftTrigger(.5);
+	private Trigger intakeAlgea = operator.leftTrigger(.5);
 	private Trigger scoreCoral = operator.rightTrigger(.5);
 
 	public RobotContainer() {
@@ -158,7 +158,7 @@ public class RobotContainer {
 		configDriverFacingAngle();
 
 		// TODO SWAP
-		poseEstimator.setAlliance(Alliance.Blue);
+		poseEstimator.setAlliance(Field.isBlue() ? Alliance.Blue : Alliance.Red);
 
 		autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
 				(stream) -> autoFilter != AutoFilters.NONE
@@ -166,6 +166,7 @@ public class RobotContainer {
 						: stream);
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
+		SmartDashboard.putBoolean("Alliance", Field.isBlue());
 
 	}
 
@@ -173,7 +174,6 @@ public class RobotContainer {
 		drivebase.periodic();
 		elevator.periodic();
 		manipJoint.periodic();
-		intakePivot.periodic();
 		candle.periodic();
 		poseEstimator.periodic();
 	}
@@ -235,30 +235,28 @@ public class RobotContainer {
 
 		driverIntake.whileTrue(new ParallelCommandGroup(
 				intake.runIntakeCommand(IntakeModes.INTAKE),
-				feeder.runFeederCommand(FeederModes.FEED),
-				manipulator.runManipulatorCommand(ManipulatorModes.FEED)).asProxy()
+				feeder.runFeederCommand(FeederModes.FEED)).asProxy()
 						.withName("Driver Intake"));
 
-		driverOutake.whileTrue(new EjectCoralCommand(intake, feeder, manipulator).asProxy()
-				.withName("Driver Intake"));
+		driverOutake.whileTrue(new ParallelCommandGroup(
+				intake.runIntakeCommand(IntakeModes.OUTTAKE),
+				feeder.runFeederCommand(FeederModes.REVERSE)).asProxy()
+						.withName("Driver Intake"));
 
 	}
 
 	private void configureOperatorControls() {
 
 		// Intake Controls
-		intakeCoral.whileTrue(new ParallelCommandGroup(
-				intake.runIntakeCommand(IntakeModes.INTAKE),
-				feeder.runFeederCommand(FeederModes.FEED),
-				manipulator.runManipulatorCommand(ManipulatorModes.FEED)).asProxy()
-						.withName("Intake System"));
+		intakeAlgea.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.FEED)
+				.withName("Intake Algea"));
 
 		scoreCoral.whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
 				.withName("Score Coral"));
 
-		reverseFeed.whileTrue(new EjectCoralCommand(intake, feeder, manipulator)
-				.withName("Coral Outake"));
-
+		groundAlgae.onTrue(
+				new SmartPresetCommand(ControllerConstants.GroundAlgeaPosition, elevator, manipJoint)
+						.withName("Ground Algea"));
 		// Pivot Controls - changed for shot
 		// lebronShot.onTrue(
 		// intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
@@ -301,7 +299,7 @@ public class RobotContainer {
 				new ElevatorLebron(elevator, manipulator, manipJoint)
 						.withName("Take The Shot"));
 
-		pickCoral.whileTrue(
+		pickCoral.onTrue(
 				new PickCoralCommand(elevator, manipJoint, manipulator)
 						.withName("Pick Coarl"));
 
@@ -367,12 +365,10 @@ public class RobotContainer {
 				.withName("Intake Default Command"));
 		feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE)
 				.withName("Feeder Default Command"));
-		manipulator.setDefaultCommand(manipulator.runManipulatorCommand(ManipulatorModes.IDLE)
+		manipulator.setDefaultCommand(manipulator.smartStallCommand()
 				.withName("Manipulator Default Command"));
 		candle.setDefaultCommand(candle.changeCANdle(AnimationTypes.SPIRIT).withName("CANDle Default Command"));
-
 		// Subsystem Status
-		hasCoral.onTrue(candle.changeCANdle(AnimationTypes.INTAKE).withName("CANdle Coral"));
 		isScoring.whileTrue(candle.changeCANdle(AnimationTypes.SCORE).withName("CANdle Score"));
 		// LED Status
 		isEndgame.whileTrue(candle.changeCANdle(AnimationTypes.STRESS_TIME).withName("LED Endgame"));
@@ -380,10 +376,6 @@ public class RobotContainer {
 				candle.changeCANdle(
 						(Field.isRed() ? AnimationTypes.BLINK_RED : AnimationTypes.BLINK_BLUE))
 						.withName("LED Auton Alliance"));
-
-		elevatorTarget
-				.onTrue(candle.changeCANdle(AnimationTypes.ELEVATOR_GOAL).withTimeout(0.5)
-						.withName("CANDle Goal"));
 
 		isAutonDisabled.whileTrue(
 				candle.changeCANdle(AnimationTypes.Rainbow).ignoringDisable(true)
@@ -414,36 +406,22 @@ public class RobotContainer {
 	}
 
 	public void setCommandMappings() {
-		NamedCommands.registerCommand("EjectCoral",
-				new EjectCoralCommand(intake, feeder, manipulator));
-		NamedCommands.registerCommand("ElevatorFeed",
-				new ParallelCommandGroup(new ElevatorFeedCommand(elevator, manipJoint),
-						intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)));
 		NamedCommands.registerCommand("L2Preset",
 				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
 				new SmartPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L4Preset",
 				new SmartPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint));
+		NamedCommands.registerCommand("LoliPreset",
+				new SmartPresetCommand(ControllerConstants.LolipopPosition, elevator, manipJoint));
 		NamedCommands.registerCommand("StowPreset",
-				new ElevatorStowCommand(elevator, manipJoint).withTimeout(0.5));
-		NamedCommands.registerCommand("IntakeCoral",
-				new ParallelCommandGroup(
-						intake.runIntakeCommand(IntakeModes.INTAKE),
-						feeder.runFeederCommand(FeederModes.FEED),
-						manipulator.runManipulatorCommand(ManipulatorModes.FEED)));
+				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
+		NamedCommands.registerCommand("IntakeLolipop",
+				manipulator.runManipulatorCommand(ManipulatorModes.FEED));
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
-		NamedCommands.registerCommand("ScoreL4",
-				manipulator.runManipulatorCommand(ManipulatorModes.SCORE).withTimeout(0.5)
-						.andThen(new ParallelCommandGroup(
-								new SmartPresetCommand(
-										ControllerConstants.EjectL4Position,
-										elevator, manipJoint)
-												.alongWith(manipulator
-														.runManipulatorCommand(
-																ManipulatorModes.SCORE)))
-																		.withTimeout(1)));
+		NamedCommands.registerCommand("SmartScore",
+				new SmartScoreCommand(elevator, manipJoint, manipulator, candle));
 
 	}
 }

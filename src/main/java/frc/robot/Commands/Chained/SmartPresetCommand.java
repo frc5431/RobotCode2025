@@ -20,7 +20,7 @@ public class SmartPresetCommand extends SequentialCommandGroup {
 								new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorConstants.rise,
 										ElevatorConstants.error))),
 						new PrintCommand("********************************\nRise Skipped\n***************************"),
-						(() -> (elevator.isSwingSafe() && manipJoint.isSwingSafe()))),
+						(() -> !(elevator.isSwingSafe() && manipJoint.isSwingSafe()))),
 				// rises to RISE so manip can safely move
 
 				// manip runs to stow position only if the elevator is at the setpoint goal
@@ -34,7 +34,7 @@ public class SmartPresetCommand extends SequentialCommandGroup {
 					new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(position.getJointMode().position,
 					ManipJointConstants.error))),
 						new PrintCommand("*********************\nSwing Out Skipped\n************************"),
-						(() -> (position.getElevatorMode().rotation.lte(ElevatorConstants.rise) && elevator.isSwingSafe()))),
+						(() -> !(manipJoint.isSwingSafe()))),
 			
 				// since its sequential, this lowers once the manip is
 				elevator.runElevatorCommand(position.getElevatorMode()));

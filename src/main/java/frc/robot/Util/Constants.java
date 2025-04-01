@@ -58,6 +58,9 @@ public final class Constants {
         public static final PresetPosition ScoreProcessorPosition = new PresetPosition(ElevatorPositions.PROCESSOR,
                 ManipJointPositions.PROCESSOR);
 
+        public static final PresetPosition GroundAlgeaPosition = new PresetPosition(ElevatorPositions.GROUND_ALGEA,
+                ManipJointPositions.GROUND_ALGEA);
+
         public static final PresetPosition LolipopPosition = new PresetPosition(ElevatorPositions.LOLIPOP,
                 ManipJointPositions.LOLIPOP);
 
@@ -168,7 +171,7 @@ public final class Constants {
         public static final AngularVelocity mm_error = Units.RPM.of(0);
 
         public enum ManipulatorModes {
-            IDLE(idleSpeed, 0), SCORE(scoreSpeed, -1), FEED(feedSpeed, 1), MANUAL(feedSpeed,
+            IDLE(idleSpeed, 0), SCORE(scoreSpeed, -1), FEED(feedSpeed, 1), STALL(feedSpeed, 0), MANUAL(feedSpeed,
                     0.4), REVERSE(reverseSpeed, 0.2), SLOWSCORE(scoreSpeed, -0.3);
 
             public AngularVelocity speed;
@@ -235,26 +238,29 @@ public final class Constants {
         public static final Angle tightError = Units.Rotation.of(.1);
         public static final Angle superTightError = Units.Rotation.of(.05);
 
-        public static final Angle lolipop = Units.Rotation.of(0.2);
+        public static final Angle lolipop = Units.Rotation.of(0.1);
 
         public static final Angle coralL1 = Units.Rotation.of(0.5);
-        public static final Angle processor = Units.Rotation.of(0.45);
+        public static final Angle processor = Units.Rotation.of(0.7);
+        public static final Angle groundAlgae = Units.Rotation.of(0.4);
+
 
         public static final Angle stow = Units.Rotation.of(0.7);
         public static final Angle feed = Units.Rotation.of(2.12);
         public static final Angle pickup = Units.Rotation.of(1.7);
 
-        public static final Angle cleanL3 = Units.Rotation.of(2.2);
+        public static final Angle cleanL3 = Units.Rotation.of(3.5);
 
-        public static final Angle cleanl2 = Units.Rotation.of(2.12);
-        public static final Angle coralL2 = Units.Rotation.of(0.7);
+        public static final Angle cleanl2 = Units.Rotation.of(2.5);
+        public static final Angle coralL2 = Units.Rotation.of(0.8);
         public static final Angle slamL3 = Units.Rotation.of(1.2);
-        public static final Angle coralL3 = Units.Rotation.of(1.8);
+        public static final Angle coralL3 = Units.Rotation.of(2.3);
         // 2.7
         // lower this to l3 increase speed of feeding
         public static final Angle safeSwing = Units.Rotation.of(2.5);
-        public static final Angle rise = Units.Rotation.of(3);
+        public static final Angle rise = Units.Rotation.of(2.5);
 
+        public static final Angle slaml4 = Units.Rotation.of(4);
         public static final Angle coralL4 = Units.Rotation.of(4.65);
         public static final Angle lebronShoot = Units.Rotation.of(3.65);
         public static final Angle eject = Units.Rotation.of(4.7);
@@ -262,9 +268,9 @@ public final class Constants {
         public static final Angle coralStation = Units.Rotation.of(3);
 
         public enum ElevatorPositions {
-            STOW(stow), FEED(feed), PROCESSOR(processor), LOLIPOP(lolipop), PICKUP(pickup), CORAL_L1(coralL1), CLEAN_L2(
+            STOW(stow), FEED(feed), PROCESSOR(processor), GROUND_ALGEA(groundAlgae), LOLIPOP(lolipop), PICKUP(pickup), CORAL_L1(coralL1), CLEAN_L2(
                     cleanl2), CLEAN_L3(cleanL3), SLAM_L3(slamL3), CORAL_L2(coralL2), CORAL_L3(
-                            coralL3), CORAL_L4(coralL4), SAFESWING(safeSwing), RISE(rise), EJECT(eject), LEBRON_SHOOT(lebronShoot);
+                            coralL3), CORAL_L4(coralL4), SLAM_L4(slaml4), SAFESWING(safeSwing), RISE(rise), EJECT(eject), LEBRON_SHOOT(lebronShoot);
 
             public Angle rotation;
 
@@ -326,7 +332,7 @@ public final class Constants {
 
         public static final PathConstraints constraints = new PathConstraints(0.75, 1, 0.5 * Math.PI, 0.5 * Math.PI);
         public static final PPHolonomicDriveController alignController = new PPHolonomicDriveController(
-                new PIDConstants(0.01, 0, 0.6),
+                new PIDConstants(0.008, 0, 0.2),
                 new PIDConstants(0.5, 0, 0.0));
         public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         public static final Distance robotLength = Units.Inches.of(28);
@@ -336,10 +342,10 @@ public final class Constants {
         public static final LinearVelocity FaceTargetAVelocityDeadzone = TunerConstants.kSpeedAt12Volts.times(0.05);
 
         public static final Rotation2d rotationTolerance = Rotation2d.fromDegrees(5.0);
-        public static final Distance positionTolerance = Units.Inches.of(1);
+        public static final Distance positionTolerance = Units.Inches.of(2);
         public static final LinearVelocity speedTolerance = Units.InchesPerSecond.of(10);
         public static final Time autoAlignPredict = Units.Seconds.of(0.0);
-        public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(1);
+        public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(0.25);
         public static final Time autoAlignAdjustTimeout = Units.Seconds.of(1);
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
@@ -424,7 +430,6 @@ public final class Constants {
         public enum ManipJointStates {
             STOWED, FEED, HUMAN, L1, L2, L3, L4
         }
-
         public static final boolean attached = true;
         public static final int id = 23;
         public static final double gearRatio = 1 / 1;
@@ -435,32 +440,37 @@ public final class Constants {
         public static final Angle offset = Units.Rotation.of(0);
         public static final FeedbackSensor sensorType = FeedbackSensor.kAlternateOrExternalEncoder;
         public static final double maxForwardOutput = 1;
-        public static final double maxReverseOutput = -0.08;
+        public static final double maxReverseOutput = -0.1;
+        //-0.08
+
 
         // calculate WITH coral,
         // 0.15 output units
         public static final double s = 0.3; // 0.15 holds arm at 90 degree position, when gravity's pull is strongest
 
         public static final double p = 2;
-        public static final double i = 0.001;
+        public static final double i = 0.00;
         public static final double d = 1.7;
         public static final double maxIAccum = 0.005;
 
         public static final Angle eject = Units.Rotation.of(-0.8);
         public static final Angle stow = Units.Rotations.of(-2);
         public static final Angle scoreL1 = Units.Rotations.of(-3.5);
-        public static final Angle scoreL2 = Units.Rotations.of(-3.2);
-        public static final Angle slamL2 = Units.Rotations.of(-3.6);
-        public static final Angle scoreL3 = Units.Rotations.of(-1.5);
-        public static final Angle slamL3 = Units.Rotations.of(-4);
+        public static final Angle scoreL2 = Units.Rotations.of(-3);
+        public static final Angle slamL2 = Units.Rotations.of(-5);
+        public static final Angle scoreL3 = Units.Rotations.of(-3);
+        public static final Angle slamL3 = Units.Rotations.of(-5);
         public static @Setter Angle adjustAngle = Units.Rotations.of(-2);
-        public static final Angle lolipop = Units.Rotations.of(-7);
+        public static final Angle lolipop = Units.Rotations.of(-7.5);
 
-        public static final Angle cleanAlgea = Units.Rotations.of(-2.5);
-        public static final Angle processorAngle = Units.Rotations.of(-7.6);
+        public static final Angle cleanAlgea = Units.Rotations.of(-7);
+        public static final Angle groundAlgae = Units.Rotations.of(-8);
+        public static final Angle processorAngle = Units.Rotations.of(-6);
         public static final Angle safeSwing = Units.Rotations.of(-11);
-        public static final Angle prefeed = Units.Rotations.of(-14);
-        public static final Angle feed = Units.Rotations.of(-13);
+        public static final Angle prefeed = Units.Rotations.of(-13);
+        public static final Angle feed = Units.Rotations.of(-14);
+        public static final Angle postFeed = Units.Rotations.of(-14);
+
         public static final Angle scoreL4 = Units.Rotations.of(-3.7);
         public static final Angle slamL4 = Units.Rotations.of(-5);
 
@@ -469,7 +479,7 @@ public final class Constants {
         public static final Angle tightError = Units.Rotations.of(0.1);
 
         public enum ManipJointPositions {
-            STOW(stow), EJECT(eject), PREEFEED(prefeed), LOLIPOP(lolipop), FEED(feed), CLEAN_L2(cleanAlgea), CLEAN_L3(
+            STOW(stow), EJECT(eject), PREEFEED(prefeed), LOLIPOP(lolipop), GROUND_ALGEA(groundAlgae), FEED(feed), POST_FEED(postFeed), CLEAN_L2(cleanAlgea), CLEAN_L3(
                     cleanAlgea), PROCESSOR(processorAngle), CORAL_L1(scoreL1), CORAL_L2(scoreL2), SLAM_L2(slamL2), CORAL_L3(
                             scoreL3), SLAM_L3(slamL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4), STRAIGHT_UP(straightUp);
 

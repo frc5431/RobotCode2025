@@ -129,9 +129,9 @@ public class PoseEstimator extends SubsystemBase {
       sawTag = true;
       // var pose2d = visionPose.estimatedPose.toPose2d();
       var pose2d = vision.getBestLimelight().getRawPose3d().toPose2d();
-      if (originPosition != kBlueAllianceWallRightSide) {
-        pose2d = flipAlliance(pose2d);
-      }
+      // if (originPosition != kBlueAllianceWallRightSide) {
+      //   pose2d = flipAlliance(pose2d);
+      // }
 
       // TODO: Need to filter out the poses
       // TODO: Kill Theta STDs
@@ -156,7 +156,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   public void resetRotablion() {
-    poseEstimator.resetRotation(Field.isBlue() ? Rotation2d.kZero : Rotation2d.k180deg);
+    poseEstimator.resetRotation(Rotation2d.kZero);
   }
 
   /**

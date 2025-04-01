@@ -258,7 +258,7 @@ public class AlignToReef {
         if (alliance.isEmpty()) {
             reefPoseList = allReefTagPoses;
         } else{
-            reefPoseList = alliance.get() == Alliance.Blue ? 
+            reefPoseList = Field.isBlue() ? 
                 blueReefTagPoses :
                 redReefTagPoses;
         }

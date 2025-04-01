@@ -31,7 +31,7 @@ public class Field {
 	private @Getter static final Distance halfWidth = fieldWidth.div(2);
 
 	public static final Distance startingLineX = Units.Inch.of(299.438); // Measured from the inside of starting
-																			// line
+	// line
 
 	public static class Processor {
 		public static final Pose2d centerFace = new Pose2d(Units.Inches.of(235.726), Units.Inches.of(0),
@@ -62,9 +62,12 @@ public class Field {
 				Rotation2d.fromDegrees(144.011 - 90));
 	}
 
-	public static final int[] reefAprilTags = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
-	public static final int[] redReefAprilTags = { 6, 7, 8, 9, 10, 11 };
-	public static final int[] blueReefAprilTags = { 17, 18, 19, 20, 21, 22 };
+	public static final int[] reefAprilTags = {
+			6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
+	public static final int[] redReefAprilTags = {
+			6, 7, 8, 9, 10, 11 };
+	public static final int[] blueReefAprilTags = {
+			17, 18, 19, 20, 21, 22 };
 
 	public enum FieldBranch {
 		A(BranchSide.LEFT, ReefSide.ONE), B(BranchSide.RIGHT, ReefSide.ONE), C(BranchSide.LEFT, ReefSide.TWO), D(
@@ -88,9 +91,9 @@ public class Field {
 	}
 
 	public enum BranchSide {
-		LEFT(new Translation2d(Inches.of(-6.25), Inches.of(15))), 
-		RIGHT(new Translation2d(Inches.of(6.25), Inches.of(15))),
-		MIDDLE(new Translation2d(Inches.of(0), Inches.of(20)));
+		LEFT(new Translation2d(Inches.of(-6.25), Inches.of(15))), RIGHT(
+				new Translation2d(Inches.of(6.25), Inches.of(15))), MIDDLE(
+						new Translation2d(Inches.of(0), Inches.of(20)));
 
 		public Translation2d tagOffset;
 
@@ -147,15 +150,15 @@ public class Field {
 		public static final Translation2d center = new Translation2d(Units.Inches.of(176.746),
 				Units.Inches.of(158.501));
 		public static final Distance faceToZoneLine = Units.Inches.of(12); // Side of the reef to the inside of
-																			// the reef zone line
+		// the reef zone line
 
 		public static final Pose2d[] centerFaces = new Pose2d[6]; // Starting facing the driver station in
-																	// clockwise order
+		// clockwise order
 		public static final List<Map<ReefHeight, Pose3d>> branchPositions = new ArrayList<>(); // Starting at
-																								// the right
-																								// branch facing
-																								// the driver
-																								// station in
+		// the right
+		// branch facing
+		// the driver
+		// station in
 		// clockwise
 
 		static {
@@ -293,13 +296,17 @@ public class Field {
 
 	/** Returns {@code true} if the robot is on the blue alliance. */
 	public static boolean isBlue() {
-		//TODO ADD NULL CHECKING
-		return DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+		// TODO ADD NULL CHECKING
+		return !isRed();
 	}
 
 	/** Returns {@code true} if the robot is on the red alliance. */
 	public static boolean isRed() {
-		return !isBlue();
+		var alliance = DriverStation.getAlliance();
+		if (alliance.isPresent()) {
+			return alliance.get() == DriverStation.Alliance.Red;
+		}
+		return false;
 	}
 
 	public @Getter static final Trigger red = new Trigger(() -> isRed());

@@ -15,10 +15,10 @@ public class PickCoralCommand extends SequentialCommandGroup {
     
     public PickCoralCommand(Elevator elevator, ManipJoint manipJoint, Manipulator manipulator){
         addCommands(
-            manipJoint.runManipJointCommand(ManipJointPositions.PREEFEED),
+            manipJoint.runManipJointCommand(ManipJointPositions.POST_FEED),
             manipulator.setManipulatorCommand(ManipulatorModes.FEED),
             elevator.runElevatorCommand(ElevatorPositions.PICKUP),
-            new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorPositions.PICKUP.rotation, ElevatorConstants.superTightError)),
+
             new WaitCommand(0.4),
             elevator.runElevatorCommand(ElevatorPositions.FEED)
         );

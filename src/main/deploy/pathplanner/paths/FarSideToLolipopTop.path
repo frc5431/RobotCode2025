@@ -8,48 +8,92 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.566356855456744,
-        "y": 4.767265292663013
+        "x": 5.221365634078655,
+        "y": 5.3742573547273995
       },
       "isLocked": false,
       "linkedName": "LeftOutRightPipeEnd"
     },
     {
       "anchor": {
-        "x": 3.8360655737704916,
-        "y": 6.362602459016394
+        "x": 4.82625,
+        "y": 6.150499999999999
       },
       "prevControl": {
-        "x": 4.690297677537591,
-        "y": 6.232380934083541
+        "x": 5.089499999999999,
+        "y": 5.9944999999999995
       },
       "nextControl": {
-        "x": 3.204615244224574,
-        "y": 6.45886250879701
+        "x": 4.2767428548176625,
+        "y": 6.4761338638117545
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8221311475409834,
-        "y": 5.83514344262295
+        "x": 2.886,
+        "y": 5.7215
       },
       "prevControl": {
-        "x": 3.0428568481034066,
-        "y": 6.344326245331607
+        "x": 3.3503024142218236,
+        "y": 5.7215
+      },
+      "nextControl": {
+        "x": 2.636,
+        "y": 5.7215
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2035,
+        "y": 5.7410000000000005
+      },
+      "prevControl": {
+        "x": 2.760368852459018,
+        "y": 5.695606557377051
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "LolipopTop"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.8398340248962612,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeLolipop",
+      "waypointRelativePos": 0.7771712158808939,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeLolipop"
+        }
+      }
+    },
+    {
+      "name": "LoliPreset",
+      "waypointRelativePos": 1.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "LoliPreset"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 1.0,
     "maxAcceleration": 2.5,
     "maxAngularVelocity": 400.0,
     "maxAngularAcceleration": 540.0,
@@ -66,5 +110,5 @@
     "velocity": 0,
     "rotation": 59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

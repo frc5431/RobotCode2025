@@ -3,6 +3,7 @@ package frc.robot.Commands.Chained;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
@@ -21,15 +22,19 @@ public class ElevatorFeedCommand extends SequentialCommandGroup {
 
 		addCommands(
 				new ConditionalCommand(
-						new PrintCommand("Rise Skipped"),
+					new PrintCommand("********************************\nRise Skipped\n***************************"),
+					new SequentialCommandGroup(
 						elevator.runElevatorCommand(ElevatorPositions.SAFESWING),
+						new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorConstants.safeSwing,
+						ElevatorConstants.error))),
 						() -> elevator.isSwingSafe()),
-				new WaitUntilCommand(() -> elevator.getPositionSetpointGoal(ElevatorConstants.safeSwing,
-						ElevatorConstants.error)),
+	
 				elevator.runElevatorCommand(ElevatorPositions.FEED),
-				manipJoint.runManipJointCommand(ManipJointPositions.FEED),
-				new WaitUntilCommand(() -> manipJoint.getPositionSetpointGoal(ManipJointConstants.feed,
-						ManipJointConstants.error)));
+				manipJoint.runManipJointCommand(ManipJointPositions.PREEFEED),
+				new WaitUntilCommand(() -> Math.abs(manipJoint.getMotorPosition()) >= 13.0),
+				manipJoint.runManipJointCommand(ManipJointPositions.FEED)
+
+				);
 
 		addRequirements(elevator, manipJoint);
 	}

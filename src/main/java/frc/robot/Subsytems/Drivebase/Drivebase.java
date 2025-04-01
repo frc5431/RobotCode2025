@@ -20,6 +20,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -62,6 +63,8 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     // TODO: GIVE DRIVER DPAD ALIGNMENT
 
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
+
+    private @Getter double driverFOCInverter = (Field.isBlue()) ? 1 : -1;
 
     private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
             .withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
@@ -157,7 +160,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void resetGyro() {
-        this.resetRotation(Field.isBlue() ? Rotation2d.kZero : Rotation2d.k180deg);
+        this.resetRotation(kBlueAlliancePerspectiveRotation );
     }
 
     public Command zeroGyro() {
@@ -176,7 +179,13 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                             AutonConstants.translationPID,
                             AutonConstants.rotationPID),
                     RobotConfig.fromGUISettings(),
-                    () -> Field.isRed(),
+                    () -> {
+                        var alliance = DriverStation.getAlliance();
+                        if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                        }
+                        return false;
+                    },
                     this);
 
         } catch (Exception e) {
@@ -218,18 +227,17 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         return pose;
     }
 
-    
-    public Pose2d predict(Time inTheFuture){
-        
+    public Pose2d predict(Time inTheFuture) {
+
         Pose2d currPose = Systems.getEstimator().getCurrentPose();
 
         var cs = getChassisSpeeds();
 
         return new Pose2d(
-            currPose.getX() + cs.vxMetersPerSecond * inTheFuture.in(Seconds), 
-            currPose.getY() + cs.vyMetersPerSecond * inTheFuture.in(Seconds), 
-            currPose.getRotation().plus(Rotation2d.fromRadians(cs.omegaRadiansPerSecond * inTheFuture.in(Seconds)))
-        );
+                currPose.getX() + cs.vxMetersPerSecond * inTheFuture.in(Seconds),
+                currPose.getY() + cs.vyMetersPerSecond * inTheFuture.in(Seconds),
+                currPose.getRotation()
+                        .plus(Rotation2d.fromRadians(cs.omegaRadiansPerSecond * inTheFuture.in(Seconds))));
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -238,7 +246,8 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     public double getSpeed() {
         ChassisSpeeds robotVelocity = getChassisSpeeds();
-        return Math.sqrt(robotVelocity.vxMetersPerSecond * robotVelocity.vxMetersPerSecond + robotVelocity.vyMetersPerSecond * robotVelocity.vyMetersPerSecond);
+        return Math.sqrt(robotVelocity.vxMetersPerSecond * robotVelocity.vxMetersPerSecond
+                + robotVelocity.vyMetersPerSecond * robotVelocity.vyMetersPerSecond);
     }
 
     /**
@@ -260,6 +269,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     public void resetPoses(Pose2d pose) {
         this.resetPose(pose);
         Systems.getEstimator().setCurrentPose(pose);
+        Systems.getLayout().setOrigin(new Pose3d(pose));
     }
 
     /**
@@ -273,18 +283,15 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
-                .withSteerRequestType(SteerRequestType.Position)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withDriveRequestType(DriveRequestType.Velocity));
     }
 
-    
     public void driveAlign(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
                 .withSteerRequestType(SteerRequestType.MotionMagicExpo)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
-
-    
 
     public void driveAuton(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
@@ -329,14 +336,13 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         speedsPublisher.set(getChassisSpeeds());
 
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-            DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(
-                        allianceColor == Alliance.Red
-                                ? kRedAlliancePerspectiveRotation
-                                : kBlueAlliancePerspectiveRotation);
-                hasAppliedOperatorPerspective = true;
-            });
+            setOperatorPerspectiveForward(
+                    Field.isBlue()
+                            ? kBlueAlliancePerspectiveRotation
+                            : kRedAlliancePerspectiveRotation);
+            hasAppliedOperatorPerspective = true;
         }
+
     }
 
 }

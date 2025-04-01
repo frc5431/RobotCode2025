@@ -123,7 +123,7 @@ public class ManipJoint extends REVMechanism {
 	}
 
 	public void runVoltage(double rate) {
-		setPercentOutput((-Systems.getOperator().getLeftY() > 0) ? -Systems.getOperator().getLeftY() : -Systems.getOperator().getLeftY() * 0.25
+		setPercentOutput((-Systems.getOperator().getLeftY() > 0) ? -Systems.getOperator().getLeftY() * 0.5 : -Systems.getOperator().getLeftY() * 0.25
 		);
 
 		ManipJointConstants.setAdjustAngle(Rotations.of(getMotorPosition()));

@@ -85,10 +85,6 @@ public class Manipulator extends REVMechanism {
 		// SmartDashboard.putNumber("Mainpulator Velocity", getMotorVelocity());
 		// SmartDashboard.putBoolean("ManipJoint Beambreak Status", hasCoral());
 
-		/* Has Algae = isStalling */
-		if (isStalling(.5) && ManipulatorConstants.checkAlgaeStall) {
-			setPercentOutput(.02);
-		}
 	}
 
 	protected void stop() {
@@ -110,19 +106,31 @@ public class Manipulator extends REVMechanism {
         }
     }
 
+		public void runEnum(ManipulatorModes manipulatorModes) {
+			this.mode = manipulatorModes;
+
+					setPercentOutput(manipulatorModes.output);
+			
+	}
+
     public Command runManipulatorCommand(ManipulatorModes manipulatorModes) {
-        return new RunCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
+        return new RunCommand(() -> this.runEnum(manipulatorModes), this)
                 .withName("Intake.runEnum");
     }
 
+		public Command smartStallCommand() {
+			return new RunCommand((this.isStalling(0.5)) ? () -> this.runEnum(ManipulatorModes.STALL) : () -> this.runEnum(ManipulatorModes.IDLE), this)
+							.withName("Intake.runEnum");
+	}
+
 	public Command setManipulatorCommand(ManipulatorModes manipulatorModes) {
-        return new InstantCommand(() -> this.runEnum(manipulatorModes, IntakeConstants.useRpm), this)
+        return new InstantCommand(() -> this.runEnum(manipulatorModes), this)
                 .withName("Intake.runEnum");
     }
 	
 
     public Command runManipulatorCommand(ManipulatorModes manipulatorModes, boolean rpm) {
-        return new RunCommand(() -> this.runEnum(manipulatorModes, rpm), this)
+        return new RunCommand(() -> this.runEnum(manipulatorModes), this)
                 .withName("Intake.runEnum");
     }
 

@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Subsytems.Drivebase.Drivebase;
@@ -87,8 +88,8 @@ public class PositionPIDCommand extends Command {
                 .calculateRobotRelativeSpeeds(
                         drivebase.getRobotPose(), goalState));
 
-        xErrLogger.accept(drivebase.getRobotPose().getX() - goalPose.getX());
-        yErrLogger.accept(drivebase.getRobotPose().getY() - goalPose.getY());
+        SmartDashboard.putNumber("x align err ", drivebase.getRobotPose().getX() - goalPose.getX());
+        SmartDashboard.putNumber("y align err ", drivebase.getRobotPose().getY() - goalPose.getY());
     }
 
     @Override

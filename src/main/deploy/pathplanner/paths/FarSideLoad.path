@@ -65,7 +65,7 @@
       }
     },
     {
-      "name": "ElevatorFeed",
+      "name": "",
       "waypointRelativePos": 1.2099932478055322,
       "endWaypointRelativePos": null,
       "command": null
