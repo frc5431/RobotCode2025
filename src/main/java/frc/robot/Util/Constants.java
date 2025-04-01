@@ -1,6 +1,7 @@
 package frc.robot.Util;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -82,6 +84,28 @@ public final class Constants {
         // The PID values from last year
         public static final PIDConstants translationPID = new PIDConstants(1.6, 0, 0.1);
         public static final PIDConstants rotationPID = new PIDConstants(2, 0, .0);
+
+        // TODO: Playing with these. Need to clean up
+        public static final double PATH_THETA_kP = 5;
+        public static final double PATH_THETA_kI = 0.01;
+        public static final double PATH_THETA_kD = 0.0;
+
+        public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(Math.PI, 2 / Math.PI);
+        public static final double THETA_kP = 6;
+        public static final double THETA_kI = 0.02;
+        public static final double THETA_kD = 0.0;
+
+        public static final double D_kP = 1;
+        public static final double D_kI = 0.02;
+        public static final double D_kD = 0;
+
+        public static final double TRANSLATION_TOLERANCE = 1;
+        public static final double THETA_TOLERANCE = 0.035; // Radians
+
+        public static final double reefAproach = 1;
+        public static final double reefScoreDist = 0.2;
+        public static final double rightReefoffset = 0.5;
+        public static final double leftReefoffset = -0.5;
     }
 
     public static class IntakeConstants {
@@ -350,6 +374,7 @@ public final class Constants {
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = RotationsPerSecond.of(0.5);
+        public static final LinearVelocity AutonMaxVelocity = MetersPerSecond.of(5);
 
     }
 
