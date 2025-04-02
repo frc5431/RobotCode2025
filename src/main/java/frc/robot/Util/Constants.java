@@ -108,6 +108,8 @@ public final class Constants {
         public static final double reefScoreDist = 0.2;
         public static final double rightReefoffset = 0.5;
         public static final double leftReefoffset = -0.5;
+
+        public static final double maxSpeedAlign = 0.5;
     }
 
     public static class IntakeConstants {

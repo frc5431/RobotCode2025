@@ -8,6 +8,7 @@ import static frc.robot.Util.Constants.AutonConstants.D_kI;
 import static frc.robot.Util.Constants.AutonConstants.D_kP;
 import static frc.robot.Util.Constants.AutonConstants.TRANSLATION_TOLERANCE;
 import static frc.robot.Util.Constants.AutonConstants.THETA_TOLERANCE;
+import static frc.robot.Util.Constants.AutonConstants.maxSpeedAlign;
 import static frc.robot.Util.Constants.DrivebaseConstants.AutonMaxAngularRate;
 import static frc.robot.Util.Constants.DrivebaseConstants.AutonMaxVelocity;
 import static frc.robot.Util.Constants.VisionConstants.FIELD_WIDTH_METERS;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
+import frc.robot.Util.Field;
 
 /**
  * Command to drive to a pose.
@@ -56,6 +58,7 @@ public class DriveToPoseCommand extends Command {
   private final Supplier<Pose2d> poseProvider;
   private final Pose2d goalPose;
   private final int turnFirst;
+  private int speedDirection;
 
   public DriveToPoseCommand(
         Drivebase drivebase,
@@ -104,6 +107,8 @@ public class DriveToPoseCommand extends Command {
 
     xController.setGoal(pose.getX());
     yController.setGoal(pose.getY());  
+
+    speedDirection = Field.isRed() ? -1 : 1;
   }
 
   public boolean atGoal() {
@@ -194,8 +199,8 @@ public class DriveToPoseCommand extends Command {
       }
     }
 
-    double max_speed = 0.5;
-    drive(Math.min(Math.max(-xSpeed, -max_speed), max_speed), Math.min(Math.max(-ySpeed, -max_speed), max_speed), omegaSpeed);
+    double max_speed = maxSpeedAlign;
+    drive(speedDirection * Math.min(Math.max(xSpeed, -max_speed), max_speed), speedDirection * Math.min(Math.max(ySpeed, -max_speed), max_speed), omegaSpeed);
     
     SmartDashboard.putNumber("ZZ_X_diff", xSpeed);
     SmartDashboard.putNumber("ZZ_y_diff", ySpeed);
