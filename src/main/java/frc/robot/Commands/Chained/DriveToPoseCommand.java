@@ -49,8 +49,8 @@ public class DriveToPoseCommand extends Command {
   private final ProfiledPIDController dController;
   private final ProfiledPIDController thetaController;
 
-  private final ProfiledPIDController xController;
-  private final ProfiledPIDController yController;
+  // private final ProfiledPIDController xController;
+  // private final ProfiledPIDController yController;
 
   private Drivebase drivebase = Systems.getDrivebase();
   private final Supplier<Pose2d> poseProvider;
@@ -85,10 +85,10 @@ public class DriveToPoseCommand extends Command {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(THETA_TOLERANCE);
 
-    xController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
-    xController.setTolerance(TRANSLATION_TOLERANCE);
-    yController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
-    yController.setTolerance(TRANSLATION_TOLERANCE);
+    // xController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
+    // xController.setTolerance(TRANSLATION_TOLERANCE);
+    // yController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
+    // yController.setTolerance(TRANSLATION_TOLERANCE);
 
     addRequirements(drivebase);
   }
@@ -102,8 +102,8 @@ public class DriveToPoseCommand extends Command {
     thetaController.setGoal(pose.getRotation().getRadians());
     dController.setGoal(0.0);
 
-    xController.setGoal(pose.getX());
-    yController.setGoal(pose.getY());  
+    // xController.setGoal(pose.getX());
+    // yController.setGoal(pose.getY());  
   }
 
   public boolean atGoal() {
@@ -116,8 +116,8 @@ public class DriveToPoseCommand extends Command {
     thetaController.reset(robotPose.getRotation().getRadians());
     dController.reset(Math.sqrt(Math.pow(goalPose.getX() - robotPose.getX(), 2) + Math.pow(goalPose.getY() - robotPose.getY(), 2)));
 
-    xController.reset(robotPose.getX());
-    yController.reset(robotPose.getY());
+    // xController.reset(robotPose.getX());
+    // yController.reset(robotPose.getY());
   }
 
   @Override
@@ -132,8 +132,6 @@ public class DriveToPoseCommand extends Command {
     var distancePower = dController.calculate(distance);
     if (dController.atGoal()) {
       distancePower = 0;
-      System.out.println("*****************");
-      System.out.println("At Distance Goal");
     }
 
     var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
@@ -151,15 +149,16 @@ public class DriveToPoseCommand extends Command {
       }
     }
 
-    // Translate teh power into the unit direction for x and y
+    // Translate the power into the unit direction for x and y
     double xSpeed = distancePower * x_diff;
     double ySpeed = distancePower * y_diff;
 
 
     drive(xSpeed, ySpeed, omegaSpeed);
 
-    SmartDashboard.putNumber("ZZ_X_Speed", x_diff);
-    SmartDashboard.putNumber("ZZ_y_speed", y_diff);
+    SmartDashboard.putNumber("ZZ_X_diff", x_diff);
+    SmartDashboard.putNumber("ZZ_y_diff", y_diff);
+    SmartDashboard.putNumber("ZZ_diff", distance);
     SmartDashboard.putNumber("ZZ_theta_speed", omegaSpeed);
     SmartDashboard.putString("ZZ_PathFinised", "Still Running");
   }
