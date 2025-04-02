@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.346516393442624,
-        "y": 5.157838114754097
+        "x": 7.132684426229508,
+        "y": 7.567366803278689
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.561016393442623,
-        "y": 5.694088114754098
+        "x": 6.318,
+        "y": 6.76475
       },
       "isLocked": false,
-      "linkedName": "LeftOutRightPipeEnd"
+      "linkedName": "FarWallStart"
     },
     {
       "anchor": {
-        "x": 5.391749999999999,
-        "y": 6.21875
+        "x": 6.074249999999999,
+        "y": 6.599
       },
       "prevControl": {
-        "x": 5.838879967870942,
-        "y": 6.161144298617854
+        "x": 6.251026695296636,
+        "y": 6.775776695296637
       },
       "nextControl": {
-        "x": 3.8025,
-        "y": 6.423500000000001
+        "x": 5.897473304703363,
+        "y": 6.422223304703364
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5935,
-        "y": 5.96525
+        "x": 5.37225,
+        "y": 5.59475
       },
       "prevControl": {
-        "x": 3.0907500000000003,
-        "y": 5.9945
+        "x": 5.599932198649614,
+        "y": 5.698001229620174
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,48 +46,46 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.1867219917012484,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 0.7452282157676343,
+      "rotationDegrees": 50.0
+    },
+    {
+      "waypointRelativePos": 1.2331950207468714,
+      "rotationDegrees": 59.99999999999999
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StowPreset",
-      "waypointRelativePos": 0.31870357866306576,
+      "name": "L4Preset",
+      "waypointRelativePos": 0.605459057071959,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StowPreset"
+          "name": "L4Preset"
         }
       }
-    },
-    {
-      "name": "",
-      "waypointRelativePos": 1.2099932478055322,
-      "endWaypointRelativePos": null,
-      "command": null
     }
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
-    "maxAngularVelocity": 400.0,
-    "maxAngularAcceleration": 540.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 128.69824654763391
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

@@ -1,6 +1,8 @@
 package frc.robot.Util;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -95,12 +97,12 @@ public final class Constants {
         public static final double THETA_kI = 0.02;
         public static final double THETA_kD = 0.0;
 
-        public static final double D_kP = 1;
+        public static final double D_kP = 2;
         public static final double D_kI = 0.02;
         public static final double D_kD = 0;
 
-        public static final double TRANSLATION_TOLERANCE = 1;
-        public static final double THETA_TOLERANCE = 0.035; // Radians
+        public static final double TRANSLATION_TOLERANCE = 0.1;
+        public static final double THETA_TOLERANCE = 0.05; // Radians
 
         public static final double reefAproach = 1;
         public static final double reefScoreDist = 0.2;
@@ -356,8 +358,16 @@ public final class Constants {
 
         public static final PathConstraints constraints = new PathConstraints(0.75, 1, 0.5 * Math.PI, 0.5 * Math.PI);
         public static final PPHolonomicDriveController alignController = new PPHolonomicDriveController(
-                new PIDConstants(0.008, 0, 0.2),
+                new PIDConstants(0.5, 0, 0.0),
                 new PIDConstants(0.5, 0, 0.0));
+
+        public static final Rotation2d rotationTolerance = Rotation2d.fromDegrees(1);
+        public static final Distance positionTolerance = Units.Inches.of(1);
+        public static final LinearVelocity speedTolerance = Units.InchesPerSecond.of(5);
+        public static final Time autoAlignPredict = Units.Seconds.of(0.0);
+        public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(0.5);
+        public static final Time autoAlignAdjustTimeout = Units.Seconds.of(0.5);
+
         public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
         public static final Distance robotLength = Units.Inches.of(28);
         public static final AngularVelocity AngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
@@ -365,12 +375,7 @@ public final class Constants {
         public static final AngularVelocity FaceTargetAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final LinearVelocity FaceTargetAVelocityDeadzone = TunerConstants.kSpeedAt12Volts.times(0.05);
 
-        public static final Rotation2d rotationTolerance = Rotation2d.fromDegrees(5.0);
-        public static final Distance positionTolerance = Units.Inches.of(2);
-        public static final LinearVelocity speedTolerance = Units.InchesPerSecond.of(10);
-        public static final Time autoAlignPredict = Units.Seconds.of(0.0);
-        public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(0.25);
-        public static final Time autoAlignAdjustTimeout = Units.Seconds.of(1);
+  
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = RotationsPerSecond.of(0.5);
@@ -387,7 +392,7 @@ public final class Constants {
         // Pose on the opposite side of the field. Use with `relativeTo` to flip a pose
         // to the opposite alliance
         public static final Pose2d FLIPPING_POSE = new Pose2d(
-                new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS),
+                new Translation2d(Field.fieldLength.in(Meters), Field.fieldWidth.in(Meters)),
                 new Rotation2d(Math.PI));
 
         public static final String cameraName = "limelight";

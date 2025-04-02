@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Util.Field;
 import frc.robot.Util.Constants.DrivebaseConstants;
@@ -111,9 +112,11 @@ public class AlignToReef {
     public Command generateCommand(FieldBranchSide side) {
         return Commands.defer(() -> {
             var branch = getClosestBranch(side, drivebase);
+            drivebase.resetPose(Systems.getEstimator().getCurrentPose());
             desiredBranchPublisher.accept(branch);
-            Command command = getPathFromWaypoint(getWaypointFromBranch(branch));
-            command.addRequirements(drivebase);
+            Command command = new DriveToPoseCommand(drivebase, () -> Systems.getEstimator().getCurrentPose(), branch, 1);
+            // Command command = getPathFromWaypoint(getWaypointFromBranch(branch));
+            // command.addRequirements(drivebase);
             return command;
         }, Set.of());
     }
@@ -149,6 +152,8 @@ public class AlignToReef {
                 new GoalEndState(0.0, waypoint.getRotation()));
 
         path.preventFlipping = true;
+
+        drivebase.resetPose(Systems.getEstimator().getCurrentPose());
 
         return (AutoBuilder.followPath(path).andThen(
                 Commands.print("start position PID loop"),

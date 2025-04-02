@@ -3,50 +3,66 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2035,
-        "y": 5.7410000000000005
+        "x": 2.46675,
+        "y": 6.101749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.594618852459017,
-        "y": 6.192856557377051
+        "x": 2.5740000000000003,
+        "y": 6.3942499999999995
       },
       "isLocked": false,
       "linkedName": "LolipopTop"
     },
     {
       "anchor": {
-        "x": 3.2955,
-        "y": 6.12125
+        "x": 2.7689999999999997,
+        "y": 6.27725
       },
       "prevControl": {
-        "x": 2.95425,
-        "y": 6.25775
+        "x": 2.5488822250194554,
+        "y": 6.158725044241247
       },
       "nextControl": {
-        "x": 3.572366959830908,
-        "y": 6.010503216067637
+        "x": 3.0225,
+        "y": 6.413749999999999
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.9319672131147536,
-        "y": 5.295696721311476
+        "x": 3.296,
+        "y": 6.121
       },
       "prevControl": {
-        "x": 4.157003045184672,
-        "y": 5.404595179907545
+        "x": 2.9863509203753966,
+        "y": 6.24485706474657
+      },
+      "nextControl": {
+        "x": 3.528119836287008,
+        "y": 6.028153989842898
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.932,
+        "y": 5.296
+      },
+      "prevControl": {
+        "x": 3.852024493243654,
+        "y": 5.532862657080144
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "FarLoliPopScorePos"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.233195020746883,
+      "waypointRelativePos": 1.536099585062245,
       "rotationDegrees": 119.99999999999999
     }
   ],
@@ -54,21 +70,32 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4Preset",
+      "name": "StopManip",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ScoreL4"
+          "name": "StopManip"
+        }
+      }
+    },
+    {
+      "name": "L4Preset",
+      "waypointRelativePos": 1.777667493796511,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4Preset"
         }
       }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 2.5,
-    "maxAngularVelocity": 400.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 200.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false

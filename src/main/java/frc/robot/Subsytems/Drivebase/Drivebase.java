@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
@@ -160,7 +161,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void resetGyro() {
-        this.resetRotation(kBlueAlliancePerspectiveRotation );
+        this.resetRotation(kBlueAlliancePerspectiveRotation);
     }
 
     public Command zeroGyro() {
@@ -179,13 +180,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                             AutonConstants.translationPID,
                             AutonConstants.rotationPID),
                     RobotConfig.fromGUISettings(),
-                    () -> {
-                        var alliance = DriverStation.getAlliance();
-                        if (alliance.isPresent()) {
-                            return alliance.get() == DriverStation.Alliance.Red;
-                        }
-                        return false;
-                    },
+                    () -> false,
                     this);
 
         } catch (Exception e) {
@@ -267,9 +262,8 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public void resetPoses(Pose2d pose) {
-        this.resetPose(pose);
+        this.resetPose(pose);   
         Systems.getEstimator().setCurrentPose(pose);
-        Systems.getLayout().setOrigin(new Pose3d(pose));
     }
 
     /**
@@ -284,7 +278,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     public void driveAuton(ChassisSpeeds chassisSpeeds) {
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
                 .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-                .withDriveRequestType(DriveRequestType.Velocity));
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
     }
 
     public void driveAlign(ChassisSpeeds chassisSpeeds) {

@@ -91,9 +91,9 @@ public class Field {
 	}
 
 	public enum BranchSide {
-		LEFT(new Translation2d(Inches.of(-6.25), Inches.of(15))), RIGHT(
-				new Translation2d(Inches.of(6.25), Inches.of(15))), MIDDLE(
-						new Translation2d(Inches.of(0), Inches.of(20)));
+		LEFT(new Translation2d(Inches.of(-6.25), Inches.of(25))),
+		 RIGHT(new Translation2d(Inches.of(6.25), Inches.of(25))),
+				 MIDDLE(new Translation2d(Inches.of(0), Inches.of(25)));
 
 		public Translation2d tagOffset;
 
@@ -305,8 +305,9 @@ public class Field {
 		var alliance = DriverStation.getAlliance();
 		if (alliance.isPresent()) {
 			return alliance.get() == DriverStation.Alliance.Red;
-		}
+		} 
 		return false;
+		
 	}
 
 	public @Getter static final Trigger red = new Trigger(() -> isRed());

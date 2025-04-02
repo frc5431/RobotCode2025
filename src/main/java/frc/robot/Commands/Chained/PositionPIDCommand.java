@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Util.Constants.DrivebaseConstants;
 
@@ -82,7 +83,6 @@ public class PositionPIDCommand extends Command {
         goalState.pose = goalPose;
 
         endTriggerLogger.accept(endTrigger.getAsBoolean());
-
         drivebase.driveAlign(
                 alignController
                 .calculateRobotRelativeSpeeds(

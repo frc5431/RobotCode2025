@@ -75,6 +75,8 @@ public class RobotContainer {
 
 	private TitanController driver = Systems.getDriver();
 	private TitanController operator = Systems.getOperator();
+	private AlignToReef alignToReefCommandFactory = new AlignToReef(drivebase, layout);
+
 
 	private enum AutoFilters {
 		Comp, TEST, States, NONE
@@ -187,16 +189,15 @@ public class RobotContainer {
 	}
 
 	private void configureDriverControls() {
-		AlignToReef alignToReefCommandFactory = new AlignToReef(drivebase, layout);
 
 		drivebase.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivebase.applyRequest(
 						() -> drivebase.getDriverFOControl()
-								.withVelocityX(deadzone(-driver.getLeftY())
+								.withVelocityX(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftY())
 										* SwerveConstants.kSpeedAt12Volts
 												.in(MetersPerSecond))
-								.withVelocityY(deadzone(-driver.getLeftX())
+								.withVelocityY(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftX())
 										* SwerveConstants.kSpeedAt12Volts
 												.in(MetersPerSecond))
 								.withRotationalRate(
@@ -233,7 +234,7 @@ public class RobotContainer {
 		alignCenterReef.onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), alignToReefCommandFactory.getClosestBranch(FieldBranchSide.MIDDLE, drivebase), 2).withName("Running Path"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
-				.andThen(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
+				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
 				.withName("Zero Drivebase"));
 
 		driverIntake.whileTrue(new ParallelCommandGroup(
@@ -421,10 +422,16 @@ public class RobotContainer {
 				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("IntakeLolipop",
 				manipulator.runManipulatorCommand(ManipulatorModes.FEED));
+				NamedCommands.registerCommand("StopManip",
+				manipulator.runManipulatorCommand(ManipulatorModes.IDLE));
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("SmartScore",
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle));
+		NamedCommands.registerCommand("AlignRightReef",
+				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT));
+		NamedCommands.registerCommand("AlignLeftReef",
+				alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT));
 
 	}
 }

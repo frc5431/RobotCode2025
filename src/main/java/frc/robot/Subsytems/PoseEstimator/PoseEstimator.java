@@ -129,17 +129,34 @@ public class PoseEstimator extends SubsystemBase {
       sawTag = true;
       // var pose2d = visionPose.estimatedPose.toPose2d();
       var pose2d = vision.getBestLimelight().getRawPose3d().toPose2d();
-      // if (originPosition != kBlueAllianceWallRightSide) {
-      //   pose2d = flipAlliance(pose2d);
-      // }
+      if (Field.isRed()) {
+        pose2d = flipAlliance(pose2d);
+      }
+      
+      double targetSize = vision.getBestLimelight().getTargetSize();
+
+      double xyStds = 1000;
+      double degStds = 1000;
+      
+      if (targetSize >= 3) {
+        xyStds = VisionConstants.servicableTrustStds;
+        degStds = VisionConstants.dismalTrustStds;
+    
+    }
 
       // TODO: Need to filter out the poses
       // TODO: Kill Theta STDs
       // May want to use vision.addFilteredVisionInput
+      
+      // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
+      //                       xyStds,
+      //                       xyStds,
+      //                       degStds));
       poseEstimator.setVisionMeasurementStdDevs(Systems.getVision().visionStdMatrix);
       pose2d = Systems.getDrivebase().keepPoseOnField(pose2d);
       pose2d = new Pose2d(pose2d.getTranslation(), Systems.getDrivebase().getRobotHeading());
       poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
+      // visionPosePublisher.set(pose2d);
     }
   }
 
@@ -188,7 +205,7 @@ public class PoseEstimator extends SubsystemBase {
    * @param poseToFlip pose to transform to the other alliance
    * @return pose relative to the other alliance's coordinate system
    */
-  private Pose2d flipAlliance(Pose2d poseToFlip) {
+  public Pose2d flipAlliance(Pose2d poseToFlip) {
     return poseToFlip.relativeTo(VisionConstants.FLIPPING_POSE);
   }
 

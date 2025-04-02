@@ -201,11 +201,6 @@ public class Vision extends SubsystemBase {
                 xyStds = VisionConstants.servicableTrustStds;
                 degStds = VisionConstants.dismalTrustStds;
             
-             } else if (targetSize >= 1) {
-                    ll.sendValidStatus("Vision: Stationary close integration");
-                    xyStds = VisionConstants.lowTrustStds;
-                    degStds = VisionConstants.dismalTrustStds;
-
             } else {
                 //System.out.println("Rejected, get better");
                 return;
@@ -241,8 +236,8 @@ public class Vision extends SubsystemBase {
                             degStds));
 
             Pose2d integratedPose = new Pose2d(megaPose2d.getTranslation(), botpose.getRotation());
-            //Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
-            Systems.getDrivebase().resetPose(Systems.getEstimator().getCurrentPose());
+            Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
+            // Systems.getDrivebase().resetPose(Systems.getEstimator().getCurrentPose());
             // Systems.getEstimator().getPoseEstimator().setVisionMeasurementStdDevs(VecBuilder.fill(
             // xyStds,
             // xyStds,

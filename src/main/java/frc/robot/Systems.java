@@ -76,6 +76,7 @@ public class Systems {
 
         try {
             layout = new AprilTagFieldLayout(Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape-welded.json"));
+            layout.setOrigin(Field.isBlue() ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
         } catch (IOException ioE) {
             System.out.println("Apriltag Field Layout Path Bad");
         }

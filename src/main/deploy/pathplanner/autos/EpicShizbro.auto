@@ -5,33 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "StowPreset"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "FarSide"
+            "pathName": "Farside epic shiz"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "AlignLeftReef"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "FarSideLoad"
+            "name": "SmartScore"
           }
         }
       ]

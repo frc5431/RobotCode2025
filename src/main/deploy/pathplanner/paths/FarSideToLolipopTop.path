@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.346516393442624,
-        "y": 5.157838114754097
+        "x": 5.41125,
+        "y": 5.117
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.221365634078655,
-        "y": 5.3742573547273995
+        "x": 5.564250459558134,
+        "y": 5.382004569536075
       },
       "isLocked": false,
       "linkedName": "LeftOutRightPipeEnd"
+    },
+    {
+      "anchor": {
+        "x": 5.85,
+        "y": 5.63375
+      },
+      "prevControl": {
+        "x": 5.725,
+        "y": 5.417243649053891
+      },
+      "nextControl": {
+        "x": 5.975,
+        "y": 5.850256350946109
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,40 +36,40 @@
         "y": 6.150499999999999
       },
       "prevControl": {
-        "x": 5.089499999999999,
-        "y": 5.9944999999999995
+        "x": 5.5185,
+        "y": 6.47225
       },
       "nextControl": {
-        "x": 4.2767428548176625,
-        "y": 6.4761338638117545
+        "x": 4.247013652375751,
+        "y": 5.881277472230981
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.886,
-        "y": 5.7215
+        "x": 3.3345000000000002,
+        "y": 6.08225
       },
       "prevControl": {
-        "x": 3.3503024142218236,
-        "y": 5.7215
+        "x": 3.7988024142218237,
+        "y": 6.08225
       },
       "nextControl": {
-        "x": 2.636,
-        "y": 5.7215
+        "x": 3.0845000000000002,
+        "y": 6.08225
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2035,
-        "y": 5.7410000000000005
+        "x": 2.46675,
+        "y": 6.101749999999999
       },
       "prevControl": {
-        "x": 2.760368852459018,
-        "y": 5.695606557377051
+        "x": 2.7165502396804477,
+        "y": 6.111742009587218
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +78,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.8398340248962612,
+      "waypointRelativePos": 2.6008298755186727,
       "rotationDegrees": 0.0
     }
   ],
@@ -70,24 +86,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "IntakeLolipop",
-      "waypointRelativePos": 0.7771712158808939,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeLolipop"
-        }
-      }
-    },
-    {
       "name": "LoliPreset",
-      "waypointRelativePos": 1.1,
+      "waypointRelativePos": 1.385607940446659,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "LoliPreset"
+        }
+      }
+    },
+    {
+      "name": "IntakeLolipop",
+      "waypointRelativePos": 1.5841191066997509,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeLolipop"
         }
       }
     }
