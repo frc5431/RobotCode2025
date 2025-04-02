@@ -88,8 +88,8 @@ public class PositionPIDCommand extends Command {
                 .calculateRobotRelativeSpeeds(
                         drivebase.getRobotPose(), goalState));
 
-        SmartDashboard.putNumber("x align err ", drivebase.getRobotPose().getX() - goalPose.getX());
-        SmartDashboard.putNumber("y align err ", drivebase.getRobotPose().getY() - goalPose.getY());
+        //SmartDashboard.putNumber("x align err ", drivebase.getRobotPose().getX() - goalPose.getX());
+        //SmartDashboard.putNumber("y align err ", drivebase.getRobotPose().getY() - goalPose.getY());
     }
 
     @Override

@@ -101,7 +101,9 @@ public final class Constants {
         public static final double D_kI = 0.02;
         public static final double D_kD = 0;
 
-        public static final double TRANSLATION_TOLERANCE = 0.1;
+        public static final double X_TRANSLATION_TOLERANCE = 0.1;
+        public static final double Y_TRANSLATION_TOLERANCE = 0.1;
+
         public static final double THETA_TOLERANCE = 0.05; // Radians
 
         public static final double reefAproach = 1;

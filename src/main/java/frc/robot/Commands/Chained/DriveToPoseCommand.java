@@ -6,26 +6,16 @@ import static frc.robot.Util.Constants.AutonConstants.THETA_kP;
 import static frc.robot.Util.Constants.AutonConstants.D_kD;
 import static frc.robot.Util.Constants.AutonConstants.D_kI;
 import static frc.robot.Util.Constants.AutonConstants.D_kP;
-import static frc.robot.Util.Constants.AutonConstants.TRANSLATION_TOLERANCE;
+import static frc.robot.Util.Constants.AutonConstants.X_TRANSLATION_TOLERANCE;
+import static frc.robot.Util.Constants.AutonConstants.Y_TRANSLATION_TOLERANCE;
+
 import static frc.robot.Util.Constants.AutonConstants.THETA_TOLERANCE;
 import static frc.robot.Util.Constants.AutonConstants.maxSpeedAlign;
-import static frc.robot.Util.Constants.DrivebaseConstants.AutonMaxAngularRate;
-import static frc.robot.Util.Constants.DrivebaseConstants.AutonMaxVelocity;
-import static frc.robot.Util.Constants.VisionConstants.FIELD_WIDTH_METERS;
-
 import java.util.function.Supplier;
-
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 // import frc.robot.subsystems.DrivetrainSubsystem;
@@ -89,9 +79,9 @@ public class DriveToPoseCommand extends Command {
     thetaController.setTolerance(THETA_TOLERANCE);
 
     xController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
-    xController.setTolerance(TRANSLATION_TOLERANCE);
+    xController.setTolerance(X_TRANSLATION_TOLERANCE);
     yController = new ProfiledPIDController(D_kP, D_kI, D_kD, xyConstraints);
-    yController.setTolerance(TRANSLATION_TOLERANCE);
+    yController.setTolerance(Y_TRANSLATION_TOLERANCE);
 
     addRequirements(drivebase);
   }

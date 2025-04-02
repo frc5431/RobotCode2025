@@ -103,26 +103,22 @@ public class Elevator extends CTREMechanism {
             SmartDashboard.putString("Elevator State", getStates().toString());
             SmartDashboard.putNumber("Elevator Setpoint", getPosition().rotation.in(Rotation));
             SmartDashboard.putNumber("CANCoder Position", elevatorCANcoder.getPosition().getValueAsDouble());
-            SmartDashboard.putNumber("Follower Position", follower.getPosition().getValueAsDouble());
+            //SmartDashboard.putNumber("Follower Position", follower.getPosition().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Voltage", leader.getMotorVoltage().getValueAsDouble());
-            SmartDashboard.putNumber("Elevator Refrence", leader.getClosedLoopReference().getValueAsDouble());
+            //SmartDashboard.putNumber("Elevator Refrence", leader.getClosedLoopReference().getValueAsDouble());
             SmartDashboard.putBoolean("Elevator Goal",
                     getPositionSetpointGoal(getPosition().rotation, ElevatorConstants.error));
             SmartDashboard.putNumber("Elevator Output", leader.getClosedLoopOutput().getValueAsDouble());
-            SmartDashboard.putNumber("Elevator Leader Output", leader.getBridgeOutput().getValueAsDouble());
+            //SmartDashboard.putNumber("Elevator Leader Output", leader.getBridgeOutput().getValueAsDouble());
             SmartDashboard.putBoolean("Elevator Safe Swing", isSwingSafe());
 
-            SmartDashboard.putNumber("Elevator Acceleration", leader.getAcceleration().getValueAsDouble());
+            //SmartDashboard.putNumber("Elevator Acceleration", leader.getAcceleration().getValueAsDouble());
             SmartDashboard.putNumber("Elevator Velocity", leader.getVelocity().getValueAsDouble());
 
-            if (ElevatorConstants.canRangeAttached) {
-                SmartDashboard.putNumber("CanRange Distance", canRange.getDistance().getValueAsDouble());
-            }
-
-            if (ElevatorConstants.canCoderAttached) {
-                SmartDashboard.putNumber("Elevator/CANCoderPosition",
-                        elevatorCANcoder.getPosition().getValueAsDouble());
-            }
+            // if (ElevatorConstants.canCoderAttached) {
+            //     SmartDashboard.putNumber("Elevator/CANCoderPosition",
+            //             elevatorCANcoder.getPosition().getValueAsDouble());
+            // }
 
         }
     }

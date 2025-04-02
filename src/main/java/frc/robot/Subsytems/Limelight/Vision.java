@@ -98,7 +98,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
+        //SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
                                                                               // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
         double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180))
@@ -216,10 +216,10 @@ public class Vision extends SubsystemBase {
             }
             degStds = 9999;
 
-            SmartDashboard.putNumber("HIGHEST AMBIG", highestAmbiguity);
+            //SmartDashboard.putNumber("HIGHEST AMBIG", highestAmbiguity);
             SmartDashboard.putNumber("target size", targetSize);
-            SmartDashboard.putNumber("pose error", poseError);
-            SmartDashboard.putBoolean("multi tag", multiTags);
+            //SmartDashboard.putNumber("pose error", poseError);
+            //SmartDashboard.putBoolean("multi tag", multiTags);
             SmartDashboard.putNumber("xystds", xyStds);
             SmartDashboard.putNumber("theteaSTDS", degStds);
 

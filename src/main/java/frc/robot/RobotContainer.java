@@ -77,7 +77,6 @@ public class RobotContainer {
 	private TitanController operator = Systems.getOperator();
 	private AlignToReef alignToReefCommandFactory = new AlignToReef(drivebase, layout);
 
-
 	private enum AutoFilters {
 		Comp, TEST, States, NONE
 	}
@@ -183,9 +182,7 @@ public class RobotContainer {
 
 	public void periodic() {
 		subsystemPeriodic();
-		SmartDashboard.putNumber("Operator Left Y", -operator.getLeftY());
 		SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
-		SmartDashboard.putData("mechanism", robotMechanism.elevator);
 	}
 
 	private void configureDriverControls() {
@@ -229,9 +226,11 @@ public class RobotContainer {
 						.withName("Align Right Branch"));
 
 		// alignCenterReef.onTrue(
-		// 		alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
-		// 				.withName("Align Right Branch"));
-		alignCenterReef.onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), alignToReefCommandFactory.getClosestBranch(FieldBranchSide.MIDDLE, drivebase), 2).withName("Running Path"));
+		// alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
+		// .withName("Align Right Branch"));
+		alignCenterReef.onTrue(
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
+				.withName("Running Path"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
@@ -292,7 +291,7 @@ public class RobotContainer {
 		smartScore.onTrue(
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
 						.withName("Smart Score Command"));
-		
+
 		processorPreset.onTrue(
 				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
 						.withName("Processor Preset"));
@@ -422,7 +421,7 @@ public class RobotContainer {
 				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("IntakeLolipop",
 				manipulator.runManipulatorCommand(ManipulatorModes.FEED));
-				NamedCommands.registerCommand("StopManip",
+		NamedCommands.registerCommand("StopManip",
 				manipulator.runManipulatorCommand(ManipulatorModes.IDLE));
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));

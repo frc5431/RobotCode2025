@@ -323,7 +323,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
          */
 
         SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().baseUnitMagnitude());
-        // SmartDashboard.putData("Swerve Pose", (Sendable) this.getRobotPose());
 
         publisher.set(states);
         posePublisher.set(getRobotPose());
