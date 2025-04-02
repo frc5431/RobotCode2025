@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Util.Field;
@@ -110,26 +111,28 @@ public class AlignToReef {
     }
 
     public Command generateCommand(FieldBranchSide side) {
-        return Commands.defer(() -> {
+        return new SequentialCommandGroup(Commands.none(),
+        Commands.defer(() -> {
             var branch = getClosestBranch(side, drivebase);
             drivebase.resetPose(Systems.getEstimator().getCurrentPose());
             desiredBranchPublisher.accept(branch);
             Command command = new DriveToPoseCommand(drivebase, () -> Systems.getEstimator().getCurrentPose(), branch, 1);
-            // Command command = getPathFromWaypoint(getWaypointFromBranch(branch));
-            // command.addRequirements(drivebase);
+            // Commansd command = getPathFromWaypoint(getWaypointFromBranch(branch));
+            // command.addRequirement(drivebase);
             return command;
-        }, Set.of());
+        }, Set.of()));
     }
 
     public Command generateCommand(final ReefSide reefTag, BranchSide side) {
-        return Commands.defer(() -> {
+        return new SequentialCommandGroup(Commands.none(),
+        Commands.defer(() -> {
             var branch = getBranchFromTag(reefTag.getCurrent(), side);
             desiredBranchPublisher.accept(branch);
 
             Command command = getPathFromWaypoint(getWaypointFromBranch(branch));
             command.addRequirements(drivebase);
             return command;
-        }, Set.of(drivebase));
+        }, Set.of(drivebase)));
     }
 
     private Command getPathFromWaypoint(Pose2d waypoint) {
