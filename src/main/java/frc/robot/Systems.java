@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.io.IOException;
 
-import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
@@ -21,7 +20,6 @@ import frc.robot.Util.TitanBitDoController;
 import frc.robot.Subsytems.Intake.Feeder;
 import frc.robot.Subsytems.Intake.Intake;
 import frc.robot.Subsytems.Limelight.Vision;
-import frc.robot.Subsytems.Intake.IntakePivot;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
 import frc.robot.Util.Constants;
@@ -43,7 +41,6 @@ public class Systems {
     private MotorType brushless = MotorType.kBrushless;
 
     private @Getter Intake intake;
-    private @Getter IntakePivot intakePivot;
     private @Getter Feeder feeder;
     private @Getter ManipJoint manipJoint;
 
@@ -67,7 +64,6 @@ public class Systems {
     private SparkMax intakeMotor;
     private SparkMax manipJointMotor;
     private SparkMax feederMotor;
-    private SparkMax intakePivotMotor;
 
     /* Neo 550s */
     private SparkMax manipulatorMotor;
@@ -84,11 +80,6 @@ public class Systems {
         if (IntakeConstants.attached) {
             intakeMotor = new SparkMax(IntakeConstants.id, brushless);
             intake = new Intake(intakeMotor, IntakeConstants.attached);
-        }
-
-        if (IntakePivotConstants.attached) {
-            intakePivotMotor = new SparkMax(IntakePivotConstants.id, brushless);
-            intakePivot = new IntakePivot(intakePivotMotor, IntakePivotConstants.attached);
         }
 
         if (FeederConstants.attached) {

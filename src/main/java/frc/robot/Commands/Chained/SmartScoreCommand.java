@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import static edu.wpi.first.units.Units.Rotations;
 import frc.robot.Subsytems.CANdle.CANdleSystem;
-import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;

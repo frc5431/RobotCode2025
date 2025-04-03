@@ -6,7 +6,6 @@ import frc.robot.Subsytems.Intake.Intake;
 import frc.robot.Subsytems.Manipulator.Manipulator;
 import frc.robot.Util.Constants.FeederConstants.FeederModes;
 import frc.robot.Util.Constants.IntakeConstants.IntakeModes;
-import frc.robot.Util.Constants.ManipulatorConstants.ManipulatorModes;
 
 public class EjectCoralCommand extends ParallelCommandGroup {
 

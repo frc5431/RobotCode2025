@@ -1,7 +1,6 @@
 package frc.robot.Util;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
@@ -306,52 +305,6 @@ public final class Constants {
 
             ElevatorPositions(Angle rotation) {
                 this.rotation = rotation;
-            }
-
-        }
-
-    }
-
-    public static class IntakePivotConstants {
-
-        public enum IntakePivotStates {
-            STOW, INTAKING,
-        }
-
-        public static final int id = 20;
-        public static final boolean attached = true;
-        public static final boolean isInverted = true;
-        public static final boolean ecoderInverted = false;
-
-        public static final IdleMode idleMode = IdleMode.kBrake;
-        public static final FeedbackSensor feedbackSensor = FeedbackSensor.kAbsoluteEncoder;
-        public static final Current supplyCurrent = Units.Amp.of(40);
-        public static final Current stallCurrent = Units.Amp.of(80);
-        public static final double maxForwardOutput = 0.1;
-        public static final double maxReverseOutput = -0.3;
-
-        public static final Angle zeroOffset = Units.Rotation.of(0.32);
-        public static final Angle softLimitReverseMax = Units.Rotation.of(0.39);
-        public static final Angle softLimitForwardMax = Units.Rotation.of(0.8);
-        public static final boolean softLimitEnabled = true;
-
-        public static final double ff = 0.1;
-        public static final double p = 0.3;
-        public static final double i = 0.01;
-        public static final double d = 0.3;
-        public static final double maxIAccum = 0.1;
-
-        public static final Angle stowAngle = Units.Rotation.of(0.4);
-        public static final Angle deployAngle = Units.Rotation.of(0.75);
-        public static final Angle scoreL1 = Units.Rotation.of(0.56);
-
-        public enum IntakePivotModes {
-            STOW(stowAngle), DEPLOY(deployAngle), L1(scoreL1), NONE(stowAngle);
-
-            public Angle angle;
-
-            IntakePivotModes(Angle angle) {
-                this.angle = angle;
             }
 
         }

@@ -87,6 +87,7 @@ public class VisionUtil {
     }
 
     public static class LimelightLogger {
+        @SuppressWarnings("unused")
         private String name;
         public VisionHelper visionHelper;
 

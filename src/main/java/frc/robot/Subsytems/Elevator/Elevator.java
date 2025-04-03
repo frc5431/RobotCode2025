@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
@@ -49,7 +48,6 @@ public class Elevator extends CTREMechanism {
     public TalonFX leader;
     private TalonFX follower;
     private CANcoder elevatorCANcoder;
-    private CANrange canRange;
     private boolean attached;
 
     @Getter
@@ -73,13 +71,9 @@ public class Elevator extends CTREMechanism {
         this.follower = follower;
         this.attached = attached;
         config.talonConfig.Slot0.kS = ElevatorConstants.s;
-        // config.talonConfig.MotorOutput.withPeakForwardDutyCycle(ElevatorConstants.maxForwardOutput);
-        // config.talonConfig.MotorOutput.withPeakReverseDutyCycle(ElevatorConstants.maxReverseOutput);
         config.talonConfig.Feedback.withFeedbackRemoteSensorID(ElevatorConstants.canCoderId);
         config.applyTalonConfig(leader);
         elevatorCANcoder = new CANcoder(ElevatorConstants.canCoderId, Constants.canbus);
-        // leader.getConfigurator().apply(config.talonConfig);
-        // follower.getConfigurator().apply(config.talonConfig);
         follower.setControl(new Follower(ElevatorConstants.leftId, ElevatorConstants.follwerInvert));
 
         this.position = ElevatorPositions.STOW;

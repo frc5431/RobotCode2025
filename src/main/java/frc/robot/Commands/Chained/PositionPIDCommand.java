@@ -6,15 +6,12 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Systems;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Util.Constants.DrivebaseConstants;
 
@@ -31,10 +28,10 @@ public class PositionPIDCommand extends Command {
 
     private final BooleanPublisher endTriggerLogger = NetworkTableInstance.getDefault().getTable("logging")
             .getBooleanTopic("PositionPIDEndTrigger").publish();
-    private final DoublePublisher xErrLogger = NetworkTableInstance.getDefault().getTable("logging")
-            .getDoubleTopic("X Error").publish();
-    private final DoublePublisher yErrLogger = NetworkTableInstance.getDefault().getTable("logging")
-            .getDoubleTopic("Y Error").publish();
+    // private final DoublePublisher xErrLogger = NetworkTableInstance.getDefault().getTable("logging")
+    //         .getDoubleTopic("X Error").publish();
+    // private final DoublePublisher yErrLogger = NetworkTableInstance.getDefault().getTable("logging")
+    //         .getDoubleTopic("Y Error").publish();
 
     private PositionPIDCommand(Drivebase drivebase, Pose2d goalPose) {
         this.drivebase = drivebase;

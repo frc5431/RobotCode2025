@@ -144,6 +144,7 @@ public class Vision extends SubsystemBase {
 
         // integrate vision
         if (ll.targetInView()) {
+            @SuppressWarnings("unused")
             boolean multiTags = ll.multipleTagsInView();
             double timeStamp = ll.getRawPoseTimestamp();
             double targetSize = ll.getTargetSize();
@@ -153,10 +154,6 @@ public class Vision extends SubsystemBase {
             RawFiducial[] tags = ll.getRawFiducial();
             double highestAmbiguity = 2;
             ChassisSpeeds robotSpeeds = Systems.getDrivebase().getChassisSpeeds();
-
-            // distance from current pose to vision estimated pose
-            double poseError = Systems.getDrivebase().getRobotPose().getTranslation()
-                    .getDistance(botpose.getTranslation());
 
             /* rejections */
             // reject pose if individual tag ambiguity is too high
@@ -253,36 +250,6 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    public void autonResetPoseToVision() {
-        boolean reject = true;
-        boolean firstSuccess = false;
-        double batchSize = 5;
-        for (int i = autonPoses.size() - 1; i > autonPoses.size() - (batchSize + 1); i--) {
-            Trio<Pose3d, Pose2d, Double> poseInfo = autonPoses.get(i);
-            boolean success = resetPoseToVision(
-                    true, poseInfo.getFirst(), poseInfo.getSecond(), poseInfo.getThird());
-            if (success) {
-                if (i == autonPoses.size() - 1) {
-                    firstSuccess = true;
-                }
-                reject = false;
-                System.out.println(
-                        "AutonResetPoseToVision succeeded on " + (autonPoses.size() - i) + " try");
-                break;
-            }
-        }
-
-        if (reject) {
-            System.out.println(
-                    "AutonResetPoseToVision failed after "
-                            + batchSize
-                            + " of "
-                            + autonPoses.size()
-                            + " possible tries");
-
-        }
-    }
-
     public void resetPoseToVision() {
         VisionHelper ll = getBestLimelight();
         resetPoseToVision(
@@ -364,8 +331,6 @@ public class Vision extends SubsystemBase {
     }
 
     public VisionHelper getBestLimelight() {
-        VisionHelper bestLimelight = centLL3;
-
         return centLL3;
     }
 

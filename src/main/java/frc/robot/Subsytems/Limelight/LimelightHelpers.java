@@ -1840,6 +1840,7 @@ public class LimelightHelpers {
      */
 
     /** @return The latest LL results as a LimelightResults object. */
+    @SuppressWarnings("unused")
     private LimelightResults retrieveJSON() {
         return LimelightHelpers.getLatestResults(CAMERA_NAME);
     }

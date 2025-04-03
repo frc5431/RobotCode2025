@@ -4,14 +4,10 @@
 
 package frc.robot.Subsytems.CANdle;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Subsytems.CANdle.TitanCANdle.LEDSegment;
 import frc.robot.Util.Constants.CANdleConstants;
-
-import java.time.LocalTime;
 
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -26,8 +22,6 @@ public class CANdleSystem extends SubsystemBase {
     private final CANdle m_candle = new CANdle(CANdleConstants.id, "rio");
     private final int LedCount = 113;
 
-    private boolean hasRunThisSecond = false;
-
     enum TitanPrideColor {
         CYAN, BLUE, PURPLE
     }
@@ -40,6 +34,7 @@ public class CANdleSystem extends SubsystemBase {
         ColorFlow, SCORE, Larson, Rainbow, RgbFade, SingleFade, Strobe, Twinkle, TwinkleOff, ELEVATOR_GOAL, INTAKE, SPIRIT, STRESS_TIME, BLINK_BLUE, BLINK_RED, SetAll
     }
 
+    @SuppressWarnings("unused")
     private AnimationTypes m_currentAnimation;
 
     public CANdleSystem() {
@@ -52,77 +47,7 @@ public class CANdleSystem extends SubsystemBase {
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
         m_candle.configAllSettings(configAll, 100);
     }
-
-    public void incrementAnimation() {
-        switch (m_currentAnimation) {
-            case ColorFlow:
-                changeAnimation(AnimationTypes.SCORE);
-                break;
-            case SCORE:
-                changeAnimation(AnimationTypes.Larson);
-                break;
-            case Larson:
-                changeAnimation(AnimationTypes.Rainbow);
-                break;
-            case Rainbow:
-                changeAnimation(AnimationTypes.RgbFade);
-                break;
-            case RgbFade:
-                changeAnimation(AnimationTypes.SingleFade);
-                break;
-            case SingleFade:
-                changeAnimation(AnimationTypes.Strobe);
-                break;
-            case Strobe:
-                changeAnimation(AnimationTypes.Twinkle);
-                break;
-            case Twinkle:
-                changeAnimation(AnimationTypes.TwinkleOff);
-                break;
-            case TwinkleOff:
-                changeAnimation(AnimationTypes.ColorFlow);
-                break;
-            case SetAll:
-                changeAnimation(AnimationTypes.ColorFlow);
-                break;
-        }
-    }
-
-    public void decrementAnimation() {
-        switch (m_currentAnimation) {
-            case ColorFlow:
-                changeAnimation(AnimationTypes.TwinkleOff);
-                break;
-            case SCORE:
-                changeAnimation(AnimationTypes.ColorFlow);
-                break;
-            case Larson:
-                changeAnimation(AnimationTypes.SCORE);
-                break;
-            case Rainbow:
-                changeAnimation(AnimationTypes.Larson);
-                break;
-            case RgbFade:
-                changeAnimation(AnimationTypes.Rainbow);
-                break;
-            case SingleFade:
-                changeAnimation(AnimationTypes.RgbFade);
-                break;
-            case Strobe:
-                changeAnimation(AnimationTypes.SingleFade);
-                break;
-            case Twinkle:
-                changeAnimation(AnimationTypes.Strobe);
-                break;
-            case TwinkleOff:
-                changeAnimation(AnimationTypes.Twinkle);
-                break;
-            case SetAll:
-                changeAnimation(AnimationTypes.ColorFlow);
-                break;
-        }
-    }
-
+    
     public void setColors() {
         changeAnimation(AnimationTypes.SetAll);
     }
@@ -213,31 +138,22 @@ public class CANdleSystem extends SubsystemBase {
             case SetAll:
                 m_toAnimate = null;
                 break;
+            case BLINK_RED:
+            m_toAnimate = new StrobeAnimation(20, 180, 10, 0, 98.0 / 256.0, LedCount);
+            m_toAnimate.setLedOffset(8);
+                break;
+            case STRESS_TIME:
+            m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, LedCount);
+            m_toAnimate.setLedOffset(8);
+                break;
+            default:
+                break;
         }
         // System.out.println("Changed to " + m_currentAnimation.toString());
     }
 
     public Command changeCANdle(AnimationTypes animationTypes) {
         return new RunCommand(() -> changeAnimation(animationTypes), this);
-    }
-
-    public void titanPride() {
-        int timeSec = LocalTime.now().getSecond();
-
-        if (timeSec % 2 == 0 && !hasRunThisSecond) {
-            hasRunThisSecond = true;
-            switch (currentPRIDE) {
-                case BLUE:
-                    LEDSegment.MainStrip.setFlowAnimation(CANdleConstants.purple, 0.1);
-                case PURPLE:
-                    LEDSegment.MainStrip.setFlowAnimation(CANdleConstants.cyanish, 0.1);
-                case CYAN:
-                    LEDSegment.MainStrip.setFlowAnimation(CANdleConstants.darkBlue, 0.1);
-            }
-
-        } else {
-            hasRunThisSecond = false;
-        }
     }
 
     @Override
@@ -251,14 +167,6 @@ public class CANdleSystem extends SubsystemBase {
             m_candle.animate(m_toAnimate);
         }
 
-        if (DriverStation.isFMSAttached()) {
-            m_candle.setLEDs(0, 100, 0, 50, 0, 8);
-        }
-
     }
 
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
-    }
 }

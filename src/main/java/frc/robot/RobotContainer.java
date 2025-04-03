@@ -4,16 +4,13 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,13 +22,10 @@ import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
-import frc.robot.Commands.Chained.DriveToPoseCommand;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 import frc.robot.Commands.Chained.AlignToReef;
-import frc.robot.Commands.Chained.EjectCoralCommand;
 import frc.robot.Commands.Chained.ElevatorFeedCommand;
 import frc.robot.Commands.Chained.ElevatorLebron;
-import frc.robot.Commands.Chained.ElevatorStowCommand;
 import frc.robot.Commands.Chained.PickCoralCommand;
 import frc.robot.Commands.Chained.SmartScoreCommand;
 import frc.robot.Commands.Chained.SmartPresetCommand;
@@ -42,15 +36,12 @@ import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Intake.Feeder;
 import frc.robot.Subsytems.Intake.Intake;
-import frc.robot.Subsytems.Intake.IntakePivot;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
-import frc.robot.Util.RobotMechanism;
 import frc.robot.Util.SwerveConstants;
 import frc.robot.Util.Constants.*;
 import frc.robot.Util.Constants.FeederConstants.FeederModes;
 import frc.robot.Util.Constants.IntakeConstants.IntakeModes;
-import frc.robot.Util.Constants.IntakePivotConstants.IntakePivotModes;
 import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import frc.robot.Util.Constants.ManipulatorConstants.ManipulatorModes;
 import frc.team5431.titan.core.joysticks.TitanController;
@@ -60,7 +51,6 @@ import lombok.Getter;
 public class RobotContainer {
 
 	private final Systems systems = new Systems();
-	private final RobotMechanism robotMechanism = new RobotMechanism();
 	private final Intake intake = systems.getIntake();
 	private final Feeder feeder = systems.getFeeder();
 	private final Elevator elevator = systems.getElevator();
@@ -92,6 +82,7 @@ public class RobotContainer {
 	private @Getter Trigger isAutonEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
 	private @Getter Trigger isAutonDisabled = new Trigger(
 			() -> DriverStation.isAutonomous() && DriverStation.isDisabled());
+	@SuppressWarnings("unused")
 	private Trigger elevatorTarget = new Trigger(
 			() -> elevator.getPositionSetpointGoal(elevator.getPosition().rotation, ElevatorConstants.error)
 					&& manipJoint.getPositionSetpointGoal(manipJoint.getMode().position,
@@ -126,7 +117,6 @@ public class RobotContainer {
 
 	private Trigger zeroDrivebase = driver.y();
 	private Trigger robotOriented = driver.start();
-	private Trigger driverStow = driver.x();
 	private Trigger driverOutake = driver.leftTrigger(0.5);
 	private Trigger driverIntake = driver.rightTrigger(0.5);
 
@@ -157,9 +147,8 @@ public class RobotContainer {
 		setCommandMappings();
 		configureOperatorControls();
 		configureDriverControls();
-		configDriverFacingAngle();
+		//configDriverFacingAngle();
 
-		// TODO SWAP
 		poseEstimator.setAlliance(Field.isBlue() ? Alliance.Blue : Alliance.Red);
 
 		autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
@@ -225,12 +214,9 @@ public class RobotContainer {
 				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
 						.withName("Align Right Branch"));
 
-		// alignCenterReef.onTrue(
-		// alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
-		// .withName("Align Right Branch"));
 		alignCenterReef.onTrue(
-			alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
-				.withName("Running Path"));
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
+				.withName("Align Middle"));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
@@ -244,7 +230,7 @@ public class RobotContainer {
 		driverOutake.whileTrue(new ParallelCommandGroup(
 				intake.runIntakeCommand(IntakeModes.OUTTAKE),
 				feeder.runFeederCommand(FeederModes.REVERSE)).asProxy()
-						.withName("Driver Intake"));
+						.withName("Driver Outtake"));
 
 	}
 
@@ -290,7 +276,7 @@ public class RobotContainer {
 
 		smartScore.onTrue(
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
-						.withName("Smart Score Command"));
+						.withName("Smart Score"));
 
 		processorPreset.onTrue(
 				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
@@ -307,56 +293,6 @@ public class RobotContainer {
 						.withName("Pick Coarl"));
 
 		manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));
-
-	}
-
-	private Command lockToAngleCommand(Angle redAngle, Angle blueAngle) {
-		return drivebase.applyRequest(
-				() -> drivebase.getFacingRequest()
-						.withVelocityX(
-								deadzone(-driver.getLeftY())
-										* SwerveConstants.kSpeedAt12Volts
-												.in(MetersPerSecond))
-						.withHeading(Field.isBlue() ? blueAngle : redAngle)
-						.withVelocityY(
-								deadzone(-driver.getLeftX())
-										* SwerveConstants.kSpeedAt12Volts
-												.in(MetersPerSecond)))
-				.until(() -> Math.abs(driver.getHID().getRawAxis(4)) > 0.15);
-	}
-
-	private void configDriverFacingAngle() {
-		driver.upDpad().onTrue(new InstantCommand(() -> {
-			drivebase.getFacingRequest().pid.reset();
-		})).toggleOnTrue(lockToAngleCommand(Degrees.of(180), Degrees.of(180)));
-
-		// driver.upRightDpad().onTrue(new InstantCommand(() -> {
-		// drivebase.getFacingRequest().pid.reset();
-		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(30), Degrees.of(30)));
-
-		driver.rightDpad().onTrue(new InstantCommand(() -> {
-			drivebase.getFacingRequest().pid.reset();
-		})).toggleOnTrue(lockToAngleCommand(Degrees.of(90), Degrees.of(90)));
-
-		// driver.downRightDpad().onTrue(new InstantCommand(() -> {
-		// drivebase.getFacingRequest().pid.reset();
-		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(60), Degrees.of(60)));
-
-		driver.downDpad().onTrue(new InstantCommand(() -> {
-			drivebase.getFacingRequest().pid.reset();
-		})).toggleOnTrue(lockToAngleCommand(Degrees.of(0), Degrees.of(0)));
-
-		// driver.downLeftDpad().onTrue(new InstantCommand(() -> {
-		// drivebase.getFacingRequest().pid.reset();
-		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(120), Degrees.of(120)));
-
-		driver.leftDpad().onTrue(new InstantCommand(() -> {
-			drivebase.getFacingRequest().pid.reset();
-		})).toggleOnTrue(lockToAngleCommand(Degrees.of(270), Degrees.of(270)));
-
-		// driver.upLeftDpad().onTrue(new InstantCommand(() -> {
-		// drivebase.getFacingRequest().pid.reset();
-		// })).toggleOnTrue(lockToAngleCommand(Degrees.of(330), Degrees.of(330)));
 
 	}
 
