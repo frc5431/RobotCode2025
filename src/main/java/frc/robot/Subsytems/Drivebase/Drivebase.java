@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Util.SwerveConstants.TunerSwerveDrivetrain;
 import frc.team5431.titan.core.misc.Calc;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -57,11 +58,10 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean hasAppliedOperatorPerspective = false;
 
-    // TODO: GIVE DRIVER DPAD ALIGNMENT
 
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
-    private @Getter double driverFOCInverter = (Field.isBlue()) ? 1 : -1;
+    private @Getter @Setter double driverFOCInverter = (Field.isBlue()) ? 1 : -1;
 
     private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
             .withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
@@ -69,7 +69,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     private @Getter SwerveRequest.FieldCentric driverFOControl = new SwerveRequest.FieldCentric()
             .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
             .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
-            .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
+            .withForwardPerspective(perspectiveValue)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
@@ -169,7 +170,6 @@ public class RobotContainer {
 						: stream);
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
-		SmartDashboard.putBoolean("Alliance", Field.isBlue());
 
 	}
 
@@ -184,6 +184,9 @@ public class RobotContainer {
 	public void periodic() {
 		subsystemPeriodic();
 		SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+		SmartDashboard.putBoolean("Alliance", Field.isBlue());
+		SmartDashboard.putBoolean("Is Red", Field.isRed());
+
 	}
 
 	private void configureDriverControls() {
@@ -217,6 +220,7 @@ public class RobotContainer {
 				.withName("Swerve Robot Oriented"));
 
 		driver.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+		driver.b().onTrue(new InstantCommand(() -> drivebase.setDriverFOCInverter(drivebase.getDriverFOCInverter() * -1)));
 
 		// Align Reef Commands
 		// todo: new commands!
@@ -224,16 +228,19 @@ public class RobotContainer {
 				new InstantCommand(
 						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
 								alignMiddleCommand))
+								.withTimeout(0.1)
 										.andThen(alignLeftReefCommand));
 
 		alignRightReef.onTrue(
 				new InstantCommand(
 						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
 								alignMiddleCommand))
+								.withTimeout(0.1)
 										.andThen(alignRightReefCommand));
 
 		alignCenterReef.onTrue(new InstantCommand(
 				() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand, alignMiddleCommand))
+						.withTimeout(0.1)
 						.andThen(alignMiddleCommand));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
@@ -382,9 +389,11 @@ public class RobotContainer {
 		NamedCommands.registerCommand("SmartScore",
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle));
 		NamedCommands.registerCommand("AlignRightReef",
-				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT));
+				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)));
 		NamedCommands.registerCommand("AlignLeftReef",
-				alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT));
+				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)));
 
 	}
 }

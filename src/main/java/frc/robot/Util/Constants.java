@@ -100,8 +100,8 @@ public final class Constants {
         public static final double D_kI = 0.02;
         public static final double D_kD = 0;
 
-        public static final double X_TRANSLATION_TOLERANCE = 0.1;
-        public static final double Y_TRANSLATION_TOLERANCE = 0.1;
+        public static final double X_TRANSLATION_TOLERANCE = 0.05;
+        public static final double Y_TRANSLATION_TOLERANCE = 0.05;
 
         public static final double THETA_TOLERANCE = 0.05; // Radians
 
@@ -278,7 +278,7 @@ public final class Constants {
         public static final Angle feed = Units.Rotation.of(2.12);
         public static final Angle pickup = Units.Rotation.of(1.7);
 
-        public static final Angle cleanL3 = Units.Rotation.of(3.5);
+        public static final Angle cleanL3 = Units.Rotation.of(3.85);
 
         public static final Angle cleanl2 = Units.Rotation.of(2.5);
         public static final Angle coralL2 = Units.Rotation.of(0.8);
@@ -451,6 +451,8 @@ public final class Constants {
         public static final Angle lolipop = Units.Rotations.of(-7.5);
 
         public static final Angle cleanAlgea = Units.Rotations.of(-7);
+        public static final Angle algaeL3 = Units.Rotations.of(-6.5);
+
         public static final Angle groundAlgae = Units.Rotations.of(-8);
         public static final Angle processorAngle = Units.Rotations.of(-6);
         public static final Angle safeSwing = Units.Rotations.of(-11);
@@ -458,7 +460,7 @@ public final class Constants {
         public static final Angle feed = Units.Rotations.of(-14);
         public static final Angle postFeed = Units.Rotations.of(-14);
 
-        public static final Angle scoreL4 = Units.Rotations.of(-3.7);
+        public static final Angle scoreL4 = Units.Rotations.of(-3.5);
         public static final Angle slamL4 = Units.Rotations.of(-5);
 
         public static final Angle straightUp = Units.Rotation.of(-0.5);

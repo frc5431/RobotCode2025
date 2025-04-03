@@ -91,9 +91,11 @@ public class Field {
 	}
 
 	public enum BranchSide {
-		LEFT(new Translation2d(Inches.of(-6.25), Inches.of(22))),
-		 RIGHT(new Translation2d(Inches.of(6.25), Inches.of(22))),
-				 MIDDLE(new Translation2d(Inches.of(0), Inches.of(25)));
+		LEFT(new Translation2d(Inches.of(-6.5 + 0.75), Inches.of(22))),
+		RIGHT(new Translation2d(Inches.of(6.5 + 0.75), Inches.of(22))),
+		AUTOLEFT(new Translation2d(Inches.of(-6.5 + 0.75), Inches.of(40))),
+		AUTORIGHT(new Translation2d(Inches.of(6.5 + 0.75), Inches.of(40))),
+		MIDDLE(new Translation2d(Inches.of(0), Inches.of(25)));
 
 		public Translation2d tagOffset;
 
@@ -296,7 +298,6 @@ public class Field {
 
 	/** Returns {@code true} if the robot is on the blue alliance. */
 	public static boolean isBlue() {
-		// TODO ADD NULL CHECKING
 		return !isRed();
 	}
 

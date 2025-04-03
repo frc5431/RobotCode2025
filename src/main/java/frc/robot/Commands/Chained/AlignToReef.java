@@ -78,7 +78,7 @@ public class AlignToReef {
      * ofthe field, instead of relative to the tag
      */
     public enum FieldBranchSide {
-        LEFT(BranchSide.LEFT), RIGHT(BranchSide.RIGHT), MIDDLE(BranchSide.MIDDLE);
+        LEFT(BranchSide.LEFT), RIGHT(BranchSide.RIGHT), MIDDLE(BranchSide.MIDDLE), AUTOLEFT(BranchSide.AUTOLEFT), AUTORIGHT(BranchSide.AUTORIGHT);
 
         public BranchSide branchSide;
 
@@ -90,6 +90,12 @@ public class AlignToReef {
                     return FieldBranchSide.LEFT;
                 case MIDDLE:
                     return FieldBranchSide.MIDDLE;
+                case AUTOLEFT:
+                    return FieldBranchSide.AUTORIGHT;
+                case AUTORIGHT:
+                return FieldBranchSide.AUTOLEFT;
+                default:
+                    break;
             }
             System.out.println("Error, switch case failed to catch the field branch side");
             return this;
@@ -260,13 +266,15 @@ public class AlignToReef {
         var alliance = DriverStation.getAlliance();
         
         ArrayList<Pose2d> reefPoseList;
-        if (alliance.isEmpty()) {
-            reefPoseList = allReefTagPoses;
-        } else{
-            reefPoseList = Field.isBlue() ? 
-                blueReefTagPoses :
-                redReefTagPoses;
-        }
+        reefPoseList = allReefTagPoses;
+
+        // if (alliance.isEmpty()) {
+        //     reefPoseList = allReefTagPoses;
+        // } else{
+        //     reefPoseList = Field.isBlue() ? 
+        //         blueReefTagPoses :
+        //         redReefTagPoses;
+        // }
 
         
         return pose.nearest(reefPoseList);
