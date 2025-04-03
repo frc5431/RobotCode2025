@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FarSide"
+            "pathName": "FarSideVisionL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignLeftReef"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "SmartScore"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {
@@ -29,33 +29,27 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.25
+            "pathName": "LolipopScoreTopVision"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "StowPreset"
+            "name": "AlignRightReef"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "LolipopTopScoreTopLeft"
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
             "name": "SmartScore"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         }
       ]

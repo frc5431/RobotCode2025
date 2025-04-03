@@ -16,16 +16,32 @@
     },
     {
       "anchor": {
-        "x": 2.9445000000000006,
-        "y": 6.3065
+        "x": 2.7689999999999997,
+        "y": 6.27725
       },
       "prevControl": {
-        "x": 2.7243822250194563,
-        "y": 6.187975044241246
+        "x": 2.5488822250194554,
+        "y": 6.158725044241247
       },
       "nextControl": {
-        "x": 3.198000000000001,
-        "y": 6.442999999999999
+        "x": 3.0225,
+        "y": 6.413749999999999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.296,
+        "y": 6.121
+      },
+      "prevControl": {
+        "x": 2.9863509203753966,
+        "y": 6.24485706474657
+      },
+      "nextControl": {
+        "x": 3.528119836287008,
+        "y": 6.028153989842898
       },
       "isLocked": false,
       "linkedName": null
@@ -46,7 +62,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.536099585062245,
       "rotationDegrees": 119.99999999999999
     }
   ],
@@ -66,7 +82,7 @@
     },
     {
       "name": "L4Preset",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 1.777667493796511,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.2455,
-        "y": 2.815999999999999
+        "x": 5.499,
+        "y": 2.4454999999999996
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.02899364905389,
-        "y": 2.9409999999999994
+        "x": 5.282493649053889,
+        "y": 2.5705
       },
       "isLocked": false,
       "linkedName": "NearSideReefEnd"
@@ -57,7 +57,7 @@
     "rotation": -59.0362434679265
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Near",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -59.99999999999999

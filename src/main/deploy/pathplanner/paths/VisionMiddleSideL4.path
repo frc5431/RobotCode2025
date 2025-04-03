@@ -3,63 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.132684426229508,
-        "y": 7.567366803278689
+        "x": 7.1857500000000005,
+        "y": 4.337
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.318,
-        "y": 6.76475
+        "x": 6.939782522475023,
+        "y": 4.292278640450004
       },
       "isLocked": false,
-      "linkedName": "FarWallStart"
+      "linkedName": "MidStart"
     },
     {
       "anchor": {
-        "x": 6.074249999999999,
-        "y": 6.599
+        "x": 6.7275,
+        "y": 4.1907499999999995
       },
       "prevControl": {
-        "x": 6.251026695296636,
-        "y": 6.775776695296637
+        "x": 6.977499999999999,
+        "y": 4.1907499999999995
       },
       "nextControl": {
-        "x": 5.897473304703363,
-        "y": 6.422223304703364
+        "x": 6.4775,
+        "y": 4.1907499999999995
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.37225,
-        "y": 5.59475
+        "x": 6.171749999999999,
+        "y": 4.1225
       },
       "prevControl": {
-        "x": 5.599932198649614,
-        "y": 5.698001229620174
+        "x": 6.421514039588764,
+        "y": 4.133359306069076
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MiddleRightPipeEnd"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7452282157676343,
-      "rotationDegrees": 50.0
-    },
-    {
-      "waypointRelativePos": 1.2331950207468714,
-      "rotationDegrees": 59.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L4Preset",
-      "waypointRelativePos": 0.605459057071959,
+      "name": "",
+      "waypointRelativePos": 0.4665012406947878,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -71,7 +62,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 200.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -79,10 +70,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

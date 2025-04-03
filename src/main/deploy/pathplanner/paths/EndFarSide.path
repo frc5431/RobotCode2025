@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.41125,
-        "y": 5.117
+        "x": 5.00175,
+        "y": 5.253499999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.233065815684057,
-        "y": 4.734882783609109
+        "x": 4.8235658156840575,
+        "y": 4.871382783609108
       },
       "isLocked": false,
       "linkedName": "LeftOutRightPipeEnd"
@@ -57,7 +57,7 @@
     "rotation": 62.241459398940066
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Far",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999

@@ -3,70 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4960000000000004,
-        "y": 5.96525
+        "x": 7.12725,
+        "y": 0.524749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6032500000000005,
-        "y": 6.257750000000001
-      },
-      "isLocked": false,
-      "linkedName": "LolipopTop"
-    },
-    {
-      "anchor": {
-        "x": 2.9445000000000006,
-        "y": 6.3065
-      },
-      "prevControl": {
-        "x": 2.7243822250194563,
-        "y": 6.187975044241246
-      },
-      "nextControl": {
-        "x": 3.198000000000001,
-        "y": 6.442999999999999
+        "x": 5.87925,
+        "y": 1.6849999999999992
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.55875,
-        "y": 5.624
+        "x": 5.78175,
+        "y": 2.0067499999999994
       },
       "prevControl": {
-        "x": 3.478774493243654,
-        "y": 5.860862657080143
+        "x": 5.888999999999999,
+        "y": 1.6752499999999997
+      },
+      "nextControl": {
+        "x": 5.704794928646335,
+        "y": 2.244611129638603
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.499,
+        "y": 2.4454999999999996
+      },
+      "prevControl": {
+        "x": 5.624,
+        "y": 2.22899364905389
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FarLoliPopScorePos"
+      "linkedName": "NearSideReefEnd"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.25,
-      "rotationDegrees": 119.99999999999999
+      "waypointRelativePos": 0.4763485477178543,
+      "rotationDegrees": -59.99999999999999
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StopManip",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StopManip"
-        }
-      }
-    },
-    {
       "name": "L4Preset",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 0.2799007444168739,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -78,18 +67,18 @@
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 200.0,
-    "maxAngularAcceleration": 540.0,
+    "maxAngularAcceleration": 300.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "Far",
+  "folder": "Near",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

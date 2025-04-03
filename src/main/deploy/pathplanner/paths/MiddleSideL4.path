@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.78175,
-        "y": 3.8689999999999993
+        "x": 6.171749999999999,
+        "y": 4.1225
       },
       "prevControl": {
-        "x": 6.425969864615534,
-        "y": 3.8689999999999993
+        "x": 6.815969864615534,
+        "y": 4.1225
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ScoreL4",
+      "name": "SmartScore",
       "waypointRelativePos": 0.31196581196581025,
       "endWaypointRelativePos": null,
       "command": {
@@ -57,7 +57,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

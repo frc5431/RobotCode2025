@@ -7,37 +7,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center PushBack"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowPreset"
+            "pathName": "FarPush"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleSideL4"
+            "pathName": "FarSideVisionL4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "AlignLeftReef"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.5
+            "name": "SmartScore"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Algae Remove"
+            "pathName": "FarSideToLolipopTop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LolipopTopScoreTopLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignRightReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SmartScore"
           }
         }
       ]

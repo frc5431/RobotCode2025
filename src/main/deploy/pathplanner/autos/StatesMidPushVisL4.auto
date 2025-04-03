@@ -5,33 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "StowPreset"
+            "pathName": "MidPush"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NearSideL4"
+            "pathName": "VisionMiddleSideL4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ScoreL4"
+            "name": "AlignLeftReef"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NearSideLeave"
+            "name": "SmartScore"
           }
         }
       ]

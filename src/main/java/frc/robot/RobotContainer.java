@@ -81,7 +81,7 @@ public class RobotContainer {
 		Comp, TEST, States, NONE
 	}
 
-	AutoFilters autoFilter = AutoFilters.NONE;
+	AutoFilters autoFilter = AutoFilters.States;
 	// Triggers
 
 	// Automated Triggers
@@ -205,9 +205,9 @@ public class RobotContainer {
 
 		robotOriented.whileTrue(drivebase.applyRequest(
 				() -> drivebase.getDriverROControl()
-						.withVelocityX(deadzone(-driver.getLeftY())
+						.withVelocityX(-deadzone(-driver.getLeftY())
 								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
-						.withVelocityY(deadzone(-driver.getLeftX())
+						.withVelocityY(-deadzone(-driver.getLeftX())
 								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
 						.withRotationalRate(
 								deadzone(-driver.getRightX())
