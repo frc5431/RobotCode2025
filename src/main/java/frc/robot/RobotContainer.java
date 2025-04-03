@@ -390,10 +390,10 @@ public class RobotContainer {
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle));
 		NamedCommands.registerCommand("AlignRightReef",
 				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)));
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)).withTimeout(10));
 		NamedCommands.registerCommand("AlignLeftReef",
 				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)));
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)).withTimeout(10));
 
 	}
 }

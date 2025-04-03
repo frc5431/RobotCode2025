@@ -235,11 +235,11 @@ public class AlignToReef {
 
         BranchSide tagSide = fieldSide.branchSide;
 
-        if (robotPose.getX() > 4.500
-                &&
-                robotPose.getX() < 13) {
-            tagSide = fieldSide.getOpposite().branchSide;
-        }
+        // if (robotPose.getX() > 4.500
+        //         &&
+        //         robotPose.getX() < 13) {
+        //     tagSide = fieldSide.getOpposite().branchSide;
+        // }
 
         return getBranchFromTag(tag, tagSide);
     }
