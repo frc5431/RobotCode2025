@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
@@ -36,6 +37,7 @@ import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Intake.Feeder;
 import frc.robot.Subsytems.Intake.Intake;
+import frc.robot.Subsytems.Limelight.Vision;
 import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
 import frc.robot.Util.SwerveConstants;
@@ -58,6 +60,7 @@ public class RobotContainer {
 	private final Manipulator manipulator = systems.getManipulator();
 	private final CANdleSystem candle = Systems.getTitanCANdle();
 	private final Drivebase drivebase = Systems.getDrivebase();
+	private final Vision vision = Systems.getVision();
 	private final AprilTagFieldLayout layout = Systems.getLayout();
 	private final SendableChooser<Command> autoChooser;
 
@@ -66,6 +69,15 @@ public class RobotContainer {
 	private TitanController driver = Systems.getDriver();
 	private TitanController operator = Systems.getOperator();
 	private AlignToReef alignToReefCommandFactory = new AlignToReef(drivebase, layout);
+
+	private Command alignLeftReefCommand = alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)
+			.withName("Align Left Branch");
+
+	private Command alignRightReefCommand = alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
+			.withName("Align Right Branch");
+
+	private Command alignMiddleCommand = alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
+			.withName("Align Middle");
 
 	private enum AutoFilters {
 		Comp, TEST, States, NONE
@@ -147,7 +159,7 @@ public class RobotContainer {
 		setCommandMappings();
 		configureOperatorControls();
 		configureDriverControls();
-		//configDriverFacingAngle();
+		// configDriverFacingAngle();
 
 		poseEstimator.setAlliance(Field.isBlue() ? Alliance.Blue : Alliance.Red);
 
@@ -204,19 +216,25 @@ public class RobotContainer {
 												.in(RadiansPerSecond)))
 				.withName("Swerve Robot Oriented"));
 
+		driver.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
 		// Align Reef Commands
 		// todo: new commands!
 		alignLeftReef.onTrue(
-				alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)
-						.withName("Align Left Branch"));
+				new InstantCommand(
+						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
+								alignMiddleCommand))
+										.andThen(alignLeftReefCommand));
 
 		alignRightReef.onTrue(
-				alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)
-						.withName("Align Right Branch"));
+				new InstantCommand(
+						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
+								alignMiddleCommand))
+										.andThen(alignRightReefCommand));
 
-		alignCenterReef.onTrue(
-			alignToReefCommandFactory.generateCommand(FieldBranchSide.MIDDLE)
-				.withName("Align Middle"));
+		alignCenterReef.onTrue(new InstantCommand(
+				() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand, alignMiddleCommand))
+						.andThen(alignMiddleCommand));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
