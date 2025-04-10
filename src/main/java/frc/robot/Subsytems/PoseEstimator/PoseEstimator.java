@@ -5,6 +5,8 @@ import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAlli
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -64,6 +66,8 @@ public class PoseEstimator extends SubsystemBase {
 
   StructPublisher<Pose2d> visionPosePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("Vision Pose", Pose2d.struct).publish();
+
+  
   // private final PhotonRunnable photonEstimator = new PhotonRunnable();
   // private final Notifier photonNotifier = new Notifier(photonEstimator);
 
@@ -82,6 +86,10 @@ public class PoseEstimator extends SubsystemBase {
         drivebase.getRobotPose(),
         stateStdDevs,
         visionMeasurementStdDevs);
+
+        Logger.recordOutput("Pose Estimator", this.getCurrentPose());
+
+        
   }
 
   /**

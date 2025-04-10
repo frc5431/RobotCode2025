@@ -5,9 +5,11 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.AutoLogOutputManager;
+import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,18 +26,18 @@ public class Robot extends LoggedRobot {
     AutoLogOutputManager.addPackage("frc.robot.Subsystems");
 
     if (isReal()) {
-    Logger.addDataReceiver(new WPILOGWriter());
-    Logger.addDataReceiver(new NT4Publisher());
-    Logger.start();
+      Logger.addDataReceiver(new WPILOGWriter());
+      Logger.addDataReceiver(new NT4Publisher());
+      Logger.start();
 
     } else {
-    /*
-    * setUseTiming(false);
-    * String logPath = LogFileUtil.findReplayLog();
-    * Logger.setReplaySource(new WPILOGReader(logPath));
-    * Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
-    * "_sim")));
-    */
+
+      setUseTiming(false);
+      String logPath = LogFileUtil.findReplayLog();
+      Logger.setReplaySource(new WPILOGReader(logPath));
+      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
+          "_sim")));
+
     }
 
     m_robotContainer = new RobotContainer();
@@ -63,11 +65,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.onInitialize();
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-      if(m_autonomousCommand != null){
-      m_autonomousCommand.schedule();}
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
     }
-  
+  }
 
   @Override
   public void autonomousPeriodic() {

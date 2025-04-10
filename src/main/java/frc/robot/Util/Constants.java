@@ -125,7 +125,7 @@ public final class Constants {
         public static final int id = 21;
         public static final double gearRatio = 1;
         public static final Current supplyLimit = Units.Amps.of(30);
-        public static final Current stallLimit = Units.Amps.of(45);
+        public static final Current stallLimit = Units.Amps.of(60);
         public static final Angle offset = Units.Rotation.of(0);
         public static final double maxForwardOutput = 1;
         public static final double maxReverseOutput = -1;
@@ -150,7 +150,7 @@ public final class Constants {
         public static final AngularVelocity mm_error = Units.RPM.of(0);
 
         public enum IntakeModes {
-            IDLE(idleSpeed, 0.0), INTAKE(intakeSpeed, 0.95), FEED(feedSpeed, 0.2), OUTTAKE(outtakeSpeed, -0.4);
+            IDLE(idleSpeed, 0.0), INTAKE(intakeSpeed, 0.7), FEED(feedSpeed, 0.2), OUTTAKE(outtakeSpeed, -0.4);
 
             public AngularVelocity speed;
             public double output;
@@ -270,7 +270,7 @@ public final class Constants {
         public static final Angle lolipop = Units.Rotation.of(0.1);
 
         public static final Angle coralL1 = Units.Rotation.of(0.5);
-        public static final Angle processor = Units.Rotation.of(0.7);
+        public static final Angle processor = Units.Rotation.of(0.35);
         public static final Angle groundAlgae = Units.Rotation.of(0.4);
 
 

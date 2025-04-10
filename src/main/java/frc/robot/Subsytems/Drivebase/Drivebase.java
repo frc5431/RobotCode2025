@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -154,6 +156,11 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
                 modules);
         configureAutoBuilder();
+
+                Logger.recordOutput("Robot Pose", this.getRobotPose());
+                Logger.recordOutput("Chassis Speeds", this.getChassisSpeeds());
+                Logger.recordOutput("Robot Heading", this.getRobotHeading());
+
     }
 
     public void resetGyro() {

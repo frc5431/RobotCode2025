@@ -228,14 +228,14 @@ public class RobotContainer {
 				new InstantCommand(
 						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
 								alignMiddleCommand))
-								.withTimeout(0.1)
+										.withTimeout(0.1)
 										.andThen(alignLeftReefCommand));
 
 		alignRightReef.onTrue(
 				new InstantCommand(
 						() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand,
 								alignMiddleCommand))
-								.withTimeout(0.1)
+										.withTimeout(0.1)
 										.andThen(alignRightReefCommand));
 
 		alignCenterReef.onTrue(new InstantCommand(
@@ -387,13 +387,15 @@ public class RobotContainer {
 		NamedCommands.registerCommand("SimpleScore",
 				manipulator.runManipulatorCommand(ManipulatorModes.SCORE));
 		NamedCommands.registerCommand("SmartScore",
-				new SmartScoreCommand(elevator, manipJoint, manipulator, candle));
+				new SmartScoreCommand(true, elevator, manipJoint, manipulator, candle));
 		NamedCommands.registerCommand("AlignRightReef",
-				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT)).withTimeout(10));
+				new SequentialCommandGroup(
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT).withTimeout(1.2),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT).withTimeout(3)));
 		NamedCommands.registerCommand("AlignLeftReef",
-				new SequentialCommandGroup(alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT)).withTimeout(10));
+				new SequentialCommandGroup(
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT).withTimeout(1.2),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT).withTimeout(3)));
 
 	}
 }
