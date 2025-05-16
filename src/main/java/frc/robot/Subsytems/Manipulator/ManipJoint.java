@@ -153,7 +153,7 @@ public class ManipJoint extends REVMechanism {
 				.withName("ManipJoint.runEnumMM");
 	}
 
-	public Command killManipJoingCommand() {
+	public Command killManipJointCommand() {
 		return new InstantCommand(() -> this.stop(), this)
 				.withName("KILL MANIPJOINT COMMAND");
 	}

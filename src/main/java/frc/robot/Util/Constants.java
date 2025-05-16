@@ -576,4 +576,42 @@ public final class Constants {
         }
     }
 
+    public static class ClimberConstants {
+        public enum ClimberStates {
+            STOWED, CLIMB, ALIGN, 
+        }
+        public static final boolean attached = true;
+        public static final int id = -1; // TODO
+        public static final double gearRatio = 81 / 1; // ASK
+        public static final Current supplyLimit = Units.Amps.of(40); // ASK
+        public static final Current stallLimit = Units.Amps.of(50); // ASK
+        public static final double stallCurrent = 37; // ASK
+        public static final IdleMode idleMode = IdleMode.kBrake;
+        public static final boolean isInverted = false; 
+        public static final Angle offset = Units.Rotation.of(0);
+        public static final FeedbackSensor sensorType = FeedbackSensor.kPrimaryEncoder; 
+        public static final double maxForwardOutput = 1;
+        public static final double maxReverseOutput = -1;
+        public static final double p = 1; // TUNE
+        public static final double i = 0.01; // TUNE
+        public static final double d = 0.3; // TUNE
+        public static final double maxIAccum = 0.2; // TUNE
+
+        public static final Angle stow = Units.Rotations.of(-1); // TODO
+        public static final Angle climb = Units.Rotations.of(-1); // TODO
+        public static final Angle align = Units.Rotations.of(-1); // TODO
+        public static final Angle error = Units.Rotations.of(0);
+
+        public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
+        
+        public enum ClimberPositions {
+            STOW(stow), CLIMB(climb), ALIGN(align);
+
+            public Angle position; 
+
+            ClimberPositions(Angle position) {
+                this.position = position;
+            }
+        }
+    }
 }

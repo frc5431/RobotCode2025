@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
@@ -35,6 +34,7 @@ import frc.robot.Commands.Chained.SmartPresetCommand;
 
 import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
+import frc.robot.Subsytems.Climber.Climber;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Subsytems.Intake.Feeder;
@@ -44,6 +44,7 @@ import frc.robot.Subsytems.Manipulator.ManipJoint;
 import frc.robot.Subsytems.Manipulator.Manipulator;
 import frc.robot.Util.SwerveConstants;
 import frc.robot.Util.Constants.*;
+import frc.robot.Util.Constants.ClimberConstants.ClimberPositions;
 import frc.robot.Util.Constants.ElevatorConstants.ElevatorPositions;
 import frc.robot.Util.Constants.FeederConstants.FeederModes;
 import frc.robot.Util.Constants.IntakeConstants.IntakeModes;
@@ -61,6 +62,7 @@ public class RobotContainer {
 	private final Elevator elevator = systems.getElevator();
 	private final ManipJoint manipJoint = systems.getManipJoint();
 	private final Manipulator manipulator = systems.getManipulator();
+		private final Climber climber = systems.getClimber();
 	private final CANdleSystem candle = Systems.getTitanCANdle();
 	private final Drivebase drivebase = Systems.getDrivebase();
 	private final Vision vision = Systems.getVision();
@@ -125,6 +127,8 @@ public class RobotContainer {
 	private Trigger alignRightReef = driver.rightBumper();
 	private Trigger alignLeftReef = driver.leftBumper();
 	private Trigger alignCenterReef = driver.a();
+	private Trigger climbAlign = driver.start(); // Test binding
+	private Trigger climbFR = driver.back(); // Test binding
 
 	// more Game Status
 	// private @Getter Trigger reefAlignment = new Trigger(
@@ -138,6 +142,7 @@ public class RobotContainer {
 	// Operator Controls
 	private Trigger lebronShot = operator.leftBumper();
 	private Trigger pickCoral = operator.x();
+
 
 	// Preset Controls
 	private Trigger feedPreset = operator.downDpad();
@@ -261,6 +266,9 @@ public class RobotContainer {
 				feeder.runFeederCommand(FeederModes.REVERSE)).asProxy()
 						.withName("Driver Outtake"));
 
+		climbAlign.whileTrue(climber.runClimberCommand(ClimberPositions.ALIGN));
+
+		climbFR.whileTrue(climber.runClimberCommand(ClimberPositions.CLIMB));
 	}
 
 	private void configureOperatorControls() {
