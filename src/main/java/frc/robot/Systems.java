@@ -14,6 +14,7 @@ import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
 
 import frc.robot.Subsytems.CANdle.CANdleSystem;
 import frc.robot.Subsytems.CANdle.CANdleSystem.AnimationTypes;
+import frc.robot.Subsytems.Climber.Climber;
 import frc.robot.Subsytems.Drivebase.Drivebase;
 import frc.robot.Subsytems.Elevator.Elevator;
 import frc.robot.Util.TitanBitDoController;
@@ -43,7 +44,7 @@ public class Systems {
     private @Getter Intake intake;
     private @Getter Feeder feeder;
     private @Getter ManipJoint manipJoint;
-
+    private @Getter Climber climber;
     private @Getter Manipulator manipulator;
     private @Getter Elevator elevator;
     private static @Getter CANdleSystem titanCANdle;
@@ -64,10 +65,11 @@ public class Systems {
     private SparkMax intakeMotor;
     private SparkMax manipJointMotor;
     private SparkMax feederMotor;
-
-    /* Neo 550s */
+    private SparkMax climberMotor;
     private SparkMax manipulatorMotor;
 
+    /* Neo 550s */
+    // NONE 
     public Systems() {
 
         try {
@@ -101,6 +103,11 @@ public class Systems {
             elevatorLeft = new TalonFX(ElevatorConstants.leftId, Constants.canbus);
             elevatorRight = new TalonFX(ElevatorConstants.rightId, Constants.canbus);
             elevator = new Elevator(elevatorLeft, elevatorRight, ElevatorConstants.attached);
+        }
+
+        if (ClimberConstants.attached) {
+            climberMotor = new SparkMax(ClimberConstants.id, brushless);
+            climber = new Climber(climberMotor, ClimberConstants.attached);
         }
 
         if (CANdleConstants.attached) {
