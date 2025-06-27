@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.Rotation;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicExpoDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -33,6 +33,8 @@ public class Elevator extends CTREMechanism {
             configPIDGains(ElevatorConstants.p, ElevatorConstants.i,
                     ElevatorConstants.d);
             configNeutralBrakeMode(ElevatorConstants.breakType);
+            configMotionMagicPosition(ElevatorConstants.s);
+            configMotionMagic(ElevatorConstants.cruiseVelocity, ElevatorConstants.acceleration, ElevatorConstants.jerk);
             configFeedbackSensorSource(ElevatorConstants.feedbackSensor);
             configGearRatio(ElevatorConstants.gearRatio);
             configGravityType(ElevatorConstants.gravityType);
@@ -157,7 +159,7 @@ public class Elevator extends CTREMechanism {
 
     public void runEnum(ElevatorPositions position) {
         this.position = position;
-        leader.setControl(new PositionDutyCycle(position.rotation));
+        leader.setControl(new MotionMagicExpoDutyCycle(position.rotation));
         // setMMPosition(position.rotation);
     }
 

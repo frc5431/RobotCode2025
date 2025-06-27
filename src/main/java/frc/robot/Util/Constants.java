@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.util.Color;
@@ -83,7 +84,7 @@ public final class Constants {
 
     public static class AutonConstants {
         // The PID values from last year
-        public static final PIDConstants translationPID = new PIDConstants(1.6, 0, 0.1);
+        public static final PIDConstants translationPID = new PIDConstants(1., 0, 0.5);
         public static final PIDConstants rotationPID = new PIDConstants(2, 0, .0);
 
         // TODO: Playing with these. Need to clean up
@@ -246,6 +247,7 @@ public final class Constants {
         public static final double maxForwardOutput = 0.5;
         public static final double maxReverseOutput = -0.5;
 
+
         public static final boolean useFMaxRotation = true;
         public static final boolean useRMaxRotation = true;
         public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
@@ -296,6 +298,11 @@ public final class Constants {
 
         public static final Angle coralStation = Units.Rotation.of(3);
 
+        public static final AngularVelocity cruiseVelocity = Units.RotationsPerSecond.of(12);
+        public static final double jerk = 2; 
+        public static final double acceleration = 0.9;
+
+
         public enum ElevatorPositions {
             STOW(stow), FEED(feed), PROCESSOR(processor), GROUND_ALGEA(groundAlgae), LOLIPOP(lolipop), PICKUP(pickup), CORAL_L1(coralL1), CLEAN_L2(
                     cleanl2), CLEAN_L3(cleanL3), SLAM_L3(slamL3), CORAL_L2(coralL2), CORAL_L3(
@@ -325,14 +332,12 @@ public final class Constants {
         public static final Time teleopAlignAdjustTimeout = Units.Seconds.of(0.5);
         public static final Time autoAlignAdjustTimeout = Units.Seconds.of(0.5);
 
-        public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.5);
+        public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75);
         public static final Distance robotLength = Units.Inches.of(28);
         public static final AngularVelocity AngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity VisionAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity FaceTargetAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final LinearVelocity FaceTargetAVelocityDeadzone = TunerConstants.kSpeedAt12Volts.times(0.05);
-
-  
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = RotationsPerSecond.of(0.5);
@@ -430,6 +435,13 @@ public final class Constants {
         public static final double maxReverseOutput = -0.1;
         //-0.08
 
+        public static final AngularVelocity crusiseVelocity = Units.RPM.of(1200);
+        public static final AngularAcceleration ACCELERATION = Units.RotationsPerSecondPerSecond.of(200);
+        public static final Angle jerk = Units.Rotations.of(0.1);
+
+        // public static final double crusiseVelocity = 1000;
+        // public static final double ACCELERATION = 100;
+        // public static final double jerk = 0.1;
 
         // calculate WITH coral,
         // 0.15 output units

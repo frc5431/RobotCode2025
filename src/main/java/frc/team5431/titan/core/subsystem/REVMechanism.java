@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -73,6 +74,7 @@ public abstract class REVMechanism implements Subsystem {
         return false;
     }
 
+    //TODO: condesnse into one function with logic for what is dersiered feedback device
     /**
      * Checks if the motor is reaching the rotational setpoint
      * 
@@ -451,8 +453,8 @@ public abstract class REVMechanism implements Subsystem {
          * @param velocity     desired crusing velocity of motor (setpoint) (Rotations
          *                     Per Minute)
          */
-        public void configMaxMotionVelocity(AngularVelocity acceleration, AngularVelocity velocity) {
-            sparkConfig.closedLoop.maxMotion.maxAcceleration(acceleration.in(Units.RPM));
+        public void configMaxMotionVelocity(AngularAcceleration acceleration, AngularVelocity velocity) {
+            sparkConfig.closedLoop.maxMotion.maxAcceleration(acceleration.in(Units.RotationsPerSecondPerSecond));
             sparkConfig.closedLoop.maxMotion.maxVelocity(velocity.in(Units.RPM));
         }
 
@@ -470,10 +472,10 @@ public abstract class REVMechanism implements Subsystem {
          *                     Per Minute)
          * @param error        allowed error in RPM
          */
-        public void configMaxMotion(AngularVelocity velocity, AngularVelocity acceleration, AngularVelocity error) {
-            sparkConfig.closedLoop.maxMotion.maxAcceleration(acceleration.in(Units.RPM));
+        public void configMaxMotion(AngularVelocity velocity, AngularAcceleration acceleration, Angle error) {
+            sparkConfig.closedLoop.maxMotion.maxAcceleration(acceleration.in(Units.RotationsPerSecondPerSecond));
             sparkConfig.closedLoop.maxMotion.maxVelocity(velocity.in(Units.RPM));
-            sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(error.in(Units.RPM));
+            sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(error.in(Units.Rotation));
         }
 
         /**

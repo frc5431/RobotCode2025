@@ -336,6 +336,7 @@ public abstract class CTREMechanism implements Subsystem {
             mmPositionVoltage = mmPositionVoltage.withFeedForward(feedforward);
         }
 
+        //TODO: make not double
         /**
          * @param cruiseVelocity defines the passive running velocity of the motor, rps
          * @param acceleration   acceleration in rps
@@ -404,6 +405,7 @@ public abstract class CTREMechanism implements Subsystem {
             talonConfigFeedForward(slot, kV, kA, kS, kG);
         }
 
+        //TODO: add logic that constructs a candcoder if needed, can create other funciton with more needed paraments (same name?)
         public void configFeedbackSensorSource(FeedbackSensorSourceValue source) {
             configFeedbackSensorSource(source, 0);
         }

@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Drivebase;
+package frc.team5431.titan.core.subsystem;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -14,12 +14,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,24 +34,25 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Systems;
-import frc.robot.Util.Field;
-import frc.robot.Util.SwerveConstants;
-import frc.robot.Util.Constants.AutonConstants;
-import frc.robot.Util.Constants.DrivebaseConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Util.SwerveConstants.TunerSwerveDrivetrain;
 import frc.team5431.titan.core.misc.Calc;
+import frc.team5431.titan.core.misc.GameField;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
- * Subsystem so it can easily be used in command-based projects.
+ * @author {blame} Natalie Daleo
+ *         <h4>
+ *         TitanUtil Class that utilizes Pheonix 6 Swerve
+ *         </h4>
+ *         <body>
+ *         Class that extends the Phoenix 6 SwerveDrivetrain class and
+ *         implements
+ *         Subsystem so it can easily be used in command-based projects.
  */
-public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
+public class TitanSwerve extends PheonixTunerSwerve implements Subsystem {
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -62,35 +63,26 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     private @Getter SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
-    private @Getter @Setter double driverFOCInverter = (Field.isBlue()) ? 1 : -1;
+    /**
+     * This should be tuned to your individual robot
+     */
+    private @Getter @Setter PIDConstants translationPID = new PIDConstants(1, 0, 0.5);
+    /**
+     * This should be tuned to your individual robot
+     */
+    private @Getter @Setter PIDConstants rotationPID = new PIDConstants(2, 0, 0);
 
-    private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric()
-            .withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
+    private @Getter SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric();
 
-    private @Getter SwerveRequest.FieldCentric driverFOControl = new SwerveRequest.FieldCentric()
-            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
-            .withForwardPerspective(perspectiveValue)
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private @Getter SwerveRequest.FieldCentric driverFieldControl = new SwerveRequest.FieldCentric()
+            .withForwardPerspective(perspectiveValue);
 
-    private @Getter SwerveRequest.RobotCentric driverROControl = new SwerveRequest.RobotCentric()
-            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private @Getter SwerveRequest.RobotCentric driverRobotControl = new SwerveRequest.RobotCentric();
 
-    private @Getter SwerveRequest.RobotCentric alignControl = new SwerveRequest.RobotCentric()
-            .withDeadband(SwerveConstants.kSpeedAt12Volts.times(0.1))
-            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone) // Add a 10%
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-    private @Getter TitanFieldCentricFacingAngle facingRequest = new TitanFieldCentricFacingAngle()
-            .withPID(new PIDController(6, 0.01, 0.008));
+    private @Getter SwerveRequest.RobotCentric alignControl = new SwerveRequest.RobotCentric();
 
     SwerveModuleState[] states = this.getState().ModuleStates;
-    StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+    StructArrayPublisher<SwerveModuleState> modulePublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Swerve Module States", SwerveModuleState.struct).publish();
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
@@ -113,7 +105,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
      * @param modules
      *            Constants for each specific module
      */
-    public Drivebase(
+    public TitanSwerve(
             SwerveDrivetrainConstants drivetrainConstants,
             SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
@@ -146,7 +138,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
      * @param modules
      *            Constants for each specific module
      */
-    public Drivebase(
+    public TitanSwerve(
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             Matrix<N3, N1> odometryStandardDeviation,
@@ -162,14 +154,6 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
     }
 
-    public void resetGyro() {
-        this.resetRotation(kBlueAlliancePerspectiveRotation);
-    }
-
-    public Command zeroGyro() {
-        return new InstantCommand(() -> resetGyro(), this);
-    }
-
     private void configureAutoBuilder() {
         try {
             AutoBuilder.configure(
@@ -177,10 +161,9 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                     this::resetPoses,
                     this::getChassisSpeeds,
                     (speeds) -> driveAuton(speeds),
-                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
-                                                    // for holonomic drive trains
-                            AutonConstants.translationPID,
-                            AutonConstants.rotationPID),
+                    new PPHolonomicDriveController(
+                            translationPID,
+                            rotationPID),
                     RobotConfig.fromGUISettings(),
                     () -> false,
                     this);
@@ -191,60 +174,120 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     /**
-     * The function `getRobotPose` returns the robot's pose after checking and
-     * updating it.
-     *
-     * @return The `getRobotPose` method is returning the robot's current pose after
-     *         calling the
-     *         `seedCheckedPose` method with the current pose as an argument.
+     * @return the robot's pose derived from the swerve module states
      */
     public Pose2d getRobotPose() {
         return getState().Pose;
     }
 
+    /**
+     * @return the robot's heading derived from the swerve module states
+     */
     public Rotation2d getRobotHeading() {
         return getState().Pose.getRotation();
-
     }
 
-    // Keep the robot on the field
-    public Pose2d keepPoseOnField(Pose2d pose) {
-
-        double halfBot = DrivebaseConstants.robotLength.div(2).in(Meters);
-        double x = pose.getX();
-        double y = pose.getY();
-
-        // WARNING: IF ANTHING BAD IS EVER HAPPENING, IM NOT SURE THIS IS RIGHT
-        double newX = MathUtil.clamp(x, halfBot, (Field.getFieldLength().in(Meters) - halfBot));
-        double newY = MathUtil.clamp(y, halfBot, (Field.getFieldLength().in(Meters) - halfBot));
-
-        if (x != newX || y != newY) {
-            pose = new Pose2d(new Translation2d(newX, newY), pose.getRotation());
-        }
-        return pose;
-    }
-
-    public Pose2d predict(Time inTheFuture) {
-
-        Pose2d currPose = Systems.getEstimator().getCurrentPose();
-
-        var cs = getChassisSpeeds();
-
-        return new Pose2d(
-                currPose.getX() + cs.vxMetersPerSecond * inTheFuture.in(Seconds),
-                currPose.getY() + cs.vyMetersPerSecond * inTheFuture.in(Seconds),
-                currPose.getRotation()
-                        .plus(Rotation2d.fromRadians(cs.omegaRadiansPerSecond * inTheFuture.in(Seconds))));
-    }
-
+    /**
+     * @return the robot's chassis speeds derived from kinematics
+     */
     public ChassisSpeeds getChassisSpeeds() {
         return getKinematics().toChassisSpeeds(getState().ModuleStates);
     }
 
-    public double getSpeed() {
-        ChassisSpeeds robotVelocity = getChassisSpeeds();
-        return Math.sqrt(robotVelocity.vxMetersPerSecond * robotVelocity.vxMetersPerSecond
-                + robotVelocity.vyMetersPerSecond * robotVelocity.vyMetersPerSecond);
+    public double getAverageDriveVoltage() {
+        return ((this.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble() +
+                this.getModule(1).getDriveMotor().getMotorVoltage().getValueAsDouble() +
+                this.getModule(2).getDriveMotor().getMotorVoltage().getValueAsDouble() +
+                this.getModule(3).getDriveMotor().getMotorVoltage().getValueAsDouble()) / 4);
+    }
+
+    public boolean faceTargetEvaluate(double setpoint) {
+        return Calc.approxEquals(this.getRobotPose().getRotation().getRadians(),
+                Units.degreesToRadians(setpoint), 0.1);
+    }
+
+    public void resetGyro() {
+        this.resetRotation(kBlueAlliancePerspectiveRotation);
+    }
+
+    /*
+     * // Keep the robot on the field
+     * public Pose2d keepPoseOnField(Pose2d pose) {
+     * 
+     * double halfBot =
+     * double x = pose.getX();
+     * double y = pose.getY();
+     * 
+     * // WARNING: IF ANTHING BAD IS EVER HAPPENING, IM NOT SURE THIS IS RIGHT
+     * double newX = MathUtil.clamp(x, halfBot, (Field.getFieldLength().in(Meters) -
+     * halfBot));
+     * double newY = MathUtil.clamp(y, halfBot, (Field.getFieldLength().in(Meters) -
+     * halfBot));
+     * 
+     * if (x != newX || y != newY) {
+     * pose = new Pose2d(new Translation2d(newX, newY), pose.getRotation());
+     * }
+     * return pose;
+     * }
+     */
+
+    public Pose2d predict(Time inTheFuture, Pose2d currentPose) {
+
+        var cs = getChassisSpeeds();
+
+        return new Pose2d(
+                currentPose.getX() + cs.vxMetersPerSecond * inTheFuture.in(Seconds),
+                currentPose.getY() + cs.vyMetersPerSecond * inTheFuture.in(Seconds),
+                currentPose.getRotation()
+                        .plus(Rotation2d.fromRadians(cs.omegaRadiansPerSecond * inTheFuture.in(Seconds))));
+    }
+
+    public void resetPoses(Pose2d pose) {
+        this.resetPose(pose);
+        // Systems.getEstimator().setCurrentPose(pose);
+    }
+
+    public void driveAuton(ChassisSpeeds chassisSpeeds) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    public void driveAuton(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())
+                .withSteerRequestType(SteerRequestType.Position)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    public void driveAlign(ChassisSpeeds chassisSpeeds) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    public void driveAlign(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
+                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())
+                .withSteerRequestType(SteerRequestType.Position)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
+    }
+
+    /**
+     * Instant Command that resets Rotation2d to foward facing value
+     */
+    public Command zeroGyro() {
+        return new InstantCommand(() -> resetGyro(), this);
+    }
+
+    public Command stopRobotCentric() {
+        return new InstantCommand(() -> this
+                .setControl(new SwerveRequest.RobotCentric()
+                        .withVelocityX(0)
+                        .withVelocityY(0)
+                        .withRotationalRate(0)));
     }
 
     /**
@@ -263,63 +306,38 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
         return run(() -> new SwerveRequest.PointWheelsAt().withModuleDirection(direction));
     }
 
-    public void resetPoses(Pose2d pose) {
-        this.resetPose(pose);
-        Systems.getEstimator().setCurrentPose(pose);
-    }
-
     /**
-     * @param chassisSpeeds
-     * @return
+     * Default Periodic Loop, should be called if the periodic function is
+     * overridden
      */
-    public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
-        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)
-                .withVelocityY(chassisSpeeds.vyMetersPerSecond)));
-    }
+    public void defaultPeriodic() {
+        /*
+         * Periodically try to apply the operator perspective.
+         * If we haven't applied the operator perspective before, then we should apply
+         * it regardless of DS state.
+         * This allows us to correct the perspective in case the robot code restarts
+         * mid-match.
+         * Otherwise, only check and apply the operator perspective if the DS is
+         * disabled.
+         * This ensures driving behavior doesn't change until an explicit disable event
+         * occurs during testing.
+         */
 
-    public void driveAuton(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
-                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
-    }
+        SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().baseUnitMagnitude());
 
-    public void driveAlign(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
-                .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
-    }
+        modulePublisher.set(states);
+        posePublisher.set(getRobotPose());
+        speedsPublisher.set(getChassisSpeeds());
+        updateSimState(0.02, getAverageDriveVoltage()); // Added so I can use swerve in simulation
 
-    public void driveAuton(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds)
-                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
-                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())
-                .withSteerRequestType(SteerRequestType.Position)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage));
-    }
+        if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+            setOperatorPerspectiveForward(
+                    GameField.isBlue()
+                            ? kBlueAlliancePerspectiveRotation
+                            : kRedAlliancePerspectiveRotation);
+            hasAppliedOperatorPerspective = true;
+        }
 
-    public void twelveVolts() {
-        //setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(2, 0, 0)));
-        
-    }
-
-    public Command stopRobotCentric() {
-        return new InstantCommand(() -> this
-                .setControl(new SwerveRequest.RobotCentric()
-                        .withVelocityX(0)
-                        .withVelocityY(0)
-                        .withRotationalRate(0)));
-    }
-
-    public boolean faceTargetEvaluate(double setpoint) {
-        return Calc.approxEquals(this.getRobotPose().getRotation().getRadians(),
-                Units.degreesToRadians(setpoint), 0.1);
-    }
-
-    public double getAverageDriveVoltage() {
-        return ((this.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble() +
-                this.getModule(1).getDriveMotor().getMotorVoltage().getValueAsDouble() +
-                this.getModule(2).getDriveMotor().getMotorVoltage().getValueAsDouble() +
-                this.getModule(3).getDriveMotor().getMotorVoltage().getValueAsDouble()) / 4);
     }
 
     @Override
@@ -338,14 +356,14 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
 
         SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().baseUnitMagnitude());
 
-        publisher.set(states);
+        modulePublisher.set(states);
         posePublisher.set(getRobotPose());
         speedsPublisher.set(getChassisSpeeds());
         updateSimState(0.02, getAverageDriveVoltage()); // Added so I can use swerve in simulation
 
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             setOperatorPerspectiveForward(
-                    Field.isBlue()
+                    GameField.isBlue()
                             ? kBlueAlliancePerspectiveRotation
                             : kRedAlliancePerspectiveRotation);
             hasAppliedOperatorPerspective = true;

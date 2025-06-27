@@ -54,22 +54,11 @@ public class Vision extends SubsystemBase {
     public static final Matrix<N3, N1> visionStdMatrix = VecBuilder.fill(VISION_STD_DEV_X, VISION_STD_DEV_Y,
             VISION_STD_DEV_THETA);
 
-    // TODO: deal with this
-    private Drivebase drivebase = Systems.getDrivebase();
-
-    // TODO: we only have one for now
     /* Limelights */
     public final VisionHelper centLL3 = new LimelightHelpers().new VisionHelper(
             VisionConfig.LEFT_LL, VisionConstants.centerTagPipeline, VisionConfig.centerConfig);
 
-    // public final LimelightLogger leftLogger = new LimelightLogger("Left",
-    // centLL3);
-    // public final VisionHelper rightLL = new LimelightHelpers().new VisionHelper(
-    // VisionConfig.RIGHT_LL,
-    // VisionConstants.rightTagPipeline,
-    // VisionConfig.RIGHT_CONFIG);
-    // public final LimelightLogger rightLogger = new LimelightLogger("Right",
-    // rightLL);
+    
     public final VisionHelper[] allLimelights = { centLL3 };
     public final VisionHelper[] poseLimelights = {
             centLL3

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Util.Field;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.Chained.AlignToReef.FieldBranchSide;
@@ -86,7 +87,7 @@ public class RobotContainer {
 		Comp, TEST, States, NONE
 	}
 
-	AutoFilters autoFilter = AutoFilters.States;
+	AutoFilters autoFilter = AutoFilters.NONE;
 	// Triggers
 
 	// Automated Triggers
@@ -160,9 +161,13 @@ public class RobotContainer {
 		// Path Planner reccomends that construction of their namedcommands happens
 		// before anything else in robot container
 		setCommandMappings();
-		// configureOperatorControls();
-		// configureDriverControls();
-		configureSingleControls();
+
+		// Regular Two Controllers, comment out whatever not wanted
+		configureOperatorControls();
+		configureDriverControls();
+
+		// One Controller
+		// configureSingleControls();
 
 		// configDriverFacingAngle();
 
@@ -200,10 +205,10 @@ public class RobotContainer {
 				drivebase.applyRequest(
 						() -> drivebase.getDriverFOControl()
 								.withVelocityX(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftY())
-										* SwerveConstants.kSpeedAt12Volts
+										* MetersPerSecond.of(2.5)
 												.in(MetersPerSecond))
 								.withVelocityY(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftX())
-										* SwerveConstants.kSpeedAt12Volts
+										* MetersPerSecond.of(2.5)
 												.in(MetersPerSecond))
 								.withRotationalRate(
 										deadzone(-driver.getRightX())
@@ -241,11 +246,14 @@ public class RobotContainer {
 								alignMiddleCommand))
 										.withTimeout(0.1)
 										.andThen(alignRightReefCommand));
+		
+		driver.a().whileTrue(new StartEndCommand( () -> drivebase.twelveVolts(), () -> drivebase.stopRobotCentric()));
 
-		alignCenterReef.onTrue(new InstantCommand(
-				() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand, alignMiddleCommand))
-						.withTimeout(0.1)
-						.andThen(alignMiddleCommand));
+
+		// alignCenterReef.onTrue(new InstantCommand(
+		// 		() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand, alignMiddleCommand))
+		// 				.withTimeout(0.1)
+		// 				.andThen(alignMiddleCommand));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))

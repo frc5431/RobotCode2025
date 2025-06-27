@@ -50,7 +50,7 @@ public class SwerveConstants {
 
         // The stator current at which the wheels start to slip;
         // This needs to be tuned to your individual robot
-        private static final Current kSlipCurrent = Amps.of(60);
+        private static final Current kSlipCurrent = Amps.of(50);
 
         // Initial configs for the drive and steer motors and the azimuth encoder; these
         // cannot be null.
@@ -83,7 +83,7 @@ public class SwerveConstants {
 
         // Theoretical free speed (m/s) at 12 V applied output;
         // This needs to be tuned to your individual robot
-        public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(2);
+        public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4);
 
         // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
         // This may need to be tuned to your individual robot
@@ -108,6 +108,7 @@ public class SwerveConstants {
 
         public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
                         .withCANBusName(kCANBus.getName())
+                        
                         .withPigeon2Id(kPigeonId)
                         .withPigeon2Configs(pigeonConfigs);
 
@@ -176,14 +177,6 @@ public class SwerveConstants {
         private static final Distance kBackRightXPos = Inches.of(-11.5);
         private static final Distance kBackRightYPos = Inches.of(-11.5);
 
-        public static final double trackWidthMeters = Units.Inches.of(23.5).in(Meters);
-        // public static final ModuleConfig moduleConfig = new ModuleConfig(2.0,
-        // kSpeedAt12Volts.baseUnitMagnitude(),
-        // kDriveFrictionVoltage.baseUnitMagnitude(), DCMotor.getKrakenX60Foc(1), 80,
-        // 1);
-        // public static final RobotConfig robotConfig = new RobotConfig(114.5, 0.001,
-        // moduleConfig,
-        // trackWidthMeters);
 
         public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
                         .createModuleConstants(
