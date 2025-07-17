@@ -107,14 +107,8 @@ public class ManipJoint extends REVMechanism {
 		return Rotations.of(motor.getEncoder().getPosition()).gte(ManipJointConstants.safeSwing);
 	}
 
-	protected void stop() {
-		if (attached) {
-			motor.stopMotor();
-		}
-	}
-
-	protected void setZero() {
-		resetPosition();
+	public void setZero() {
+		motor.getEncoder().setPosition(0);
 	}
 
 	public void runEnum(ManipJointPositions ManipJointmode) {
@@ -138,29 +132,10 @@ public class ManipJoint extends REVMechanism {
 				() -> setMotorPosition(Rotations.of(getMotorPosition())), this);
 	}
 
-	protected void runEnumMM(ManipJointPositions ManipJointmode) {
-		this.mode = ManipJointmode;
-		setMMPosition(ManipJointmode.position);
-	}
-
+	
 	public Command runManipJointCommand(ManipJointPositions ManipJointmode) {
 		return new InstantCommand(() -> this.runEnum(ManipJointmode), this)
 				.withName("ManipJoint.runEnum");
-	}
-
-	public Command runManipJointCommandMM(ManipJointPositions ManipJointmode) {
-		return new InstantCommand(() -> this.runEnumMM(ManipJointmode), this)
-				.withName("ManipJoint.runEnumMM");
-	}
-
-	public Command killManipJointCommand() {
-		return new InstantCommand(() -> this.stop(), this)
-				.withName("KILL MANIPJOINT COMMAND");
-	}
-
-	public Command manipJointResetPositionCommand() {
-		return new InstantCommand(() -> this.setZero(), this)
-				.withName("ManipJoint.setZero");
 	}
 
 	public double getMotorPosition() {

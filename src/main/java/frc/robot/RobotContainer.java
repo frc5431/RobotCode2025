@@ -62,7 +62,7 @@ public class RobotContainer {
 	private final Elevator elevator = systems.getElevator();
 	private final ManipJoint manipJoint = systems.getManipJoint();
 	private final Manipulator manipulator = systems.getManipulator();
-		private final Climber climber = systems.getClimber();
+	private final Climber climber = systems.getClimber();
 	private final CANdleSystem candle = Systems.getTitanCANdle();
 	private final Drivebase drivebase = Systems.getDrivebase();
 	private final Vision vision = Systems.getVision();
@@ -88,7 +88,7 @@ public class RobotContainer {
 		Comp, TEST, States, NONE
 	}
 
-	AutoFilters autoFilter = AutoFilters.NONE;
+	AutoFilters autoFilter = AutoFilters.States;
 	// Triggers
 
 	// Automated Triggers
@@ -127,8 +127,8 @@ public class RobotContainer {
 	private Trigger alignRightReef = driver.rightBumper();
 	private Trigger alignLeftReef = driver.leftBumper();
 	private Trigger alignCenterReef = driver.a();
-	private Trigger climbAlign = driver.start(); // Test binding
-	private Trigger climbFR = driver.back(); // Test binding
+	private Trigger climbIn = driver.back(); // Test binding
+	private Trigger climbOut = driver.start(); // Test binding
 
 	// more Game Status
 	// private @Getter Trigger reefAlignment = new Trigger(
@@ -145,6 +145,8 @@ public class RobotContainer {
 
 
 	// Preset Controls
+	private Trigger resetManipJoint = operator.rightStick();
+
 	private Trigger feedPreset = operator.downDpad();
 	private Trigger cleanL2Preset = operator.start();
 	private Trigger cleanL3Preset = operator.back();
@@ -191,6 +193,7 @@ public class RobotContainer {
 		elevator.periodic();
 		manipJoint.periodic();
 		candle.periodic();
+		climber.periodic();
 		poseEstimator.periodic();
 	}
 
@@ -209,10 +212,10 @@ public class RobotContainer {
 				drivebase.applyRequest(
 						() -> drivebase.getDriverFOControl()
 								.withVelocityX(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftY())
-										* MetersPerSecond.of(2.5)
+										* MetersPerSecond.of(4)
 												.in(MetersPerSecond))
 								.withVelocityY(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftX())
-										* MetersPerSecond.of(2.5)
+										* MetersPerSecond.of(4)
 												.in(MetersPerSecond))
 								.withRotationalRate(
 										deadzone(-driver.getRightX())
@@ -270,9 +273,9 @@ public class RobotContainer {
 				feeder.runFeederCommand(FeederModes.REVERSE)).asProxy()
 						.withName("Driver Outtake"));
 
-		climbAlign.whileTrue(climber.runClimberCommand(ClimberPositions.ALIGN));
+		climbIn.whileTrue(climber.runClimberCommand(ClimberPositions.IN).withName("climber in"));
 
-		climbFR.whileTrue(climber.runClimberCommand(ClimberPositions.CLIMB));
+		climbOut.whileTrue(climber.runClimberCommand(ClimberPositions.OUT).withName("climber out"));
 	}
 
 	private void configureOperatorControls() {
@@ -291,6 +294,8 @@ public class RobotContainer {
 		// lebronShot.onTrue(
 		// intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
 		// .withName("Deploy Intake"));
+
+		resetManipJoint.onTrue(new InstantCommand(() -> manipJoint.setZero()).withName("Reset Manip"));
 
 		feedPreset.onTrue(
 				new ElevatorFeedCommand(elevator, manipJoint)
@@ -497,6 +502,7 @@ public class RobotContainer {
 	}
 
 	public void setCommandMappings() {
+		NamedCommands.registerCommand("ClimberSafeStow", new SequentialCommandGroup(climber.runClimberCommand(ClimberPositions.OUT)).withTimeout(1.9));
 		NamedCommands.registerCommand("L2Preset",
 				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
@@ -517,12 +523,12 @@ public class RobotContainer {
 				new SmartScoreCommand(true, elevator, manipJoint, manipulator, candle));
 		NamedCommands.registerCommand("AlignRightReef",
 				new SequentialCommandGroup(
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT).withTimeout(1.2),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT).withTimeout(3)));
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT).withTimeout(1.0),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT).withTimeout(3.0)));
 		NamedCommands.registerCommand("AlignLeftReef",
 				new SequentialCommandGroup(
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT).withTimeout(1.2),
-						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT).withTimeout(3)));
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT).withTimeout(1.0),
+						alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT).withTimeout(3.0)));
 
 	}
 }

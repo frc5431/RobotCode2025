@@ -10,9 +10,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Util.Constants.ClimberConstants;
 import frc.robot.Util.Constants.ClimberConstants.ClimberPositions;
 import frc.robot.Util.Constants.ClimberConstants.ClimberStates;
+import frc.robot.Util.Constants.ManipJointConstants.ManipJointPositions;
 import frc.robot.Util.Constants.ManipulatorConstants;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.subsystem.REVMechanism;
@@ -53,7 +56,6 @@ public class Climber extends REVMechanism  {
 		config.applySparkConfig(motor);
 
 		Logger.recordOutput("ClimberMode", getMode());
-		Logger.recordOutput("Climber/Setpoint", getMode().position.in(Rotation));
 		Logger.recordOutput("Climber/State", getState());
 		Logger.recordOutput("Climber/Velocity", getMotorVelocity());
 		Logger.recordOutput("Climber/Voltage", getMotorVoltage());
@@ -65,9 +67,8 @@ public class Climber extends REVMechanism  {
 	@Override
 	public void periodic() {
 		SmartDashboard.putString("Climber Mode", this.getMode().toString());
-		SmartDashboard.putNumber("Climber Setpoint", getMode().position.in(Rotations));
-		SmartDashboard.putBoolean("Climber Goal",
-				getPositionSetpointGoal(getMode().position, ClimberConstants.error));
+		SmartDashboard.putNumber("Climber Position", this.getMotorPosition());
+
 		SmartDashboard.putNumber("Climber Output", this.getMotorOutput());
 		SmartDashboard.putNumber("Climber Current", this.getMotorCurrent());
 		SmartDashboard.putNumber("Climber Voltage", this.getMotorVoltage());
@@ -98,25 +99,25 @@ public class Climber extends REVMechanism  {
 
 	public void runEnum(ClimberPositions Climbermode) {
 		this.mode = Climbermode;
-		setMotorPosition(Climbermode.position);
+		this.setPercentOutput(Climbermode.speed);
 	}
 
-	// Stole from ManipJoint, seems like it was never used when I searched but whatever.
-	protected void runEnumMM(ClimberPositions Climbermode) {
-		this.mode = Climbermode;
-		setMMPosition(Climbermode.position);
+	protected void usgiurb(Angle angle) {
+		setMMPosition(angle);
+	}
+
+	public Command safeSwingClimber() {
+		return new InstantCommand(() -> this.usgiurb(Angle.ofBaseUnits(40, Rotations)), this)
+				.withName("ManipJoint.runEnum");
 	}
 
 	public Command runClimberCommand(ClimberPositions Climbermode) {
-		return new InstantCommand(() -> this.runEnum(Climbermode), this)
+		return new StartEndCommand(() -> this.runEnum(Climbermode), () -> this.setPercentOutput(0))
+		
 				.withName("Climber.runEnum");
 	}
 
-	// May comment out these two but who cares ig
-	public Command runClimberCommandMM(ClimberPositions Climbermode) {
-		return new InstantCommand(() -> this.runEnumMM(Climbermode), this)
-				.withName("Climber.runEnumMM");
-	}
+	// May comment out these two but who cares
 
 	// Also was never used but whatever
 	public Command killClimberCommand() {

@@ -69,7 +69,6 @@ public class Systems {
     private SparkMax manipulatorMotor;
 
     /* Neo 550s */
-    // NONE 
     public Systems() {
 
         try {

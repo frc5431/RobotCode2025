@@ -278,7 +278,7 @@ public final class Constants {
 
         public static final Angle stow = Units.Rotation.of(0.7);
         public static final Angle feed = Units.Rotation.of(2.12);
-        public static final Angle pickup = Units.Rotation.of(1.7);
+        public static final Angle pickup = Units.Rotation.of(1.75);
 
         public static final Angle cleanL3 = Units.Rotation.of(3.85);
 
@@ -435,13 +435,6 @@ public final class Constants {
         public static final double maxReverseOutput = -0.1;
         //-0.08
 
-        public static final AngularVelocity crusiseVelocity = Units.RPM.of(1200);
-        public static final AngularAcceleration ACCELERATION = Units.RotationsPerSecondPerSecond.of(200);
-        public static final Angle jerk = Units.Rotations.of(0.1);
-
-        // public static final double crusiseVelocity = 1000;
-        // public static final double ACCELERATION = 100;
-        // public static final double jerk = 0.1;
 
         // calculate WITH coral,
         // 0.15 output units
@@ -593,7 +586,7 @@ public final class Constants {
             STOWED, CLIMB, ALIGN, 
         }
         public static final boolean attached = true;
-        public static final int id = -1; // TODO
+        public static final int id = 50; // TODO
         public static final double gearRatio = 81 / 1; // ASK
         public static final Current supplyLimit = Units.Amps.of(40); // ASK
         public static final Current stallLimit = Units.Amps.of(50); // ASK
@@ -609,20 +602,20 @@ public final class Constants {
         public static final double d = 0.3; // TUNE
         public static final double maxIAccum = 0.2; // TUNE
 
-        public static final Angle stow = Units.Rotations.of(-1); // TODO
-        public static final Angle climb = Units.Rotations.of(-1); // TODO
-        public static final Angle align = Units.Rotations.of(-1); // TODO
-        public static final Angle error = Units.Rotations.of(0);
+        public static final double stow = 0; // TODO
+        public static final double in = 0.75;
+        public static final double out = -0.75;
+        public static final double error = 0;
 
         public static final MAXMotionPositionMode mm_positionMode = MAXMotionPositionMode.kMAXMotionTrapezoidal;
         
         public enum ClimberPositions {
-            STOW(stow), CLIMB(climb), ALIGN(align);
+            STOW(stow), IN(in), OUT(out);
 
-            public Angle position; 
+            public double speed; 
 
-            ClimberPositions(Angle position) {
-                this.position = position;
+            ClimberPositions(double speed) {
+                this.speed = speed;
             }
         }
     }

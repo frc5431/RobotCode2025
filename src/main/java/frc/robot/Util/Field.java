@@ -93,8 +93,8 @@ public class Field {
 	public enum BranchSide {
 		LEFT(new Translation2d(Inches.of(-6.75 + 0.75), Inches.of(22))),
 		RIGHT(new Translation2d(Inches.of(6.75 + 0.75), Inches.of(22))),
-		AUTOLEFT(new Translation2d(Inches.of(-6.75 + 0.75), Inches.of(40))),
-		AUTORIGHT(new Translation2d(Inches.of(6.75 + 0.75), Inches.of(40))),
+		AUTOLEFT(new Translation2d(Inches.of(-6.75 + 0.5), Inches.of(40))),
+		AUTORIGHT(new Translation2d(Inches.of(6.75 + 0.5), Inches.of(40))),
 		MIDDLE(new Translation2d(Inches.of(0), Inches.of(25)));
 
 		public Translation2d tagOffset;

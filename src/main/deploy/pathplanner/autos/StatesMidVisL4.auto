@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "ClimberSafeStow"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "VisionMiddleSideL4"
@@ -19,7 +25,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SmartScore"
+            "name": "ClimberSafeStow"
           }
         }
       ]
