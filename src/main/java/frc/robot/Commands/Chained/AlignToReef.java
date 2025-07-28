@@ -120,7 +120,7 @@ public class AlignToReef {
             var branch = getClosestBranch(side, drivebase);
             drivebase.resetPose(Systems.getEstimator().getCurrentPose());
             desiredBranchPublisher.accept(branch);
-            Command command = new DriveToPoseCommand(drivebase, () -> Systems.getEstimator().getCurrentPose(), branch, 1);
+            Command command = new DriveToPoseCommand(drivebase, () -> Systems.getEstimator().getCurrentPose(), branch, 0);
             // Command command = getPathFromWaypoint(getWaypointFromBranch(branch));
             // command.addRequirements(drivebase);
             return command;

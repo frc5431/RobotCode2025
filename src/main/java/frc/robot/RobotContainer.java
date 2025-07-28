@@ -130,6 +130,9 @@ public class RobotContainer {
 	private Trigger climbIn = driver.back(); // Test binding
 	private Trigger climbOut = driver.start(); // Test binding
 
+	private Trigger alignLeftSeq = driver.x();
+	private Trigger alignRightSeq = driver.b();
+
 	// more Game Status
 	// private @Getter Trigger reefAlignment = new Trigger(
 	// () -> alignRightReef.getAsBoolean() || alignLeftReef.getAsBoolean());
@@ -169,11 +172,11 @@ public class RobotContainer {
 		setCommandMappings();
 
 		// Regular Two Controllers, comment out whatever not wanted
-		configureOperatorControls();
-		configureDriverControls();
+		//configureOperatorControls();
+		//configureDriverControls();
 
 		// One Controller
-		// configureSingleControls();
+		configureSingleControls();
 
 		// configDriverFacingAngle();
 
@@ -258,6 +261,13 @@ public class RobotContainer {
 				() -> CommandScheduler.getInstance().cancel(alignLeftReefCommand, alignRightReefCommand, alignMiddleCommand))
 						.withTimeout(0.1)
 						.andThen(alignMiddleCommand));
+		
+		alignLeftSeq.onTrue(new SequentialCommandGroup(
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTOLEFT).withTimeout(1.0),
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.LEFT).withTimeout(3.0)));
+		alignRightSeq.onTrue(new SequentialCommandGroup(
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.AUTORIGHT).withTimeout(1.0),
+			alignToReefCommandFactory.generateCommand(FieldBranchSide.RIGHT).withTimeout(3.0)));
 
 		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
 				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
@@ -502,7 +512,7 @@ public class RobotContainer {
 	}
 
 	public void setCommandMappings() {
-		NamedCommands.registerCommand("ClimberSafeStow", new SequentialCommandGroup(climber.runClimberCommand(ClimberPositions.OUT)).withTimeout(1.9));
+		NamedCommands.registerCommand("ClimberSafeStow", new SequentialCommandGroup(climber.runClimberCommand(ClimberPositions.OUT)).withTimeout(0.5));
 		NamedCommands.registerCommand("L2Preset",
 				new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint));
 		NamedCommands.registerCommand("L3Preset",
