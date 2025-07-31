@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimberSafeStow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarSide"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SmartScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarSideToLolipopTop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LolipopTopNoVision"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SmartScore"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
