@@ -175,7 +175,7 @@ public final class Constants {
         public static final int id = 24;
         public static final double gearRatio = 1 / 1;
         public static final Current supplyLimit = Units.Amps.of(40);
-        public static final Current stallLimit = Units.Amps.of(50);
+        public static final Current stallLimit = Units.Amps.of(80);
         public static final double stallCurrent = 37;
         public static final IdleMode idleMode = IdleMode.kBrake;
         public static final boolean isInverted = true;
@@ -468,6 +468,7 @@ public final class Constants {
         public static final Angle scoreL4 = Units.Rotations.of(-3.5);
         public static final Angle slamL4 = Units.Rotations.of(-5);
 
+        public static final Angle lebronRelease = Units.Rotation.of(-4.5);
         public static final Angle straightUp = Units.Rotation.of(-0.5);
         public static final Angle error = Units.Rotations.of(0.3);
         public static final Angle tightError = Units.Rotations.of(0.1);
@@ -475,7 +476,7 @@ public final class Constants {
         public enum ManipJointPositions {
             STOW(stow), EJECT(eject), PREEFEED(prefeed), LOLIPOP(lolipop), GROUND_ALGEA(groundAlgae), FEED(feed), POST_FEED(postFeed), CLEAN_L2(cleanAlgea), CLEAN_L3(
                     cleanAlgea), PROCESSOR(processorAngle), CORAL_L1(scoreL1), CORAL_L2(scoreL2), SLAM_L2(slamL2), CORAL_L3(
-                            scoreL3), SLAM_L3(slamL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4), STRAIGHT_UP(straightUp);
+                            scoreL3), SLAM_L3(slamL3), ADJUSTANGLE(adjustAngle), CORAL_L4(scoreL4), LEBRON_RELEASE(lebronRelease), STRAIGHT_UP(straightUp);
 
             public Angle position;
 
