@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.Subsytems.PoseEstimator.PoseEstimator;
@@ -81,32 +82,38 @@ public class Systems {
         if (IntakeConstants.attached) {
             intakeMotor = new SparkMax(IntakeConstants.id, brushless);
             intake = new Intake(intakeMotor, IntakeConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(intake);
         }
 
         if (FeederConstants.attached) {
             feederMotor = new SparkMax(FeederConstants.id, brushless);
             feeder = new Feeder(feederMotor, FeederConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(feeder);
         }
 
         if (ManipulatorConstants.attached) {
             manipulatorMotor = new SparkMax(ManipulatorConstants.id, brushless);
             manipulator = new Manipulator(manipulatorMotor, ManipulatorConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(manipulator);
         }
 
         if (ManipJointConstants.attached) {
             manipJointMotor = new SparkMax(ManipJointConstants.id, brushless);
             manipJoint = new ManipJoint(manipJointMotor, ManipJointConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(manipJoint);
         }
 
         if (ElevatorConstants.attached) {
             elevatorLeft = new TalonFX(ElevatorConstants.leftId, Constants.canbus);
             elevatorRight = new TalonFX(ElevatorConstants.rightId, Constants.canbus);
             elevator = new Elevator(elevatorLeft, elevatorRight, ElevatorConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(elevator);
         }
 
         if (ClimberConstants.attached) {
             climberMotor = new SparkMax(ClimberConstants.id, brushless);
             climber = new Climber(climberMotor, ClimberConstants.attached);
+            CommandScheduler.getInstance().registerSubsystem(climber);
         }
 
         if (CANdleConstants.attached) {

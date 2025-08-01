@@ -191,17 +191,7 @@ public class RobotContainer {
 
 	}
 
-	public void subsystemPeriodic() {
-		drivebase.periodic();
-		elevator.periodic();
-		manipJoint.periodic();
-		candle.periodic();
-		climber.periodic();
-		poseEstimator.periodic();
-	}
-
 	public void periodic() {
-		subsystemPeriodic();
 		SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
 		SmartDashboard.putBoolean("Alliance", Field.isBlue());
 		SmartDashboard.putBoolean("Is Red", Field.isRed());
@@ -394,7 +384,9 @@ public class RobotContainer {
 								new ParallelCommandGroup(
 						intake.runIntakeCommand(IntakeModes.INTAKE),
 						feeder.runFeederCommand(FeederModes.FEED)
-								.withName("Driver Intake")), () -> elevator.getPosition() == ElevatorPositions.CLEAN_L2 || elevator.getPosition() == ElevatorPositions.CLEAN_L3)
+								.withName("Driver Intake")), () -> elevator.getPosition() == ElevatorPositions.CLEAN_L2 ||
+																												elevator.getPosition() == ElevatorPositions.CLEAN_L3 ||
+																												elevator.getPosition() == ElevatorPositions.GROUND_ALGEA)
 			);
 
 		driver.rightTrigger(0.5).whileTrue(new ParallelCommandGroup(
@@ -407,8 +399,8 @@ public class RobotContainer {
 		// driver.x().whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.FEED)
 		// 		.withName("Intake Algea"));
 
-		// driver.rightBumper().whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
-		// 		.withName("Score Coral"));
+		driver.a().whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
+				.withName("Score Algae"));
 
 		// groundAlgae.onTrue(
 		// 		new SmartPresetCommand(ControllerConstants.GroundAlgeaPosition, elevator, manipJoint)
@@ -446,9 +438,9 @@ public class RobotContainer {
 				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
 						.withName("Smart Score"));
 
-		// processorPreset.onTrue(
-		// 		new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
-		// 				.withName("Processor Preset"));
+		driver.leftStick().onTrue(
+				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
+						.withName("Processor Preset"));
 
 		driver.rightStick().whileTrue(manipJoint.runVoltageCommand(-0.3));
 
@@ -458,7 +450,11 @@ public class RobotContainer {
 
 		driver.x().onTrue(
 				new PickCoralCommand(elevator, manipJoint, manipulator)
-						.withName("Pick Coarl"));
+						.withName("Pick Coral"));
+		
+		driver.b().onTrue(
+				new SmartPresetCommand(ControllerConstants.GroundAlgeaPosition, elevator, manipJoint)
+						.withName("Ground Algae"));
 
 		// manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));
 	}
