@@ -84,7 +84,7 @@ public final class Constants {
 
     public static class AutonConstants {
         // The PID values from last year
-        public static final PIDConstants translationPID = new PIDConstants(1., 0, 0.5);
+        public static final PIDConstants translationPID = new PIDConstants(1.3, 0, 0.5);
         public static final PIDConstants rotationPID = new PIDConstants(2, 0, .0);
 
         // TODO: Playing with these. Need to clean up

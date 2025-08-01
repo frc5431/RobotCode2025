@@ -33,6 +33,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Systems;
 import frc.robot.Util.Field;
@@ -182,6 +183,7 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
                             AutonConstants.translationPID,
                             AutonConstants.rotationPID),
                     RobotConfig.fromGUISettings(),
+                    // () -> DriverStation.getAlliance().get() == Alliance.Red, // resets gyro to blue side always
                     () -> false,
                     this);
 
