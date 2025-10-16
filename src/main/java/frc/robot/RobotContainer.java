@@ -172,8 +172,8 @@ public class RobotContainer {
 		setCommandMappings();
 
 		// Regular Two Controllers, comment out whatever not wanted
-		//configureOperatorControls();
-		//configureDriverControls();
+		// configureOperatorControls();
+		// configureDriverControls();
 
 		// One Controller
 		configureSingleControls();
@@ -458,6 +458,126 @@ public class RobotContainer {
 
 		// manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));
 	}
+
+
+	//temp
+	private void configureStemGals() {
+		
+		drivebase.setDefaultCommand(
+				// Drivetrain will execute this command periodically
+				drivebase.applyRequest(
+						() -> drivebase.getDriverFOControl()
+								.withVelocityX(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftY())
+										* SwerveConstants.kSpeedAt12Volts
+												.in(MetersPerSecond))
+								.withVelocityY(drivebase.getDriverFOCInverter() * deadzone(-driver.getLeftX())
+										* SwerveConstants.kSpeedAt12Volts
+												.in(MetersPerSecond))
+								.withRotationalRate(
+										deadzone(-driver.getRightX())
+												* DrivebaseConstants.MaxAngularRate
+														.in(RadiansPerSecond)))
+						.withName("Swerve Default Command"));
+
+		robotOriented.whileTrue(drivebase.applyRequest(
+				() -> drivebase.getDriverROControl()
+						.withVelocityX(-deadzone(-driver.getLeftY())
+								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withVelocityY(-deadzone(-driver.getLeftX())
+								* SwerveConstants.kSpeedAt12Volts.in(MetersPerSecond))
+						.withRotationalRate(
+								deadzone(-driver.getRightX())
+										* DrivebaseConstants.MaxAngularRate
+												.in(RadiansPerSecond)))
+				.withName("Swerve Robot Oriented"));
+
+		// driver.b().onTrue(new InstantCommand(() -> drivebase.setDriverFOCInverter(drivebase.getDriverFOCInverter() * -1)));
+
+		zeroDrivebase.onTrue(new InstantCommand(() -> drivebase.resetGyro())
+				.alongWith(new InstantCommand(() -> Systems.getEstimator().resetRotablion()))
+				.withName("Zero Drivebase"));
+
+		driver.leftTrigger(0.5).whileTrue(
+			new ConditionalCommand(
+				manipulator.runManipulatorCommand(ManipulatorModes.FEED), 
+								new ParallelCommandGroup(
+						intake.runIntakeCommand(IntakeModes.INTAKE),
+						feeder.runFeederCommand(FeederModes.FEED)
+								.withName("Driver Intake")), () -> elevator.getPosition() == ElevatorPositions.CLEAN_L2 ||
+																												elevator.getPosition() == ElevatorPositions.CLEAN_L3 ||
+																												elevator.getPosition() == ElevatorPositions.GROUND_ALGEA)
+			);
+
+		driver.rightTrigger(0.5).whileTrue(new ParallelCommandGroup(
+				intake.runIntakeCommand(IntakeModes.OUTTAKE),
+				feeder.runFeederCommand(FeederModes.REVERSE))
+						.withName("Driver Outtake"));
+
+		// Intake Controls
+
+		// driver.x().whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.FEED)
+		// 		.withName("Intake Algea"));
+
+		driver.a().whileTrue(manipulator.runManipulatorCommand(ManipulatorModes.SCORE).asProxy()
+				.withName("Score Algae"));
+
+		// groundAlgae.onTrue(
+		// 		new SmartPresetCommand(ControllerConstants.GroundAlgeaPosition, elevator, manipJoint)
+		// 				.withName("Ground Algea"));
+		
+		// Pivot Controls - changed for shot
+		// lebronShot.onTrue(
+		// intakePivot.runIntakePivotCommand(IntakePivotModes.DEPLOY)
+		// .withName("Deploy Intake"));
+
+		driver.downDpad().onTrue(
+				new ElevatorFeedCommand(elevator, manipJoint)
+						.withName("Feed Preset"));
+
+		driver.start().onTrue(
+				new SmartPresetCommand(ControllerConstants.CleanL2Position, elevator, manipJoint)
+						.withName("Clean L2 Preset"));
+
+		driver.back().onTrue(
+				new SmartPresetCommand(ControllerConstants.CleanL3Position, elevator, manipJoint)
+						.withName("Clean L3 Preset"));
+
+		driver.rightDpad().onTrue(new SmartPresetCommand(ControllerConstants.ScoreL2Position, elevator, manipJoint)
+				.withName("Elevator L2 Preset"));
+
+		driver.leftDpad().onTrue(
+				new SmartPresetCommand(ControllerConstants.ScoreL3Position, elevator, manipJoint)
+						.withName("Elevator L3 Preset"));
+
+		driver.upDpad().onTrue(
+				new SmartPresetCommand(ControllerConstants.ScoreL4Position, elevator, manipJoint)
+						.withName("Elevator L4 Preset"));
+
+		driver.rightBumper().onTrue(
+				new SmartScoreCommand(elevator, manipJoint, manipulator, candle)
+						.withName("Smart Score"));
+
+		driver.leftStick().onTrue(
+				new SmartPresetCommand(ControllerConstants.ScoreProcessorPosition, elevator, manipJoint)
+						.withName("Processor Preset"));
+
+		driver.rightStick().whileTrue(manipJoint.runVoltageCommand(-0.3));
+
+		driver.leftBumper().onTrue(
+				new ElevatorLebron(elevator, manipulator, manipJoint)
+						.withName("Take The Shot"));
+
+		driver.x().onTrue(
+				new PickCoralCommand(elevator, manipJoint, manipulator)
+						.withName("Pick Coral"));
+		
+		driver.b().onTrue(
+				new SmartPresetCommand(ControllerConstants.GroundAlgeaPosition, elevator, manipJoint)
+						.withName("Ground Algae"));
+
+		// manipJointManual.whileTrue(manipJoint.runVoltageCommand(-operator.getLeftY() * 2));
+	}
+
 
 	public void onInitialize() {
 		// Default Commands
